@@ -57,7 +57,6 @@ namespace Fitamas.UserInterface
 
         public void Initialize(GameWorld world)
         {
-            GUIStyle.Init(world.Game);
             InputSystem.keyboard.KeyTyped += (s, e) =>
             {
                 keyboardSubscriber?.OnKeyDown(e);

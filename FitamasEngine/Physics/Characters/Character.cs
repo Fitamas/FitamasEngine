@@ -4,7 +4,7 @@ using Fitamas.Serializeble;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Gameplay.Characters
+namespace Fitamas.Physics.Characters
 {
     public enum CharacterState
     {
@@ -17,13 +17,11 @@ namespace Fitamas.Gameplay.Characters
 
     public class Character
     {
-        [SerializableField] private string name = "NoName";
         [SerializableField] private Avatar avatar;
 
         private bool isInit = false;
         private bool isRagDollCreate = false;
 
-        public string Name => name;
         public Avatar Avatar => avatar;
 
         public CharacterState characterState = CharacterState.idle;
@@ -75,8 +73,6 @@ namespace Fitamas.Gameplay.Characters
         {
             if (isInit)
             {
-
-
                 isInit = false;
             }
         }
@@ -101,7 +97,7 @@ namespace Fitamas.Gameplay.Characters
                 Joint2DHelper.RemoveRagDoll(avatar.GetElements());
                 isRagDoll = false;
                 canMove = true;
-                isRagDollCreate= false;
+                isRagDollCreate = false;
             }
         }
     }

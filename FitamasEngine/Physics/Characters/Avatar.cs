@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fitamas.Gameplay.Characters
+namespace Fitamas.Physics.Characters
 {
     public abstract class Avatar
     {

@@ -1,14 +1,12 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Extended.Entities;
-using Fitamas.Gameplay.Characters;
 using Fitamas.Math2D;
+using Fitamas.Physics;
+using Fitamas.Physics.Characters;
 using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Dynamics;
-using nkast.Aether.Physics2D.Dynamics.Contacts;
-using System;
-using System.Collections.Generic;
 
-namespace Fitamas.Physics
+namespace Fitamas.Physics.Characters
 {
     public class CharacterController : EntityFixedUpdateSystem
     {
@@ -94,7 +92,7 @@ namespace Fitamas.Physics
             }
         }
 
-        private void Update(Character character, Collider collider, float deltaTime) 
+        private void Update(Character character, Collider collider, float deltaTime)
         {
             //collider.Body.LinearVelocity = character.velocity;
 
@@ -301,8 +299,8 @@ namespace Fitamas.Physics
             //RaycastHit2D hit = CapsuleCast(position, Vector2.down, distance);
             RayCastHit[] hits = collider.CapsuleCast(position, new Vector2(0, -1), distance, character.layerMask);
 
-            if (hits.Length > 0) 
-            { 
+            if (hits.Length > 0)
+            {
                 RayCastHit hit = hits[0];
 
                 float angle = MathV.AngleDegrees(new Vector2(0, 1), hit.normal);

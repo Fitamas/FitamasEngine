@@ -1,4 +1,4 @@
-﻿using Fitamas.Gameplay.Characters;
+﻿using Fitamas.Physics.Characters;
 using System.Collections.Generic;
 
 namespace Fitamas.Animation

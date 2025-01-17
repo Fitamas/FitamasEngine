@@ -1,6 +1,6 @@
 ﻿using Fitamas.Entities;
-using Fitamas.Gameplay.Characters;
 using Fitamas.Serializeble;
+using Fitamas.Physics.Characters;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 

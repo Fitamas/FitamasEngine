@@ -1,14 +1,14 @@
 ﻿using Fitamas.Entities;
+using Fitamas.Extended.Entities;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Dynamics;
 
 namespace Fitamas.Physics
 {
-    public class PhysicsSystem : EntityUpdateSystem
+    public class PhysicsSystem : EntityFixedUpdateSystem
     {
         private Vector2 gravity = new Vector2(0, -9.8f);
-        private float accamulatorTime;
 
         public World physicsWorld { get; private set; }
 
@@ -81,17 +81,9 @@ namespace Fitamas.Physics
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public override void FixedUpdate(float deltaTime)
         {
-            accamulatorTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            while (accamulatorTime > Physics2D.FixedTimeStep)
-            {
-                accamulatorTime -= Physics2D.FixedTimeStep;
-
-                GameWorld.FixedUpdate(Physics2D.FixedTimeStep);
-
-                physicsWorld.Step(Physics2D.FixedTimeStep);
-            }
+            physicsWorld.Step(deltaTime);
 
             foreach (var box in ActiveEntities)
             {

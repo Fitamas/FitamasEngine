@@ -8,17 +8,33 @@ namespace Fitamas.UserInterface
 {
     public static class GUIStyle
     {
-        public static void Init(Game game)
-        {
-            DefoultTexture = new Texture2D(game.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
-            DefoultTexture.SetData(new[] { Color.White });
+        private static Texture2D defoultTexture;
+        private static BitmapFont defoultFont;
 
-            DefoultFont = game.Content.Load<BitmapFont>("Font\\DefoultFont");
+        public static Texture2D DefoultTexture 
+        {
+            get
+            {
+                if (defoultTexture == null)
+                {
+                    defoultTexture = new Texture2D(GameMain.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+                    defoultTexture.SetData(new[] { Color.White });
+                }
+                return defoultTexture;
+            }
         }
 
-        public static Texture2D DefoultTexture { get; set; }
-
-        public static BitmapFont DefoultFont { get; set; }
+        public static BitmapFont DefoultFont 
+        {
+            get
+            {
+                if (defoultFont == null)
+                {
+                    defoultFont = GameMain.Instance.Content.Load<BitmapFont>("Font\\DefoultFont");
+                }
+                return defoultFont;
+            }
+        }
 
         public static Color TextColor = Color.Black;
 

@@ -6,7 +6,6 @@ using nkast.Aether.Physics2D.Common;
 using nkast.Aether.Physics2D.Common.PhysicsLogic;
 using nkast.Aether.Physics2D.Dynamics;
 using System.Collections.Generic;
-using MonoGame.Extended;
 using Fitamas.Math2D;
 using System;
 using Microsoft.Xna.Framework.Graphics;
@@ -22,7 +21,6 @@ namespace Fitamas.Physics
         private static RealExplosion realExplosion;
 
         public static World world => system.physicsWorld;
-        public const float FixedTimeStep = 0.02f;
         public const int MaxCastDepth = 10;
 
         public static void Init(PhysicsSystem m_system)

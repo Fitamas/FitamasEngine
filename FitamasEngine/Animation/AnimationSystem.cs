@@ -1,5 +1,5 @@
 ﻿using Fitamas.Entities;
-using Fitamas.Gameplay.Characters;
+using Fitamas.Physics.Characters;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Gameplay.Characters
+namespace Fitamas.Physics.Characters
 {
     public class CharacterElement
     {
@@ -16,9 +16,9 @@ namespace Fitamas.Gameplay.Characters
         public string ParentElement => parentElement;
         public Vector2 ConnetionPosition => connectPosition;
 
-        public CharacterElement() 
-        { 
-        
+        public CharacterElement()
+        {
+
         }
 
         public CharacterElement(string name, Vector2 localPosition)
@@ -28,7 +28,7 @@ namespace Fitamas.Gameplay.Characters
             isRoot = true;
         }
 
-        public CharacterElement(string name, string parentName, Vector2 localPosition) 
+        public CharacterElement(string name, string parentName, Vector2 localPosition)
         {
             this.name = name;
             parentElement = parentName;
