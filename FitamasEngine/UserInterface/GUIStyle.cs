@@ -17,7 +17,7 @@ namespace Fitamas.UserInterface
             {
                 if (defoultTexture == null)
                 {
-                    defoultTexture = new Texture2D(GameMain.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+                    defoultTexture = new Texture2D(GameEngine.Instance.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
                     defoultTexture.SetData(new[] { Color.White });
                 }
                 return defoultTexture;
@@ -30,7 +30,7 @@ namespace Fitamas.UserInterface
             {
                 if (defoultFont == null)
                 {
-                    defoultFont = GameMain.Instance.Content.Load<BitmapFont>("Font\\DefoultFont");
+                    defoultFont = GameEngine.Instance.Content.Load<BitmapFont>("Font\\DefoultFont");
                 }
                 return defoultFont;
             }

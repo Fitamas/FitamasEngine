@@ -1,31 +1,25 @@
-﻿using System;
+﻿using Fitamas.Main;
+using System;
 
 namespace Fitamas.Serializeble
 {
     public static class Resources
     {
-        private static ObjectManager objectManager;
-
-        public static string RootDirectory => objectManager.RootDirectory;
-
-        public static void LoadContent(ObjectManager objectManager)
-        {
-            Resources.objectManager = objectManager;
-        }
+        public static string RootDirectory => GameEngine.Instance.ObjectManager.RootDirectory;
 
         public static MonoObject LoadObject(string name)
         {
-            return objectManager.LoadAsset(name);
+            return GameEngine.Instance.ObjectManager.LoadAsset(name);
         }
 
         public static T Load<T>(string name) where T : MonoObject
         {
-            return objectManager.LoadAsset<T>(name);
+            return GameEngine.Instance.ObjectManager.LoadAsset<T>(name);
         }
 
         public static void Unload(string name)
         {
-            objectManager.UnloadAsset(name);
+            GameEngine.Instance.ObjectManager.UnloadAsset(name);
         }
     }
 }

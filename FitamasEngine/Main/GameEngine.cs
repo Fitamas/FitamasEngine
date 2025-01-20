@@ -16,7 +16,7 @@ using System;
 
 namespace Fitamas.Main
 {
-    public class GameMain : Game
+    public class GameEngine : Game
     {
         private GameWorld world;
         private float accamulatorTime;
@@ -25,22 +25,19 @@ namespace Fitamas.Main
 
         public GameWorld World => world;
 
-        public static GameMain Instance { get; private set; }
+        public static GameEngine Instance { get; private set; }
         public DIContainer Container { get; }
-        private ObjectManager ObjectManager { get; }
+        public ObjectManager ObjectManager { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
 
-        public GameMain()
+        public GameEngine()
         {
+            Content.RootDirectory = "Content";
             Instance = this;
 
             Container = new DIContainer();
-
-            GraphicsDeviceManager = new GraphicsDeviceManager(this);
-
-            Content.RootDirectory = "Content";
-
             ObjectManager = new ObjectManager(this, "Content");
+            GraphicsDeviceManager = new GraphicsDeviceManager(this);
         }
 
         protected override void Initialize()
@@ -59,12 +56,12 @@ namespace Fitamas.Main
 
             Debug.Log("Initialize systems");
 
-            world = CreateWorld(this);
+            world = CreateWorldBuilder(this).Build();
 
             base.Initialize();
         }
 
-        public virtual GameWorld CreateWorld(GameMain game)
+        public virtual WorldBuilder CreateWorldBuilder(GameEngine game)
         {
 
             return new WorldBuilder(game)
@@ -77,34 +74,22 @@ namespace Fitamas.Main
                 //.AddSystem(new PlayerSystem())
 
                 //Phisics
-                .AddSystem(new CharacterController())
                 .AddSystem(new PhysicsSystem())
+                .AddSystem(new CharacterController())
 
                 //Animation
                 .AddSystem(new AnimationSystem())
-
-                //Game systems
-                .AddSystem(AddSystems(game))
 
                 //Render
                 .AddSystem(new CameraSystem(game))
                 .AddSystem(new RenderSystem(game.GraphicsDevice))
                 .AddSystem(new GUISystem(game.GraphicsDevice))
-                .AddSystem(new DebugRenderSystem(game.GraphicsDevice))
-
-                .Build();
-        }
-
-        public virtual IEnumerable<ISystem> AddSystems(GameMain game)
-        {
-            return Array.Empty<ISystem>();
+                .AddSystem(new DebugRenderSystem(game.GraphicsDevice));
         }
 
         protected override void LoadContent()
         {
             Debug.Log("Load content");
-
-            Resources.LoadContent(ObjectManager);
 
             world.LoadContent(Content);
 

@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Fitamas.Samples.HelloWorld
 {
-    public class HelloWorldGame : GameMain
+    public class HelloWorldGame : GameEngine
     {
 
     }

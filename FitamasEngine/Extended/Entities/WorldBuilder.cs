@@ -33,12 +33,14 @@ using System.Collections.Generic;
 
 namespace Fitamas.Entities
 {
-    public class WorldBuilder : GameWorld
+    public class WorldBuilder
     {
-        private readonly Bag<ISystem> _systems = new Bag<ISystem>();
+        private Bag<ISystem> _systems = new Bag<ISystem>();
+        private Game game;
 
-        public WorldBuilder(Game game) : base(game)
+        public WorldBuilder(Game game)
         {
+            this.game = game;
         }
 
         public WorldBuilder AddSystem(ISystem system)
@@ -59,7 +61,7 @@ namespace Fitamas.Entities
 
         public GameWorld Build()
         {
-            var world = new GameWorld(Game);
+            var world = new GameWorld(game);
 
             foreach (var system in _systems)
                 world.RegisterSystem(system);
