@@ -1,8 +1,8 @@
 ﻿using Fitamas.Graphics;
+using FitamasEngine.UserInterface.Extensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
-using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.TextureAtlases;
 using System;
 using System.Threading.Tasks;
@@ -52,9 +52,16 @@ namespace Fitamas.UserInterface
             spriteBatch.Draw(texture, rectangle, mask, color, rotation, new Vector2(), SpriteEffects.None, layer / k);
         }
 
-        public void DrawString(BitmapFont font, string text, Vector2 position, Color color, Vector2 origin, float scale, int layer = 0)
+        public void DrawString(SpriteFont font, string text, Vector2 position, Color color, Vector2 origin, float scale, int layer = 0)
         {
-            spriteBatch.DrawString(font, text, position, color, 0, origin, scale, SpriteEffects.None, layer / k, ContextRender.Mask);           
+            Rectangle mask = ContextRender.Mask;
+
+            //if (clippingRectangle.HasValue)
+            //{
+            //    mask = Rectangle.Intersect(mask, clippingRectangle.Value);
+            //}
+
+            spriteBatch.DrawString(font, text, position, color, 0, origin, scale, SpriteEffects.None, layer / k, mask);
         }
 
         public void FillRectangle(Point positiopn, Point scale, Color color, int layer)

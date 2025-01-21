@@ -309,13 +309,13 @@ namespace Fitamas.UserInterface
             return wire;
         }
 
-        public static GUIContextMenu CreateContextMenu()
-        {
-            Point mousePosition = InputSystem.mouse.MousePosition;
-            GUICanvas canvas = GUISystem.GetActiveLayout().Canvas;
-            Point localPosition = canvas.ToLocalPosition(mousePosition);
-            return CreateContextMenu(localPosition);
-        }
+        //public static GUIContextMenu CreateContextMenu()
+        //{
+        //    Point mousePosition = InputSystem.mouse.MousePosition;
+        //    //GUICanvas canvas = GUISystem.GetActiveLayout().Canvas;
+        //    Point localPosition = canvas.ToLocalPosition(mousePosition);
+        //    return CreateContextMenu(localPosition);
+        //}
 
         public static GUIContextMenu CreateContextMenu(Point mousePosition)
         {

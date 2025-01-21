@@ -1,4 +1,4 @@
-/*
+﻿/*
     The MIT License (MIT)
 
     Copyright (c) 2015-2024:
@@ -25,19 +25,39 @@
     SOFTWARE.
 */
 
+using Fitamas.Collections;
+using Fitamas.Container;
+using Microsoft.Xna.Framework;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace MonoGame.Extended.Content.Pipeline.BitmapFonts
+namespace Fitamas.Entities
 {
-    public class BitmapFontProcessorResult
+    public class WorldBuilder
     {
-        public List<string> TextureAssets { get; private set; }
-        public BitmapFontFile FontFile { get; private set; }
+        private Bag<ISystem> _systems = new Bag<ISystem>();
+        private Game game;
 
-        public BitmapFontProcessorResult(BitmapFontFile fontFile)
+        public WorldBuilder(Game game)
         {
-            FontFile = fontFile;
-            TextureAssets = new List<string>();
+            this.game = game;         
+        }
+
+        public WorldBuilder AddSystem(ISystem system)
+        {
+            _systems.Add(system);
+            return this;
+        }
+
+        public GameWorld Build()
+        {
+            var world = new GameWorld(game);
+
+            foreach (var system in _systems)
+                world.RegisterSystem(system);
+
+            return world;
         }
     }
 }

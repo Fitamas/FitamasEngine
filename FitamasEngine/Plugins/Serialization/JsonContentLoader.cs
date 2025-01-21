@@ -1,4 +1,4 @@
-/*
+﻿/*
     The MIT License (MIT)
 
     Copyright (c) 2015-2024:
@@ -26,35 +26,32 @@
 */
 
 using System;
-using MonoGame.Extended.TextureAtlases;
-using System.Collections.Generic;
+using System.IO;
+using Fitamas.Serializeble;
+using Microsoft.Xna.Framework.Content;
+using Newtonsoft.Json;
 
-namespace MonoGame.Extended.BitmapFonts
+namespace MonoGame.Extended.Serialization
 {
-    public class BitmapFontRegion
+    public class JsonContentLoader
     {
-        public BitmapFontRegion(TextureRegion2D textureRegion, int character, int xOffset, int yOffset, int xAdvance)
+        public MonoGameJsonSerializer Serializer {  get; private set; }
+
+        public T Load<T>(ObjectManager objectManager, string path)
         {
-            TextureRegion = textureRegion;
-            Character = character;
-            XOffset = xOffset;
-            YOffset = yOffset;
-            XAdvance = xAdvance;
-            Kernings = new Dictionary<int, int>();
+            return (T)Load(objectManager, path, typeof(T));
         }
 
-        public int Character { get; }
-        public TextureRegion2D TextureRegion { get; }
-        public int XOffset { get; }
-        public int YOffset { get; }
-        public int XAdvance { get; }
-        public int Width => TextureRegion.Width;
-        public int Height => TextureRegion.Height;
-        public Dictionary<int, int> Kernings { get; }
-
-        public override string ToString()
+        public object Load(ObjectManager objectManager, string path, Type type)
         {
-            return $"{Convert.ToChar(Character)} {TextureRegion}";
+            using (var stream = objectManager.OpenStream(path))
+            using (var reader = new StreamReader(stream))
+            using (var jsonReader = new JsonTextReader(reader))
+            {
+                var serializer = new MonoGameJsonSerializer(objectManager);
+                Serializer = serializer;
+                return serializer.Deserialize(jsonReader, type);
+            }
         }
     }
 }

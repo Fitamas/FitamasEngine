@@ -1,4 +1,5 @@
-﻿using Fitamas.Events;
+﻿using Fitamas.Container;
+using Fitamas.Events;
 using NLua;
 using System;
 using System.IO;
@@ -35,9 +36,9 @@ namespace Fitamas.UserInterface.Scripting
             //lua.DoString(@" import ('WDL') "); TODO import dll in game
         }
 
-        public void OnOpen(GUISystem system)
+        public void OnOpen(DIContainer container)
         {
-            lua["system"] = system;
+            lua["container"] = container;
             onOpen?.Call();
         }
 

@@ -2,14 +2,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 
 namespace Fitamas.UserInterface
 {
     public static class GUIStyle
     {
         private static Texture2D defoultTexture;
-        private static BitmapFont defoultFont;
+        private static SpriteFont defoultFont;
 
         public static Texture2D DefoultTexture 
         {
@@ -24,13 +23,13 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public static BitmapFont DefoultFont 
+        public static SpriteFont DefoultFont 
         {
             get
             {
                 if (defoultFont == null)
                 {
-                    defoultFont = GameEngine.Instance.Content.Load<BitmapFont>("Font\\DefoultFont");
+                    defoultFont = GameEngine.Instance.Content.Load<SpriteFont>("Font\\DefoultFont");
                 }
                 return defoultFont;
             }

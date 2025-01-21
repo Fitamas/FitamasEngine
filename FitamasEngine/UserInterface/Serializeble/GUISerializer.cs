@@ -50,8 +50,7 @@ namespace Fitamas.UserInterface.Serializeble
                 canvas.AddChild(component);
             }
 
-            SerializebleLayout layout = new SerializebleLayout(canvas);
-            layout.Scripting = scripting;
+            SerializebleLayout layout = new SerializebleLayout(canvas, scripting);
 
             return layout;
         }

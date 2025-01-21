@@ -1,4 +1,5 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Container;
+using Fitamas.Serializeble;
 using Fitamas.UserInterface.Scripting;
 using Microsoft.Xna.Framework;
 using System;
@@ -9,46 +10,23 @@ namespace Fitamas.UserInterface.Serializeble
     {
         [SerializableField] protected GUICanvas canvas = new GUICanvas();
 
-        private GUISystem system;
-        public GUIScripting Scripting { get; set; }
+        public GUIScripting Scripting { get; }
 
         public GUICanvas Canvas => canvas;
 
-        public SerializebleLayout(GUICanvas canvas)
+        public SerializebleLayout(GUICanvas canvas, GUIScripting scripting)
         {
             this.canvas = canvas;
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            Scripting.Update();
-
-            canvas.Update(gameTime);
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            system.GUIRender.Begin();
-
-            canvas.Draw(gameTime);
-
-            system.GUIRender.End();
-
-            if (GUIDebug.DebugModeOn)
-            {
-                GUIDebug.Render(canvas);
-            }
+            Scripting = scripting;
         }
 
         public void OpenScreen(GUISystem system)
         {
-            this.system = system;
-
             canvas.Init(system);
 
             canvas.Enable = true;
 
-            Scripting?.OnOpen(system);
+            Scripting?.OnOpen(system.Container);
         }
 
         public void CloseScreen()

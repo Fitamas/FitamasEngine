@@ -34,7 +34,6 @@ using System.Reflection;
 using System;
 using Fitamas.Main;
 using MonoGame.Extended.Serialization.Converters;
-using MonoGame.Extended.BitmapFonts;
 using Fitamas.Serializeble;
 using Fitamas;
 
@@ -54,7 +53,7 @@ namespace MonoGame.Extended.Serialization
             Converters.Add(new ColorJsonConverter());
 
             Converters.Add(new ContentManagerJsonConverter<Texture2D>(objectManager, (Texture2D texture) => { return texture.Name; }));
-            Converters.Add(new ContentManagerJsonConverter<BitmapFont>(objectManager, (BitmapFont font) => { return font.Name; }));
+            Converters.Add(new ContentManagerJsonConverter<SpriteFont>(objectManager, (SpriteFont font) => { return font.Texture.Name; }));
 
             Converters.Add(new MonoObjectConverter(objectManager));
 

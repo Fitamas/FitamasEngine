@@ -1,7 +1,6 @@
 ﻿using Fitamas.Serializeble;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.BitmapFonts;
 using System;
 
 namespace Fitamas.UserInterface
@@ -17,11 +16,11 @@ namespace Fitamas.UserInterface
     {
         [SerializableField] private string text;
         [SerializableField] private bool autoScale;
+        [SerializableField] private float scale;
 
-        public BitmapFont Font;
+        public SpriteFont Font;
         public GUITextAligment TextAligment;
         public Color Color;
-        public float Scale;
 
         public string Text
         {
@@ -55,7 +54,23 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public GUITextBlock(BitmapFont font, string text) : base()
+        public float Scale
+        {
+            get
+            {
+                return scale;
+            }
+            set
+            {
+                if (scale != value)
+                {
+                    scale = value;
+                    CalculateScale();
+                }
+            }
+        }
+
+        public GUITextBlock(SpriteFont font, string text) : base()
         {
             Font = font;
             Color = Color.Black;
@@ -113,7 +128,7 @@ namespace Fitamas.UserInterface
         {
             if (AutoScale)
             {
-                Point scale = Font.MeasureString(text).ToPoint();
+                Point scale = (Font.MeasureString(text) * Scale).ToPoint();
 
                 if (Stretch == GUIStretch.None)
                 {
@@ -153,7 +168,7 @@ namespace Fitamas.UserInterface
             for (int i = 0; i < positions.Length; i++)
             {
                 float xDist = Math.Abs(position.X - positions[i].X);
-                float yDist = Math.Abs(position.Y - (positions[i].Y + Font.LineHeight * 0.5f));
+                float yDist = Math.Abs(position.Y - (positions[i].Y + Font.MeasureString(text).Y /*LineHeight*/ * 0.5f));
                 if (yDist < closestYDist || (NearlyEqual(yDist, closestYDist) && xDist < closestXDist))
                 {
                     closestIndex = i;
@@ -181,11 +196,11 @@ namespace Fitamas.UserInterface
                 if (i > 0)
                 {
                     char c = Text[i - 1];
-                    var region = Font.GetCharacterRegion(c);
+                    var region = Font.GetGlyphs()[c].Cropping;// GetCharacterRegion(c);
                     xPos += region != null ? region.Width : 0;
                 }
 
-                vectors[i] = new Vector2(xPos, Font.LineHeight);
+                vectors[i] = new Vector2(xPos, Font.MeasureString(text).Y/*LineHeight*/);
             }
 
             return vectors;

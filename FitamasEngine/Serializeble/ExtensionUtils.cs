@@ -1,9 +1,11 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.Scene;
 using Fitamas.UserInterface.Serializeble;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Fitamas.Serializeble
@@ -32,6 +34,11 @@ namespace Fitamas.Serializeble
             }
 
             return null;
+        }
+
+        public static Stream OpenStream(this ObjectManager objectManager, string path)
+        {
+            return TitleContainer.OpenStream(Path.Combine(objectManager.RootDirectory, path));
         }
     }
 }

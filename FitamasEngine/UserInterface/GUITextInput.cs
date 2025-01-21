@@ -6,6 +6,7 @@ using MonoGame.Extended.Input.InputListeners;
 using System.Text.RegularExpressions;
 using System;
 using Fitamas.UserInterface.Scripting;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Fitamas.UserInterface
 {
@@ -285,7 +286,7 @@ namespace Fitamas.UserInterface
 
         private void CalculateCaret()
         {
-            caretSize = new Point(CaretWidth, TextBlock.Font.LineHeight);
+            caretSize = new Point(CaretWidth, TextBlock.Font.MeasureString(TextBlock.Text).ToPoint().Y);
             Point textPosition = TextBlock.Rectangle.Location;
             Point caretOffset = Point.Zero;
 

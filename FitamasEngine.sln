@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitamasEngine", "FitamasEngine\FitamasEngine.csproj", "{E8BC477F-333E-4767-A130-92BB402CC654}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "Samples\HelloWorld\HelloWorld.csproj", "{C3E028AC-B4FB-442B-8F5B-E8DEF19DBCB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "Samples\HelloWorld\HelloWorld.csproj", "{C3E028AC-B4FB-442B-8F5B-E8DEF19DBCB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,7 +7,7 @@ namespace Fitamas.Serializeble
     {
         public static string RootDirectory => GameEngine.Instance.ObjectManager.RootDirectory;
 
-        public static MonoObject LoadObject(string name)
+        public static MonoObject Load(string name)
         {
             return GameEngine.Instance.ObjectManager.LoadAsset(name);
         }

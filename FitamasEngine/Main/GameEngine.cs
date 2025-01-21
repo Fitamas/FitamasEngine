@@ -56,15 +56,15 @@ namespace Fitamas.Main
 
             Debug.Log("Initialize systems");
 
-            world = CreateWorldBuilder(this).Build();
+            world = CreateWorldBuilder().Build();
 
             base.Initialize();
         }
 
-        public virtual WorldBuilder CreateWorldBuilder(GameEngine game)
+        public virtual WorldBuilder CreateWorldBuilder()
         {
 
-            return new WorldBuilder(game)
+            return new WorldBuilder(this)
                 //Load content
                 .AddSystem(new ScriptingSystem())
                 .AddSystem(new SceneSystem())
@@ -81,10 +81,10 @@ namespace Fitamas.Main
                 .AddSystem(new AnimationSystem())
 
                 //Render
-                .AddSystem(new CameraSystem(game))
-                .AddSystem(new RenderSystem(game.GraphicsDevice))
-                .AddSystem(new GUISystem(game.GraphicsDevice))
-                .AddSystem(new DebugRenderSystem(game.GraphicsDevice));
+                .AddSystem(new CameraSystem(this))
+                .AddSystem(new RenderSystem(GraphicsDevice))
+                .AddSystem(new GUISystem(GraphicsDevice, Container))
+                .AddSystem(new DebugRenderSystem(GraphicsDevice));
         }
 
         protected override void LoadContent()
@@ -98,17 +98,17 @@ namespace Fitamas.Main
 
         protected override void Update(GameTime gameTime)
         {
-            if (!IsActive)
-            {
-                return;
-            }
-
             accamulatorTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
             while (accamulatorTime > FixedTimeStep)
             {
                 accamulatorTime -= FixedTimeStep;
 
                 world.FixedUpdate(FixedTimeStep);
+            }
+
+            if (!IsActive)
+            {
+                return;
             }
 
             world.Update(gameTime);
@@ -121,13 +121,15 @@ namespace Fitamas.Main
             Camera.Current = Camera.Main;
 
             world.Draw(gameTime);
+
             base.Draw(gameTime);
         }
 
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
             world.Dispose();
+
+            base.Dispose(disposing);
         }
     }
 }
