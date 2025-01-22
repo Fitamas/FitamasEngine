@@ -26,7 +26,7 @@ namespace Fitamas.UserInterface.Serializeble
 
             canvas.Enable = true;
 
-            Scripting?.OnOpen(system.Container);
+            Scripting?.OnOpen(system);
         }
 
         public void CloseScreen()

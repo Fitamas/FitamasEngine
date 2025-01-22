@@ -317,6 +317,11 @@ namespace Fitamas.UserInterface
 
         public void AddChild(GUIComponent component)
         {
+            if (component == null)
+            {
+                return;
+            }
+
             if (!childrensComponent.Contains(component))
             {
                 childrensComponent.Add(component);

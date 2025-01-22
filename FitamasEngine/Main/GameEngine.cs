@@ -11,8 +11,6 @@ using Fitamas.Physics.Characters;
 using Fitamas.Scene;
 using Fitamas.Scripting;
 using Fitamas.UserInterface;
-using System.Collections.Generic;
-using System;
 
 namespace Fitamas.Main
 {

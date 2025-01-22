@@ -32,13 +32,12 @@ namespace Fitamas.UserInterface.Scripting
             {
                 Debug.LogError(e);
             }
-
-            //lua.DoString(@" import ('WDL') "); TODO import dll in game
         }
 
-        public void OnOpen(DIContainer container)
+        public void OnOpen(GUISystem system)
         {
-            lua["container"] = container;
+            lua["System"] = system;
+            lua["Container"] = system.Container;
             onOpen?.Call();
         }
 

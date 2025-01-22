@@ -6,33 +6,36 @@ using System.Collections.Generic;
 
 namespace Fitamas.UserInterface
 {
-    public static class GUIDebug
+    public class GUIDebug
     {
         private static PrimitiveBatch primitiveBatch;
         private static PrimitiveDrawing primitiveDrawing;
 
-        public static bool DebugModeOn = false;
+        public static bool Active = false;
         public static float centerScale = 4;
 
         public static Color EnableColor = Color.DarkGreen;
         public static Color DisableColor = Color.Red;
 
-        public static void Create(GraphicsDevice graphicsDevice)
+        public GUIDebug(GraphicsDevice graphicsDevice)
         {
             primitiveBatch = new PrimitiveBatch(graphicsDevice);
             primitiveDrawing = new PrimitiveDrawing(primitiveBatch);
         }
 
-        public static void Render(GUIComponent component)
+        public void Render(GUIComponent component)
         {
-            BeginBatch();
+            Matrix view = Camera.Main.ViewportScaleMatrix;
+            Matrix projection = Camera.GetProjectionMatrix();
+
+            primitiveBatch.Begin(ref projection, ref view);
 
             RenderComponent(component);
 
-            EndBatch();
+            primitiveBatch.End();
         }
 
-        private static void RenderComponent(GUIComponent component)
+        private void RenderComponent(GUIComponent component)
         {
             Color color = component.Enable ? EnableColor : DisableColor;
             Rectangle rectangle = component.Rectangle;
@@ -45,19 +48,6 @@ namespace Fitamas.UserInterface
             {
                 RenderComponent(child);
             }
-        }
-
-        public static void BeginBatch()
-        {
-            Matrix view = Camera.Main.ViewportScaleMatrix;
-            Matrix projection = Camera.GetProjectionMatrix();
-
-            primitiveBatch.Begin(ref projection, ref view);
-        }
-
-        public static void EndBatch()
-        {
-            primitiveBatch.End();
         }
     }
 }

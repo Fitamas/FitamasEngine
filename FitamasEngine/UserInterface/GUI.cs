@@ -23,8 +23,8 @@ namespace Fitamas.UserInterface
             GUIButton button = new GUIButton(rectangle);
 
             GUITextBlock textBlock = CreateTextBlock(text);
-            textBlock.Stretch = GUIStretch.HorizontalAndVertical;
             textBlock.TextAligment = GUITextAligment.Middle;
+            textBlock.Alignment = GUIAlignment.Center;
             textBlock.Text = text;
             button.AddChild(textBlock);
             button.TextBlock = textBlock;

@@ -22,6 +22,7 @@ namespace Fitamas.UserInterface
         private GraphicsDevice graphics;
         private GUIRenderBatch guiRender;
         private DIContainer container;
+        private GUIDebug debug;
 
         public IKeyboardEvent keyboardSubscriber { get; set; }
         public GUIComponent onMouse { get; set; }
@@ -45,10 +46,10 @@ namespace Fitamas.UserInterface
 
         public GUISystem(GraphicsDevice graphicsDevice, DIContainer container)
         {
-            this.container = new DIContainer(container);
+            this.container = container;
             this.container.RegisterInstance("gui_system", this);
 
-            GUIDebug.Create(graphicsDevice);
+            debug = new GUIDebug(graphicsDevice);
 
             graphics = graphicsDevice;
             guiRender = new GUIRenderBatch(graphicsDevice);
@@ -159,9 +160,9 @@ namespace Fitamas.UserInterface
 
                 GUIRender.End();
 
-                if (GUIDebug.DebugModeOn)
+                if (GUIDebug.Active)
                 {
-                    GUIDebug.Render(layout.Canvas);
+                    debug.Render(layout.Canvas);
                 }
             }
         }

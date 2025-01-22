@@ -13,10 +13,17 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Font/DefoultFont.spritefont
+#begin Font/Pixel_12.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
-/build:Font/DefoultFont.spritefont
+/build:Font/Pixel_12.spritefont
+
+#begin Font/Pixel_20.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/Pixel_20.spritefont
 

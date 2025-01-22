@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fitamas.UserInterface
 {
-    public static class GUIStyle
+    public class GUIStyle
     {
         private static Texture2D defoultTexture;
         private static SpriteFont defoultFont;
@@ -23,13 +23,13 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public static SpriteFont DefoultFont 
+        public static SpriteFont DefoultFont
         {
             get
             {
                 if (defoultFont == null)
                 {
-                    defoultFont = GameEngine.Instance.Content.Load<SpriteFont>("Font\\DefoultFont");
+                    defoultFont = GameEngine.Instance.Content.Load<SpriteFont>("Font\\Pixel_20");
                 }
                 return defoultFont;
             }
