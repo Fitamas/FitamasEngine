@@ -28,7 +28,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.ViewportAdapters;
+using Fitamas.Graphics.ViewportAdapters;
 
 namespace MonoGame.Extended.Input.InputListeners
 {

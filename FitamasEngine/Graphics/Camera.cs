@@ -1,8 +1,8 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Main;
+using Fitamas.Math2D;
+using Fitamas.Graphics.ViewportAdapters;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
-using MonoGame.Extended.ViewportAdapters;
 using System;
 
 namespace Fitamas.Graphics

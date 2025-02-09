@@ -31,7 +31,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 // ReSharper disable once CheckNamespace
 
-namespace MonoGame.Extended.ViewportAdapters
+namespace Fitamas.Graphics.ViewportAdapters
 {
     public enum BoxingMode
     {

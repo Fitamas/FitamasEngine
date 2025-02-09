@@ -40,7 +40,7 @@ namespace Fitamas.UserInterface
             Color color = component.Enable ? EnableColor : DisableColor;
             Rectangle rectangle = component.Rectangle;
             Vector2 position = rectangle.Location.ToVector2();
-            Vector2 centerPosition = rectangle.Center.ToVector2();
+            Vector2 centerPosition = rectangle.Location.ToVector2() + rectangle.Size.ToVector2() * component.Pivot;
             primitiveDrawing.DrawRectangle(position, rectangle.Width, rectangle.Height, color);
             primitiveDrawing.DrawSolidCircle(centerPosition, centerScale, color);
 

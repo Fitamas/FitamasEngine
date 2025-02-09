@@ -4,7 +4,10 @@ using Fitamas.Entities;
 using Fitamas.Extended.Entities;
 using Fitamas.Input;
 using Fitamas.Serializeble;
+using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Scripting;
 using Fitamas.UserInterface.Serializeble;
+using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -17,30 +20,30 @@ namespace Fitamas.UserInterface
     {
         public const string DefoultLayout = "Layouts\\MainMenu.xml";
 
-        //TODO window and popup
-        private SerializebleLayout layout;
         private GraphicsDevice graphics;
         private GUIRenderBatch guiRender;
         private DIContainer container;
         private GUIDebug debug;
+        private GUIRoot root;
+        private GUIScripting scripting;
 
-        public IKeyboardEvent keyboardSubscriber { get; set; }
-        public GUIComponent onMouse { get; set; }
+        public GUIComponent Focused { get; set; }
+        public GUIComponent OnMouse { get; set; }
 
         private List<IMouseEvent> clickedMouse = new List<IMouseEvent>();
         private List<IDragMouseEvent> dragMouse = new List<IDragMouseEvent>();
 
-        public bool isKeyboardInput => keyboardSubscriber != null;
+        public bool IsFocused => Focused != null;
         public GraphicsDevice GraphicsDevice => graphics;
-        public GUIRenderBatch GUIRender => guiRender;
-        public SerializebleLayout CurrentLayout => layout;
+        public GUIRenderBatch Render => guiRender;
         public DIContainer Container => container;
+        public GUIRoot Root => root;
 
         public bool MouseOnGUI
         {
             get
             {
-                return onMouse != null;
+                return OnMouse != null;
             }
         }
 
@@ -50,9 +53,12 @@ namespace Fitamas.UserInterface
             this.container.RegisterInstance("gui_system", this);
 
             debug = new GUIDebug(graphicsDevice);
+            root = new GUIRoot();
 
             graphics = graphicsDevice;
             guiRender = new GUIRenderBatch(graphicsDevice);
+
+            root.Init(this);
         }
 
         public void LoadContent(ContentManager content)
@@ -64,15 +70,15 @@ namespace Fitamas.UserInterface
         {
             InputSystem.keyboard.KeyTyped += (s, e) =>
             {
-                keyboardSubscriber?.OnKeyDown(e);
+                //keyboardSubscriber?.OnKeyDown(e);
             };
             InputSystem.keyboard.KeyReleased += (s, e) =>
             {
-                keyboardSubscriber?.OnKeyUP(e);
+                //keyboardSubscriber?.OnKeyUP(e);
             };
             InputSystem.keyboard.KeyPressed += (s, e) =>
             {
-                keyboardSubscriber?.OnKey(e);
+                //keyboardSubscriber?.OnKey(e);
             };
             InputSystem.mouse.MouseDown += (s, e) =>
             {
@@ -122,83 +128,54 @@ namespace Fitamas.UserInterface
         {
             Point mousePosition = InputSystem.mouse.MousePosition;
             List<GUIComponent> result = new List<GUIComponent>();
-            onMouse = null;
 
             RaycastAll(mousePosition, result);
 
-            foreach (var component in result)
+            GUIComponent onMouse = result.FirstOrDefault();
+
+            if (OnMouse != onMouse)
             {
-                if (onMouse != null)
+                if (OnMouse != null)
                 {
-                    if (component.Layer > onMouse.Layer)
-                    {
-                        onMouse = component;
-                    }
+                    OnMouse.IsMouseOver = false;
                 }
-                else
+
+                OnMouse = onMouse;
+
+                if (OnMouse != null)
                 {
-                    onMouse = component;
+                    OnMouse.IsMouseOver = true;
                 }
             }
 
-            if (layout != null)
-            {
-                layout.Scripting.Update();
+            scripting?.Update();
 
-                layout.Canvas.Update(gameTime);
-            }
+            root.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
         {
-            if (layout != null)
+            root.Draw(gameTime);
+
+            if (GUIDebug.Active)
             {
-
-                GUIRender.Begin();
-
-                layout.Canvas.Draw(gameTime);
-
-                GUIRender.End();
-
-                if (GUIDebug.Active)
-                {
-                    debug.Render(layout.Canvas);
-                }
+                debug.Render(root);
             }
         }
 
         public void RaycastAll(Point point, List<GUIComponent> result)
         {
-            if (layout != null)
-            {
-                layout.Canvas.RaycastAll(point, result);
-            }
+            root.RaycastAll(point, result);
         }
 
         public void AddComponent(GUIComponent component)
         {
-            if (layout != null)
-            {
-                layout.Canvas.AddChild(component);
-            }
-        }
-
-        public void RemoveComponent(GUIComponent component)
-        {
-            if (layout != null)
-            {
-                layout.Canvas.RemoveChild(component);
-            }
+            root.AddComponent(component);
         }
 
         public GUIComponent GetComponentFromId(string id)
         {
-            if (layout != null)
-            {
-                return layout.Canvas.GetComponentFromId(id);
-            }
-
-            return null;
+            return root.GetComponentFromName(id);
         }
 
         public void SubscribeInput(GUIComponent component)
@@ -233,16 +210,31 @@ namespace Fitamas.UserInterface
 
             if (selectScreen != null)
             {
-                layout?.CloseScreen();
-                layout = selectScreen;
-                layout.OpenScreen(this);
+                //if (layout != null)
+                {
+                    // TODO remove all components
+
+                    //layout.Scripting.OnClose();
+                    //foreach (var component in selectScreen.Components)
+                    //{
+                    //    RemoveComponent(component);
+                    //}
+                }
+
+                //layout = selectScreen;
+                scripting = selectScreen.Scripting;
+
+                foreach (var component in selectScreen.Components)
+                {
+                    AddComponent(component);
+                }
+                selectScreen.Scripting.OnOpen(this);
             }
         }
 
         public void Dispose()
         {
-            layout?.CloseScreen();
-            layout = null;
+
         }
     }
 }

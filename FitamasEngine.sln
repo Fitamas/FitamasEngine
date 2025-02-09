@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FitamasEngine", "FitamasEngine\FitamasEngine.csproj", "{E8BC477F-333E-4767-A130-92BB402CC654}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitamas", "FitamasEngine\Fitamas.csproj", "{E8BC477F-333E-4767-A130-92BB402CC654}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "Samples\HelloWorld\HelloWorld.csproj", "{C3E028AC-B4FB-442B-8F5B-E8DEF19DBCB3}"
 EndProject

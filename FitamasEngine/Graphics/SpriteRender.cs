@@ -2,6 +2,7 @@
 using System.Linq;
 using Fitamas.Entities;
 using Fitamas.Extended.Entities;
+using Fitamas.Math2D;
 using Fitamas.Scene;
 using Fitamas.Serializeble;
 using Microsoft.Xna.Framework;

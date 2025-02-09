@@ -25,7 +25,7 @@
     SOFTWARE.
 */
 
-using MonoGame.Extended.ViewportAdapters;
+using Fitamas.Graphics.ViewportAdapters;
 
 namespace MonoGame.Extended.Input.InputListeners
 {

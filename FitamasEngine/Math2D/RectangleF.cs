@@ -31,7 +31,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 
-namespace MonoGame.Extended
+namespace Fitamas.Math2D
 {
     // Real-Time Collision Detection, Christer Ericson, 2005. Chapter 4.2; Bounding Volumes - Axis-aligned Bounding Boxes (AABBs). pg 77
 
@@ -53,7 +53,7 @@ namespace MonoGame.Extended
     /// <seealso cref="IEquatableByRef{T}" />
     [DataContract]
     [DebuggerDisplay("{DebugDisplayString,nq}")]
-    public struct RectangleF : IEquatable<RectangleF>, IEquatableByRef<RectangleF>
+    public struct RectangleF : IEquatable<RectangleF>
     {
         /// <summary>
         ///     The <see cref="RectangleF" /> with <see cref="X" />, <see cref="Y" />, <see cref="Width" /> and

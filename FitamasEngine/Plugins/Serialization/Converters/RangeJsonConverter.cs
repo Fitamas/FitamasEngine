@@ -26,6 +26,7 @@
 */
 
 using System;
+using Fitamas.Math2D;
 using Newtonsoft.Json;
 
 namespace MonoGame.Extended.Serialization

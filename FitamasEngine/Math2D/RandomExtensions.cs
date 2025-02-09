@@ -28,7 +28,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace MonoGame.Extended
+namespace Fitamas.Math2D
 {
     public static class RandomExtensions
     {

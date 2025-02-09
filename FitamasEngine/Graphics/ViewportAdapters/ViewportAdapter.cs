@@ -29,7 +29,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MonoGame.Extended.ViewportAdapters
+namespace Fitamas.Graphics.ViewportAdapters
 {
     public abstract class ViewportAdapter : IDisposable
     {

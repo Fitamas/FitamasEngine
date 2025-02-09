@@ -1,5 +1,6 @@
 ﻿using Fitamas.Container;
 using Fitamas.Events;
+using Fitamas.UserInterface.Components;
 using NLua;
 using System;
 using System.IO;
@@ -49,42 +50,6 @@ namespace Fitamas.UserInterface.Scripting
         public void OnClose()
         {
             onClose?.Call();
-        }
-
-        public MonoAction CreateAction(string name)
-        {
-            if (!string.IsNullOrEmpty(name) && lua != null)
-            {
-                LuaFunction function = lua[name] as LuaFunction;
-
-                return () => { function?.Call(); };
-            }
-
-            return null;
-        }
-
-        public MonoAction<T0> CreateAction<T0>(string name)
-        {
-            if (!string.IsNullOrEmpty(name) && lua != null)
-            {
-                LuaFunction function = lua[name] as LuaFunction;
-
-                return (arg1) => { function?.Call(arg1); };
-            }
-
-            return null;
-        }
-
-        public MonoAction<T0, T1> CreateAction<T0, T1>(string name)
-        {
-            if (!string.IsNullOrEmpty(name) && lua != null)
-            {
-                LuaFunction function = lua[name] as LuaFunction;
-
-                return (arg0, arg1) => { function?.Call(arg0, arg1); };
-            }
-
-            return null;
         }
     }
 }

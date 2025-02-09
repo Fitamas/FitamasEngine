@@ -27,7 +27,7 @@
 
 using System;
 
-namespace MonoGame.Extended
+namespace Fitamas.Math2D
 {
     /// <summary>
     ///     Represents a closed interval defined by a minimum and a maximum value of a give type.

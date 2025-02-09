@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Fitamas.Events;
+using System;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 
-namespace Fitamas.UserInterface
+namespace Fitamas.UserInterface.Extensions
 {
     public static class StringExtension
     {

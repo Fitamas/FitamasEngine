@@ -30,7 +30,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace MonoGame.Extended.ViewportAdapters
+namespace Fitamas.Graphics.ViewportAdapters
 {
     public class ScalingWindowViewportAdapter : ViewportAdapter
     {

@@ -1,13 +1,15 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.Serializeble;
-using Fitamas.UserInterface.NodeEditor;
 using Fitamas.UserInterface.Scripting;
+using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using Fitamas.UserInterface.Components.NodeEditor;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Serializeble
 {
@@ -41,16 +43,15 @@ namespace Fitamas.UserInterface.Serializeble
 
             string lua = fileName + ".lua";
             scripting = new GUIScripting(lua);
-
-            GUICanvas canvas = new GUICanvas();
+            List<GUIComponent> components = new List<GUIComponent>();
 
             foreach (XElement el in document.Root.Elements())
             {
                 GUIComponent component = FromXML(el);
-                canvas.AddChild(component);
+                //frame.AddChild(component);
             }
 
-            SerializebleLayout layout = new SerializebleLayout(canvas, scripting);
+            SerializebleLayout layout = new SerializebleLayout(scripting, components);
 
             return layout;
         }
@@ -121,6 +122,42 @@ namespace Fitamas.UserInterface.Serializeble
             return FromXML(element1);
         }
 
+        //public MonoAction CreateAction(string name)
+        //{
+        //    if (!string.IsNullOrEmpty(name) && lua != null)
+        //    {
+        //        LuaFunction function = lua[name] as LuaFunction;
+
+        //        return () => { function?.Call(); };
+        //    }
+
+        //    return null;
+        //}
+
+        //public MonoAction<T0> CreateAction<T0>(string name)
+        //{
+        //    if (!string.IsNullOrEmpty(name) && lua != null)
+        //    {
+        //        LuaFunction function = lua[name] as LuaFunction;
+
+        //        return (arg1) => { function?.Call(arg1); };
+        //    }
+
+        //    return null;
+        //}
+
+        //public MonoAction<T0, T1> CreateAction<T0, T1>(string name)
+        //{
+        //    if (!string.IsNullOrEmpty(name) && lua != null)
+        //    {
+        //        LuaFunction function = lua[name] as LuaFunction;
+
+        //        return (arg0, arg1) => { function?.Call(arg0, arg1); };
+        //    }
+
+        //    return null;
+        //}
+
         /*
              _____                           _                
             /  __ \                         | |               
@@ -134,26 +171,26 @@ namespace Fitamas.UserInterface.Serializeble
         {
             if (element.Attribute("alignment") != null)
             {
-                component.Alignment = element.GetAttributeEnum<GUIAlignment>("alignment");
+                //component.Alignment = element.GetAttributeEnum<GUIAlignment>("alignment");
             }
             else
             {
-                component.Anchor = element.GetAttributeVector2("anchor");
+                //component.Anchor = element.GetAttributeVector2("anchor");
             }
 
-            if (element.Attribute("layer") != null)
-            {
-                component.AutoSortingLayer = false;
-                component.Layer = element.GetAttributeInt("layer", component.Layer);
-            }
+            //if (element.Attribute("layer") != null)
+            //{
+            //    component.AutoSortingLayer = false;
+            //    component.Layer = element.GetAttributeInt("layer", component.Layer);
+            //}
 
-            component.Stretch = element.GetAttributeEnum<GUIStretch>("stretch", component.Stretch);
+            //component.Stretch = element.GetAttributeEnum<GUIStretch>("stretch", component.Stretch);
             component.LocalPosition = element.GetAttributePoint("pos", component.LocalPosition);
             component.LocalScale = element.GetAttributePoint("size", component.LocalScale);
             component.Enable = element.GetAttributeBool("enable", component.Enable);
             component.Interecteble = element.GetAttributeBool("enterecteble", component.Interecteble);
             component.IsMask = element.GetAttributeBool("isMask", component.IsMask);
-            component.Id = element.GetAttributeString("id", component.Id);
+            component.Name = element.GetAttributeString("id", component.Name);
             component.Pivot = element.GetAttributeVector2("pivot", component.Pivot);
         }
 
@@ -172,27 +209,25 @@ namespace Fitamas.UserInterface.Serializeble
 
         private GUIButton LoadGUIButton(XElement element)
         {
-            GUIButton button = new GUIButton(new Rectangle());
+            GUIButton button = new GUIButton();
 
             string textBlockId = element.GetAttributeString("text");
             string imageId = element.GetAttributeString("image");
 
-            button.DefoultColor = element.GetAttributeColor("color", button.DefoultColor);
-            button.DefoultTextColor = element.GetAttributeColor("textColor", button.DefoultTextColor);
-            button.SelectColor = element.GetAttributeColor("selectColor", button.SelectColor);
-            button.SelectTextColor = element.GetAttributeColor("selectTextColor", button.SelectTextColor);
-            button.TextBlock = (GUITextBlock)FromId(textBlockId);
-            button.Image = (GUIImage)FromId(imageId);
+            //button.DefoultColor = element.GetAttributeColor("color", button.DefoultColor);
+            //button.DefoultTextColor = element.GetAttributeColor("textColor", button.DefoultTextColor);
+            //button.SelectColor = element.GetAttributeColor("selectColor", button.SelectColor);
+            //button.SelectTextColor = element.GetAttributeColor("selectTextColor", button.SelectTextColor);
 
             string onClicked = element.GetAttributeString("onClicked");
-            button.OnClicked.AddListener(scripting.CreateAction<GUIButton>(onClicked));
+            //button.OnClicked.AddListener(scripting.CreateAction<GUIButton>(onClicked));
 
             return button;
         }
 
         private GUIImage LoadGUIImage(XElement element)
         {
-            GUIImage image = new GUIImage(new Rectangle());
+            GUIImage image = new GUIImage();
 
             image.Color = element.GetAttributeColor("color", image.Color);
             image.Sprite = element.GetAttributeMonoObject<Sprite>("sprite");
@@ -215,18 +250,16 @@ namespace Fitamas.UserInterface.Serializeble
             string iconClosedId = element.GetAttributeString("iconClosed");
             string iconId = element.GetAttributeString("icon");
 
-            node.DefoultColor = element.GetAttributeColor("color", node.DefoultColor);
-            node.DefoultTextColor = element.GetAttributeColor("textColor", node.DefoultTextColor);
-            node.SelectColor = element.GetAttributeColor("selectColor", node.SelectColor);
-            node.SelectTextColor = element.GetAttributeColor("selectTextColor", node.SelectTextColor);
-            node.TextBlock = (GUITextBlock)FromId(textBlockId);
-            node.Image = (GUIImage)FromId(imageId);
+            //node.DefoultColor = element.GetAttributeColor("color", node.DefoultColor);
+            //node.DefoultTextColor = element.GetAttributeColor("textColor", node.DefoultTextColor);
+            //node.SelectColor = element.GetAttributeColor("selectColor", node.SelectColor);
+            //node.SelectTextColor = element.GetAttributeColor("selectTextColor", node.SelectTextColor);
             node.FolderIconOpen = (GUIImage)FromId(iconOpenId);
             node.FolderIconClose = (GUIImage)FromId(iconClosedId);
             node.Icon = (GUIImage)FromId(iconId);
 
             string onClicked = element.GetAttributeString("onClicked");
-            node.OnClicked.AddListener(scripting.CreateAction<GUIButton>(onClicked));
+            //node.OnClicked.AddListener(scripting.CreateAction<GUIButton>(onClicked));
 
             //node.Name = (GUITextBlock)FromId(textBlockId);
             //node.Header = (GUIImage)FromId(imageId);

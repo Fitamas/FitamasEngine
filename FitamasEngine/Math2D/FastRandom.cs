@@ -28,7 +28,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace MonoGame.Extended
+namespace Fitamas.Math2D
 {
     /// <summary>
     ///     A random number generator that uses a fast algorithm to generate random values.

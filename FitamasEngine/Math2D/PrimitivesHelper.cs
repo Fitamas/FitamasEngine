@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 
-namespace MonoGame.Extended
+namespace Fitamas.Math2D
 {
     internal class PrimitivesHelper
     {

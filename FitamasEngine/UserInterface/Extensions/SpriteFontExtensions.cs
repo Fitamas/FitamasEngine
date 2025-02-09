@@ -1,10 +1,10 @@
 using System;
 using Fitamas;
+using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 
-namespace FitamasEngine.UserInterface.Extensions
+namespace Fitamas.UserInterface.Extensions
 {
     public static class SpriteFontExtensions
     {
