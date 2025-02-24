@@ -2,112 +2,122 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using Fitamas.Serializeble;
-using MonoGame.Extended.Input.InputListeners;
+using Fitamas.Serialization;
+using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components
 {
     public class GUIComboBox : GUIButton
     {
-        private Dictionary<GUIComponent, int> dictionary;
+        public static readonly DependencyProperty<int> SelectItemProperty = new DependencyProperty<int>(-1, false);
+
+        public static readonly RoutedEvent OnSelectItemIndexEvent = new RoutedEvent();
+
+        public static readonly RoutedEvent OnSelectItemEvent = new RoutedEvent();
+
+        private GUIContextMenu contextMenu;
+        private Dictionary<GUIContextItem, int> dictionary;
         private string[] items;
 
-        public GUIVerticalGroup Group;
-        public Color DefoultItemColor = Color.White;
-        public Color SelectItemColor = Color.DeepSkyBlue;
+        public bool IsOpenMenu => contextMenu != null && contextMenu.IsActive;
 
-        public GUIEvent<GUIComboBox, int> OnSelectItem = new GUIEvent<GUIComboBox, int>();
+        public GUIEvent<GUIComboBox, int> OnSelectItemIndex { get; }
 
-        public bool EnableGroup
-        {
+        public GUIEvent<GUIComboBox, string> OnSelectItem { get; }
+
+        public int SelectedItem 
+        { 
             get
             {
-                return Group != null ? Group.Enable : false;
+                return GetValue(SelectItemProperty);
             }
             set
             {
-                if (Group != null)
-                {
-                    Group.Enable = value;
-                }
+                SetValue(SelectItemProperty, value);
             }
         }
 
-        public GUIComboBox(Rectangle rectangle, IEnumerable<string> items, int selectItem = 0)
+        public GUIComboBox(IEnumerable<string> items)
         {
-            LocalRectangle = rectangle;
-            SetItems(items);
-            SelectItem(selectItem);            
-        }
+            OnSelectItemIndex = eventHandlersStore.Create<GUIComboBox, int>(OnSelectItemIndexEvent);
+            OnSelectItem = eventHandlersStore.Create<GUIComboBox, string>(OnSelectItemEvent);
 
-        protected override void OnInit()
-        {
-            EnableGroup = false;
+            SetItems(items);
         }
 
         protected override void OnClickedButton(MouseEventArgs mouse)
         {
-            EnableGroup = !EnableGroup;
+            OpenMenu();
+
+            //TODO CLOSE ON CLICK
+
+            //if (!IsOpenMenu)
+            //{
+            //    OpenMenu();
+            //}
+            //else
+            //{
+            //    CloseMenu();
+            //}
         }
 
         public void SetItems<T>() where T : Enum
         {
             //TODO add enum
-            //add scroll rect
         }
 
         public void SetItems(IEnumerable<string> items)
         {
+            CloseMenu();
 
-
-
-
-            dictionary = new Dictionary<GUIComponent, int>();
             this.items = items.ToArray();
+        }
 
-            if (Group == null)
+        public void OpenMenu()
+        {
+            if (!IsOpenMenu)
             {
-                return;
-            }
+                dictionary = new Dictionary<GUIContextItem, int>();
 
-            //Group.CellSize = Rectangle.Size;
+                GUIContextMenu menu = GUI.CreateContextMenu(Rectangle.Location);
+                menu.OnSelectItem.AddListener(SelectItem);
+                menu.SetFixedWidth(LocalSize.X);
+                //if (menu.Content is GUIStack stack)
+                //{
+                //    Thickness thickness = menu.Padding;
+                //    stack.ControlSizeWidth = false;
+                //    stack.LocalSize = LocalSize - new Point(thickness.Left + thickness.Right, thickness.Bottom + thickness.Top);
+                //}
 
-            foreach (var child in Group.ChildrensComponent)
-            {
-                child.Destroy();
-            }
+                for (int i = 0; i < items.Length; i++)
+                {
+                    GUIContextItem contextItem = menu.AddItem(items[i]);
+                    dictionary[contextItem] = i;
+                }
 
-            for (int i = 0; i < this.items.Length; i++)
-            {
-                GUIButton button = new GUIButton();
-                button.LocalScale = Rectangle.Size;
-                //button.TextBlock.Text = this.items[i];
-                //button.DefoultColor = DefoultItemColor;
-                //button.SelectColor = SelectItemColor;
-                button.OnClicked.AddListener(SelectItem);
-
-                Group.AddChild(button);
-                dictionary[button] = i;
+                Root.OpenPopup(menu);
             }
         }
 
-        private void SelectItem(GUIButton button)
+        public void CloseMenu()
         {
-            if (dictionary.TryGetValue(button, out int index))
+            if (IsOpenMenu)
             {
-                SelectItem(index);
+                contextMenu.OnSelectItem.RemoveListener(SelectItem);
+                Root.ClosePopup();
             }
-
-            EnableGroup = false;
         }
 
-        private void SelectItem(int index)
+        private void SelectItem(GUIContextMenu menu, GUIContextItem contextItem)
         {
-            string item = items[index];
+            if (dictionary.TryGetValue(contextItem, out int index))
+            {
+                OnSelectItemIndex.Invoke(this, index);
 
-            //TextBlock.Text = item;
+                string item = items[index];
 
-            OnSelectItem?.Invoke(this, index);
+                OnSelectItem.Invoke(this, item);
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Fitamas.Graphics;
-using Fitamas.Serializeble;
+using Fitamas.Input;
+using Fitamas.Input.InputListeners;
+using Fitamas.Serialization;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input;
-using MonoGame.Extended.Input.InputListeners;
 using System;
 using System.Collections.Generic;
 
@@ -140,7 +140,7 @@ namespace Fitamas.UserInterface.Components
         {
             treeView.Select(mouse, this);
 
-            if (Interecteble && mouse.Button == MouseButton.Left)
+            if (Interacteble && mouse.Button == MouseButton.Left)
             {
                 if (!IsLeaf)
                 {
@@ -235,7 +235,7 @@ namespace Fitamas.UserInterface.Components
             {
                 icon = node.FolderIconOpen;
                 icon.LocalPosition = new Point(indent, 0);
-                icon.LocalScale = FolderIconSize;
+                icon.LocalSize = FolderIconSize;
                 icon.VerticalAlignment = GUIVerticalAlignment.Center;
                 icon.Pivot = new Vector2(0, 0.5f);
                 icon.Enable = node.IsOpen && !node.IsLeaf;
@@ -244,7 +244,7 @@ namespace Fitamas.UserInterface.Components
             {
                 icon = node.FolderIconClose;
                 icon.LocalPosition = new Point(indent, 0);
-                icon.LocalScale = FolderIconSize;
+                icon.LocalSize = FolderIconSize;
                 icon.VerticalAlignment = GUIVerticalAlignment.Center;
                 icon.Pivot = new Vector2(0, 0.5f);
                 icon.Enable = !node.IsOpen && !node.IsLeaf;
@@ -254,7 +254,7 @@ namespace Fitamas.UserInterface.Components
                 icon = node.Icon;
                 //icon.Sprite = DefoultIcon;
                 icon.LocalPosition = new Point(indent + FolderIconSize.X, 0);
-                icon.LocalScale = IconSize;
+                icon.LocalSize = IconSize;
                 icon.VerticalAlignment = GUIVerticalAlignment.Center;
                 icon.Pivot = new Vector2(0, 0.5f);
                 icon.Enable = icon.Sprite != null;
@@ -277,7 +277,7 @@ namespace Fitamas.UserInterface.Components
             node.VerticalAlignment = GUIVerticalAlignment.Top;
             node.Pivot = new Vector2(0, 0);
             node.LocalPosition = new Point(0, yPos);
-            node.LocalScale = new Point(0, NodeHeight);
+            node.LocalSize = new Point(0, NodeHeight);
 
             int nodeSize = -NodeHeight;
             for (int i = 0; i < node.Count; i++)

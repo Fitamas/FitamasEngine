@@ -1,4 +1,4 @@
-﻿using MonoGame.Extended.Input.InputListeners;
+﻿using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface
 {

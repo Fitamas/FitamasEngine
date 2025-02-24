@@ -1,7 +1,7 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Graphics;
 using Microsoft.Xna.Framework;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.Container;
 using Fitamas.Animation;
 using Fitamas.DebugTools;
@@ -12,7 +12,7 @@ using Fitamas.Scene;
 using Fitamas.Scripting;
 using Fitamas.UserInterface;
 
-namespace Fitamas.Main
+namespace Fitamas.Core
 {
     public class GameEngine : Game
     {

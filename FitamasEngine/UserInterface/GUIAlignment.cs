@@ -14,9 +14,9 @@ namespace Fitamas.UserInterface
 
     public enum GUIVerticalAlignment
     {
-        Top,
-        Center,
         Bottom,
+        Center,
+        Top,
         Stretch,
     }
 

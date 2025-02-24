@@ -8,21 +8,21 @@ namespace Fitamas.UserInterface
 {
     public struct Thickness
     {
-        private static Thickness zero = new Thickness(0f);
+        private static Thickness zero = new Thickness(0);
 
-        public float Left;
-        public float Top;
-        public float Right;
-        public float Bottom;
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
 
         public static Thickness Zero => zero;
 
-        public Thickness(float uniformLength)
+        public Thickness(int uniformLength)
         {
             Left = Top = Right = Bottom = uniformLength;
         }
 
-        public Thickness(float left, float top, float right, float bottom)
+        public Thickness(int left, int top, int right, int bottom)
         {
             Left = left;
             Top = top;
@@ -64,10 +64,10 @@ namespace Fitamas.UserInterface
 
         public static bool operator ==(Thickness t1, Thickness t2)
         {
-            return (t1.Left == t2.Left || float.IsNaN(t1.Left) && float.IsNaN(t2.Left)) &&
-                   (t1.Top == t2.Top || float.IsNaN(t1.Top) && float.IsNaN(t2.Top)) &&
-                   (t1.Right == t2.Right || float.IsNaN(t1.Right) && float.IsNaN(t2.Right)) &&
-                   (t1.Bottom == t2.Bottom || float.IsNaN(t1.Bottom) && float.IsNaN(t2.Bottom));
+            return (t1.Left == t2.Left) &&
+                   (t1.Top == t2.Top) &&
+                   (t1.Right == t2.Right) &&
+                   (t1.Bottom == t2.Bottom);
         }
 
         public static bool operator !=(Thickness t1, Thickness t2)

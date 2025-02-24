@@ -1,4 +1,4 @@
-﻿using MonoGame.Extended.Input.InputListeners;
+﻿using Fitamas.Input.InputListeners;
 using System;
 
 namespace Fitamas.UserInterface.Components
@@ -11,7 +11,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (Menu != null)
             {
-                Menu?.Activate(this);
+                Menu.Activate(this);
             }
         }
     }

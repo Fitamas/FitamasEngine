@@ -1,9 +1,9 @@
-﻿using Fitamas.UserInterface.Components;
+﻿using Fitamas.Input;
+using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Components.NodeEditor;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using MonoGame.Extended.Input.InputListeners;
 using System;
 using System.Collections.Generic;
 
@@ -48,7 +48,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 
             if (args.EventType == GUIEventType.Click && args.Button == MouseButton.Right && editor.OnEptyField)
             {
-                GUIContextMenu contextMenu = GUI.CreateContextMenu(new Rectangle(args.MousePosition, new Point(100, 100)));
+                GUIContextMenu contextMenu = GUI.CreateContextMenu(args.MousePosition);
                 contextMenu.AddItem("Item");
 
                 editor.OnCreateContextMenu.Invoke(args, contextMenu);
@@ -118,7 +118,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
         {
             if (args.EventType == GUIEventType.Click && args.Button == MouseButton.Right)
             {
-                GUIContextMenu contextMenu = GUI.CreateContextMenu(new Rectangle(args.MousePosition, new Point(100, 100)));
+                GUIContextMenu contextMenu = GUI.CreateContextMenu(args.MousePosition);
                 //contextMenu.AddItem("Delete node", () => editor.Remove((GUINode)args.Component));
 
                 editor.OnCreateContextMenu.Invoke(args, contextMenu);

@@ -10,7 +10,7 @@ namespace Fitamas.UserInterface.Components
     {
         public GUIFrame()
         {
-            Interecteble = false;
+            Interacteble = false;
         }
     }
 }

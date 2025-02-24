@@ -1,4 +1,4 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Serialization;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -109,14 +109,15 @@ namespace Fitamas.UserInterface.Components
             if (AutoScale)
             {
                 SpriteFont font = Font;
-                if (font == null)
+                string text = Text;
+                if (font == null || string.IsNullOrEmpty(text))
                 {
-                    LocalScale = Point.Zero;
+                    LocalSize = Point.Zero;
                     return;
                 }
 
-                Point localScale = LocalScale;
-                Point scale = (font.MeasureString(Text) * Scale).ToPoint();
+                Point localScale = LocalSize;
+                Point scale = (font.MeasureString(text) * Scale).ToPoint();
 
                 if (HorizontalAlignment != GUIHorizontalAlignment.Stretch)
                 {
@@ -128,11 +129,11 @@ namespace Fitamas.UserInterface.Components
                     localScale.Y = scale.Y;
                 }
 
-                LocalScale = localScale;
+                LocalSize = localScale;
             }
         }
 
-        protected override void OnDraw(GameTime gameTime, GUIContextRender contextRender)
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
             SpriteFont font = Font;
             if (font == null)
@@ -146,8 +147,8 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
-            Vector2 position = Rectangle.Location.ToVector2();
-            Vector2 textScale = font.MeasureString(text);
+            Point position = Rectangle.Location;
+            Point textScale = font.MeasureString(text).ToPoint();
 
             switch (TextAligment)
             {
@@ -161,8 +162,8 @@ namespace Fitamas.UserInterface.Components
                     break;
             }
 
-            Render.Begin(contextRender.Mask);
-            Render.DrawString(font, text, position, Color, Vector2.Zero, Scale, 1);
+            Render.Begin(context.Mask);
+            Render.DrawString(font, text, position, Color, Scale);
             Render.End();
         }
 

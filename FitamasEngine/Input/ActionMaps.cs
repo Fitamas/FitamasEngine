@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fitamas.Input.InputListeners;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using MonoGame.Extended.Input.InputListeners;
 using System.Linq;
 
 namespace Fitamas.Input

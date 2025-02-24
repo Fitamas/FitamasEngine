@@ -3,7 +3,6 @@ using Fitamas.Input;
 using Fitamas.UserInterface.Scripting;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input;
 using System;
 using System.Collections.Generic;
 using Fitamas.UserInterface.Components.NodeEditor;
@@ -35,7 +34,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             if (isCreateWire)
             {
                 Point mousePosition = InputSystem.mouse.MousePosition;
-                Point localPosition = editor.Frame.ScreenToLocal(mousePosition);
+                Point localPosition = editor.Frame.ToLocal(mousePosition);
                 wire.DrawToPoint(localPosition);
             }
         }
@@ -91,7 +90,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                         startPin.IsConnected = true;
                         wire.AnchorPoints.Clear();
                         wire.AnchorPoints.Add(new Point());
-                        wire.LocalPosition = editor.Frame.ScreenToLocal(startPin.Rectangle.Center);
+                        wire.LocalPosition = editor.Frame.ToLocal(startPin.Rectangle.Center);
                     }
                 }
             }
@@ -117,7 +116,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             {
                 if (args.Component != this.wire && args.Component is GUIWire wire)
                 {
-                    GUIContextMenu contextMenu = GUI.CreateContextMenu(new Rectangle(args.MousePosition, new Point(100, 100)));
+                    GUIContextMenu contextMenu = GUI.CreateContextMenu(args.MousePosition);
                     //contextMenu.AddItem("Delete wire", () => editor.Remove(wire));
                     //contextMenu.AddItem("Color Red", () =>
                     //{

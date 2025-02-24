@@ -1,9 +1,7 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Input;
-using Fitamas.Main;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Fitamas.Graphics

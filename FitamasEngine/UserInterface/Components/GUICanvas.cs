@@ -9,12 +9,12 @@ namespace Fitamas.UserInterface.Components
     {
         public GUICanvas() : base()
         {
-            Interecteble = false;
+            Interacteble = false;
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            LocalScale = Render.GetViewportSize();
+            LocalSize = Render.GetViewportSize();
         }
     }
 }

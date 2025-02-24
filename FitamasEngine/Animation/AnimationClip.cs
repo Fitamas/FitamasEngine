@@ -1,6 +1,6 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Graphics;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Animation

@@ -1,5 +1,4 @@
 ﻿using Fitamas.Entities;
-using Fitamas.Main;
 using Fitamas.Math2D;
 using Fitamas.Graphics.ViewportAdapters;
 using Microsoft.Xna.Framework;

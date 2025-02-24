@@ -1,9 +1,5 @@
-﻿using MonoGame.Extended.Input.InputListeners;
+﻿using Fitamas.Input.InputListeners;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -13,7 +9,7 @@ namespace Fitamas.UserInterface.Components
 
         public void OnClickedMouse(MouseEventArgs mouse)
         {
-            if (!Contain(mouse.Position)) //TODO fix
+            if (!Contains(mouse.Position)) //TODO fix
             {
                 Close();
             }

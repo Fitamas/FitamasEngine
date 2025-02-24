@@ -1,8 +1,7 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Graphics;
-using Fitamas.Main;
+using Fitamas.Input.InputListeners;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input.InputListeners;
 
 namespace Fitamas.Input
 {
@@ -43,6 +42,8 @@ namespace Fitamas.Input
         public override void Initialize(IComponentMapperService mapperService)
         {
             inputMapper = mapperService.GetMapper<InputRequest>();
+
+            mouse.ViewportAdapter = camera.ViewportAdapter;
         }
 
         public override void Update(GameTime gameTime)
@@ -54,7 +55,7 @@ namespace Fitamas.Input
 
             if (camera != null)
             {
-                mouse.ViewportAdapter = camera.ViewportAdapter;
+
                 mousePositionInWorld = camera.ScreenToWorld(mouse.MousePosition);
             }
 

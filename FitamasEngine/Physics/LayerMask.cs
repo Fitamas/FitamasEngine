@@ -1,4 +1,4 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Serialization;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;

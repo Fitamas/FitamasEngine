@@ -1,18 +1,18 @@
 ﻿using Fitamas.Math2D;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input.InputListeners;
 using System;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
+using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components
 {
     public abstract class GUISlider : GUIComponent, IDragMouseEvent
     {
-        [SerializableField] private float value;
-        [SerializableField] private float minValue;
-        [SerializableField] private float maxValue;
-        [SerializableField] private GUISliderDirection direction;
+        private float value;
+        private float minValue;
+        private float maxValue;
+        private GUISliderDirection direction;
 
         public GUIImage SlidingArea;
         public GUIImage Handle;
@@ -52,7 +52,7 @@ namespace Fitamas.UserInterface.Components
             }
             set
             {
-                LocalScale = IsHorizontal ? new Point(value, LocalScale.Y) : new Point(LocalScale.X, value);
+                LocalSize = IsHorizontal ? new Point(value, LocalSize.Y) : new Point(LocalSize.X, value);
             }
         }
 
@@ -60,7 +60,7 @@ namespace Fitamas.UserInterface.Components
         {
             get
             {
-                Point result = Handle.LocalScale;
+                Point result = Handle.LocalSize;
 
                 return IsHorizontal ? result : new Point(result.Y, result.X);
             }
@@ -68,7 +68,7 @@ namespace Fitamas.UserInterface.Components
             {
                 if (Handle != null)
                 {
-                    Handle.LocalScale = IsHorizontal ? value : new Point(value.Y, value.X);
+                    Handle.LocalSize = IsHorizontal ? value : new Point(value.Y, value.X);
                 }
             }
         }
@@ -93,7 +93,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public GUISlider(Rectangle rectangle, int minValue = 0, int maxValue = 10) : base(rectangle)
+        public GUISlider(int minValue = 0, int maxValue = 10)
         {
             this.minValue = minValue;
             this.maxValue = maxValue;
@@ -113,17 +113,17 @@ namespace Fitamas.UserInterface.Components
 
         private void ForceRotateSlider()
         {
-            Point scale = new Point(LocalScale.Y, LocalScale.X);
-            LocalScale = scale;
+            Point scale = new Point(LocalSize.Y, LocalSize.X);
+            LocalSize = scale;
 
-            Point sliderScale = Handle.LocalScale;
-            Handle.LocalScale = new Point(sliderScale.Y, sliderScale.X);
+            Point sliderScale = Handle.LocalSize;
+            Handle.LocalSize = new Point(sliderScale.Y, sliderScale.X);
         }
 
         protected virtual Point CalculateSliderPosition()
         {
             Rectangle rectangle = Rectangle;
-            Point position = IsHorizontal ? new Point(-LocalScale.X / 2, 0) : new Point(0, -LocalScale.Y / 2);
+            Point position = IsHorizontal ? new Point(-LocalSize.X / 2, 0) : new Point(0, -LocalSize.Y / 2);
 
             switch (Direction)
             {

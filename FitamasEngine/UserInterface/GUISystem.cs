@@ -3,7 +3,7 @@ using Fitamas.Container;
 using Fitamas.Entities;
 using Fitamas.Extended.Entities;
 using Fitamas.Input;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Scripting;
 using Fitamas.UserInterface.Serializeble;
@@ -21,7 +21,7 @@ namespace Fitamas.UserInterface
         public const string DefoultLayout = "Layouts\\MainMenu.xml";
 
         private GraphicsDevice graphics;
-        private GUIRenderBatch guiRender;
+        private GUIRenderBatch render;
         private DIContainer container;
         private GUIDebug debug;
         private GUIRoot root;
@@ -35,7 +35,7 @@ namespace Fitamas.UserInterface
 
         public bool IsFocused => Focused != null;
         public GraphicsDevice GraphicsDevice => graphics;
-        public GUIRenderBatch Render => guiRender;
+        public GUIRenderBatch Render => render;
         public DIContainer Container => container;
         public GUIRoot Root => root;
 
@@ -56,7 +56,7 @@ namespace Fitamas.UserInterface
             root = new GUIRoot();
 
             graphics = graphicsDevice;
-            guiRender = new GUIRenderBatch(graphicsDevice);
+            render = new GUIRenderBatch(graphicsDevice);
 
             root.Init(this);
         }
@@ -131,7 +131,7 @@ namespace Fitamas.UserInterface
 
             RaycastAll(mousePosition, result);
 
-            GUIComponent onMouse = result.FirstOrDefault();
+            GUIComponent onMouse = result.LastOrDefault();
 
             if (OnMouse != onMouse)
             {
@@ -155,7 +155,8 @@ namespace Fitamas.UserInterface
 
         public void Draw(GameTime gameTime)
         {
-            root.Draw(gameTime);
+            Rectangle rectangle = new Rectangle(new Point(0, 0), Render.GetViewportSize());
+            root.Draw(gameTime, new GUIContextRender(rectangle));
 
             if (GUIDebug.Active)
             {
@@ -210,18 +211,6 @@ namespace Fitamas.UserInterface
 
             if (selectScreen != null)
             {
-                //if (layout != null)
-                {
-                    // TODO remove all components
-
-                    //layout.Scripting.OnClose();
-                    //foreach (var component in selectScreen.Components)
-                    //{
-                    //    RemoveComponent(component);
-                    //}
-                }
-
-                //layout = selectScreen;
                 scripting = selectScreen.Scripting;
 
                 foreach (var component in selectScreen.Components)

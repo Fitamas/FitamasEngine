@@ -1,8 +1,8 @@
-﻿using Fitamas.UserInterface.Components.NodeEditor;
+﻿using Fitamas.Input;
+using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Components.NodeEditor;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using MonoGame.Extended.Input.InputListeners;
 using System;
 
 namespace Fitamas.UserInterface.Components.NodeEditor.Controllers

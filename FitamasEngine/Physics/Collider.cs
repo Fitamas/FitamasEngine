@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 using nkast.Aether.Physics2D.Common;
 using nkast.Aether.Physics2D.Dynamics;
 using System.Collections.Generic;
 using Fitamas.Math2D;
 using nkast.Aether.Physics2D.Common.PolygonManipulation;
 using nkast.Aether.Physics2D.Collision.Shapes;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.Entities;
 
 namespace Fitamas.Physics

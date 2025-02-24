@@ -2,7 +2,6 @@
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
 
 namespace Fitamas.Graphics
 {

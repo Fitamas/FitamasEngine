@@ -1,6 +1,6 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.Input.InputListeners;
+using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input.InputListeners;
 using System;
 
 namespace Fitamas.UserInterface.Components
@@ -19,16 +19,7 @@ namespace Fitamas.UserInterface.Components
 
         public GUIEvent<GUIScrollRect, Vector2> OnValueChanged = new GUIEvent<GUIScrollRect, Vector2>();
 
-        public GUIScrollRect(GUIComponent content, GUIComponent viewport) : this(content, viewport, new Rectangle())
-        {
-
-        }
-        public GUIScrollRect(GUIComponent content, Rectangle rectangle) : this(content, null, rectangle)
-        {
-
-        }
-
-        private GUIScrollRect(GUIComponent content, GUIComponent _viewport = null, Rectangle rectangle = default) : base(rectangle)
+        public GUIScrollRect(GUIComponent content, GUIComponent _viewport = null)
         {
             Viewport = _viewport != null ? _viewport : this;
             Content = content;
@@ -57,8 +48,8 @@ namespace Fitamas.UserInterface.Components
         {
             if (Content != null)
             {
-                Vector2 contentSize = Content.LocalScale.ToVector2();
-                Vector2 viewportSize = Viewport.LocalScale.ToVector2();
+                Vector2 contentSize = Content.LocalSize.ToVector2();
+                Vector2 viewportSize = Viewport.LocalSize.ToVector2();
 
                 if (contentSize != Vector2.Zero && viewportSize != Vector2.Zero)
                 {
@@ -71,8 +62,8 @@ namespace Fitamas.UserInterface.Components
                     VerticalScrollBar.Size = 1;
                 }
 
-                Vector2 contentOffset = new Vector2(Content.LocalScale.X / 2, -Content.LocalScale.Y / 2);
-                Vector2 vieportOffset = new Vector2(Viewport.LocalScale.X, -Viewport.LocalScale.Y);
+                Vector2 contentOffset = new Vector2(Content.LocalSize.X / 2, -Content.LocalSize.Y / 2);
+                Vector2 vieportOffset = new Vector2(Viewport.LocalSize.X, -Viewport.LocalSize.Y);
 
                 Content.LocalPosition = (contentOffset - position - vieportOffset).ToPoint();
             }
@@ -101,7 +92,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (Content != null)
             {
-                Point scale = Content.LocalScale - Viewport.LocalScale;
+                Point scale = Content.LocalSize - Viewport.LocalSize;
 
                 if (scale.X < 0)
                 {

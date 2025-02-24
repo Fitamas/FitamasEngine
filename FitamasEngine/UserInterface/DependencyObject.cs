@@ -69,7 +69,7 @@ namespace Fitamas.UserInterface
             return false;
         }
 
-        public void SetValue<T>(DependencyProperty<T> property, T value)
+        public DependencyObject SetValue<T>(DependencyProperty<T> property, T value)
         {
             if (IsSealed)
             {
@@ -77,6 +77,8 @@ namespace Fitamas.UserInterface
             }
 
             SetValueInternal(property, value);
+
+            return this;
         }
 
         internal void SetValueInternal<T>(DependencyProperty<T> property, T value)
@@ -85,10 +87,14 @@ namespace Fitamas.UserInterface
             {
                 if (expression is ValueExpression<T> valueExpression)
                 {
-                    property.PropertyChangedCallback?.Invoke(this, property, valueExpression.ReactiveProperty.Value, value);
-                    valueExpression.ReactiveProperty.Value = value;
-                    OnPropertyChanged(property);
-                    return;
+                    if (!valueExpression.IsFrozen)
+                    {
+                        T oldValue = valueExpression.CurrentValue;
+                        valueExpression.CurrentValue = value;
+                        property.PropertyChangedCallback?.Invoke(this, property, oldValue, value);
+                        OnPropertyChanged(property);
+                        return;
+                    }
                 }
             }
 

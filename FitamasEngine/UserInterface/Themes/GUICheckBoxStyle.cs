@@ -10,7 +10,7 @@ namespace Fitamas.UserInterface.Themes
 
         public static GUIStyle Create(ResourceDictionary dictionary)
         {
-            GUIStyle style = new GUIStyle();
+            GUIStyle style = new GUIStyle(dictionary);
 
             style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.CheckBoxDefaultColor)));
 
@@ -18,26 +18,27 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
-                new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
-                new TriggerCondition(GUIComponent.InterectebleProperty, true)},
-                CommonResourceKeys.CheckBoxHoverColor, null);
+            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+                CommonResourceKeys.CheckBoxDisableColor, null);
             style.Trigges.Add(trigger);
+
 
             trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
                 CommonResourceKeys.CheckBoxPressedColor, null);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InterectebleProperty, false,
-                CommonResourceKeys.CheckBoxDisableColor, null);
+            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+                new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
+                new TriggerCondition(GUIComponent.InteractebleProperty, true)},
+                CommonResourceKeys.CheckBoxHoverColor, null);
             style.Trigges.Add(trigger);
 
             trigger = new Trigger(GUICheckBox.ValueProperty, true);
-            trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, true), CheckMark));
+            trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, true, true), CheckMark));
             style.Trigges.Add(trigger);
 
             trigger = new Trigger(GUICheckBox.ValueProperty, false);
-            trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, false), CheckMark));
+            trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, false, true), CheckMark));
             style.Trigges.Add(trigger);
 
             return style;

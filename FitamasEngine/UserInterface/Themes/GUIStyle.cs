@@ -1,13 +1,4 @@
-﻿using Fitamas;
-using Fitamas.Main;
-using Fitamas.UserInterface;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
-using R3;
-using SharpFont.Bdf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Themes
@@ -18,12 +9,14 @@ namespace Fitamas.UserInterface.Themes
         public List<TriggerBase> Trigges { get; }
         public List<TriggerEvent> TriggerEvents { get; }
         public GUIStyle BaseOn { get; set; }
+        public ResourceDictionary Resources { get; set; }
 
-        public GUIStyle(GUIStyle baseOn = null)
+        public GUIStyle(ResourceDictionary resources, GUIStyle baseOn = null)
         {
             Setters = new List<Setter>();
             Trigges = new List<TriggerBase>();
             TriggerEvents = new List<TriggerEvent>();
+            Resources = resources;
             BaseOn = baseOn;
         }
 

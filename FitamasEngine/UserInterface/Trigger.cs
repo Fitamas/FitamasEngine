@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fitamas.UserInterface
 {
@@ -10,7 +6,7 @@ namespace Fitamas.UserInterface
     {
         private object value;
 
-        public DependencyProperty Property { get; }
+        public DependencyProperty Property { get; set; }
 
         public object Value
         {
@@ -49,7 +45,6 @@ namespace Fitamas.UserInterface
         {
             if (IsActive(component))
             {
-                //element.ActiveTriggers.Push(this);
                 ProcessSettersCollection(component);
             }
         }

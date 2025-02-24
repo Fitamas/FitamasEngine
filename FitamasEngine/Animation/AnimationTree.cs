@@ -1,4 +1,4 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Serialization;
 using System.Collections.Generic;
 
 namespace Fitamas.Animation

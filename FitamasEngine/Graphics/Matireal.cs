@@ -1,4 +1,4 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Serialization;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 

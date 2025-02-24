@@ -11,7 +11,7 @@ namespace Fitamas.UserInterface.Themes
     {
         public static GUIStyle Create(ResourceDictionary dictionary)
         {
-            GUIStyle style = new GUIStyle();
+            GUIStyle style = new GUIStyle(dictionary);
 
             style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITextBlock.ColorProperty, dictionary, CommonResourceKeys.TextBlockDefaultColor)));
 

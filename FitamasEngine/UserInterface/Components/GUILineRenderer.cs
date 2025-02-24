@@ -1,10 +1,7 @@
 ﻿using Fitamas.Math2D;
-using Fitamas.Serializeble;
-using Fitamas.UserInterface;
-using Fitamas.UserInterface.Themes;
+using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,30 +46,30 @@ namespace Fitamas.UserInterface.Components
             //LocalScale = new Point();
         }
 
-        protected override void OnDraw(GameTime gameTime, GUIContextRender contextRender)
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
             Rectangle rectangle = Rectangle;
             Point position = rectangle.Location;
 
-            Render.Begin(contextRender.Mask);
+            Render.Begin(context.Mask);
 
             if (ShadowEnable)
             {
                 for (int i = 1; i < anchors.Count; i++)
                 {
-                    DrawLine(anchors[i - 1], anchors[i], position, ShadowColor, 0, Thickness + ShadowSize);
+                    DrawLine(anchors[i - 1], anchors[i], position, ShadowColor, Thickness + ShadowSize);
                 }
             }
 
             for (int i = 1; i < anchors.Count; i++)
             {
-                DrawLine(anchors[i - 1], anchors[i], position, Color, 1, Thickness);
+                DrawLine(anchors[i - 1], anchors[i], position, Color, Thickness);
             }
 
             Render.End();
         }
 
-        private void DrawLine(Point lastAnchor, Point currentAnchor, Point position, Color color, int layer, int thickness)
+        private void DrawLine(Point lastAnchor, Point currentAnchor, Point position, Color color, int thickness)
         {
             lastAnchor.Y = -lastAnchor.Y;
             currentAnchor.Y = -currentAnchor.Y;
@@ -85,7 +82,7 @@ namespace Fitamas.UserInterface.Components
             Point offset = (direction.PerpendicularCounterClockwise().NormalizeF() * halfThickness).ToPoint();
             Rectangle rectangle = new Rectangle(position + lastAnchor - offset, new Point((int)distance, thickness));
 
-            Render.Draw(texture, rectangle, color, layer, angle);
+            Render.Draw(texture, rectangle, color, angle);
         }
     }
 }

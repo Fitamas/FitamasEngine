@@ -1,4 +1,4 @@
-﻿using Fitamas.Main;
+﻿using Fitamas.Core;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;

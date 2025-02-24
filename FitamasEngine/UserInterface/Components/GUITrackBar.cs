@@ -15,7 +15,7 @@ namespace Fitamas.UserInterface.Components
     {
         public bool WholeNumbers;
 
-        public GUITrackBar(Rectangle rectangle, int minValue = 0, int maxValue = 10) : base(rectangle, minValue, maxValue)
+        public GUITrackBar(Rectangle rectangle, int minValue = 0, int maxValue = 10) : base(minValue, maxValue)
         {
 
         }

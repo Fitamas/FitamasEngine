@@ -1,4 +1,4 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Serialization;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using System;
@@ -89,7 +89,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             {
                 if (Content != null)
                 {
-                    return Content.LocalScale;
+                    return Content.LocalSize;
                 }
 
                 return new Point();

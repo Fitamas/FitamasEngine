@@ -52,6 +52,13 @@ namespace Fitamas.Graphics.ViewportAdapters
             return Matrix.Identity;
         }
 
+        public override Point PointToScreen(int x, int y)
+        {
+            var scaleMatrix = GetScaleMatrix();
+            var invertedMatrix = Matrix.Invert(scaleMatrix);
+            return Vector2.Transform(new Vector2(x, ViewportHeight - y), invertedMatrix).ToPoint();
+        }
+
         private void OnClientSizeChanged(object sender, EventArgs eventArgs)
         {
             var x = Window.ClientBounds.Width;

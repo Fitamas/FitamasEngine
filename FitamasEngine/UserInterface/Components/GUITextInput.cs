@@ -2,8 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.Input.InputListeners;
-using Fitamas.UserInterface.Extensions;
+using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -75,14 +74,14 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public GUITextInput(Rectangle rectangle, GUIContentType contentType = GUIContentType.Standart) : base(rectangle)
+        public GUITextInput(GUIContentType contentType = GUIContentType.Standart)
         {
             IsMask = true;
             RaycastTarget = true;
             ContentType = contentType;
         }
 
-        protected override void OnDraw(GameTime gameTime, GUIContextRender contextRender)
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
             if (isSelect)
             {
@@ -105,8 +104,8 @@ namespace Fitamas.UserInterface.Components
                     CalculateCaret();
                 }
 
-                Render.Begin(contextRender.Mask);
-                Render.FillRectangle(caretPosition, caretSize, CaretColor, 1);
+                Render.Begin(context.Mask);
+                Render.FillRectangle(caretPosition, caretSize, CaretColor);
                 Render.End();
             }
         }
@@ -118,7 +117,7 @@ namespace Fitamas.UserInterface.Components
 
         public void OnClickedMouse(MouseEventArgs mouse)
         {
-            if (Contain(mouse.Position))
+            if (Contains(mouse.Position))
             {
                 Select(mouse.Position);
             }

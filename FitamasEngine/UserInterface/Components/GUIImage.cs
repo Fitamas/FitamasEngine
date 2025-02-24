@@ -1,11 +1,7 @@
 ﻿using Fitamas.Graphics;
+using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
-using Fitamas.Serializeble;
-using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.TextureAtlases;
 using System;
 
 namespace Fitamas.UserInterface.Components
@@ -37,44 +33,141 @@ namespace Fitamas.UserInterface.Components
 
     public enum GUIFillOrigin
     {
-        Bottom,
-        Right,
         Top,
         Left,
+        Bottom,
+        Right,
     }
 
     public class GUIImage : GUIComponent
     {
         public static readonly DependencyProperty<Color> ColorProperty = new DependencyProperty<Color>(Color.White);
 
-        [SerializableField] private float fillAmount;
-        [SerializableField] private int selectRegion;
+        public static readonly DependencyProperty<GUIImageType> ImageTypeProperty = new DependencyProperty<GUIImageType>(GUIImageType.Simple);
 
-        public GUIImageType ImageType;
-        public GUIImageEffect ImageEffect;
-        public GUIFillMethod FillMethod;
-        public GUIFillOrigin FillOrigin;
-        public Sprite Sprite;
-        public bool Clockwise;
-        public bool PreserveAspect;
+        public static readonly DependencyProperty<GUIImageEffect> ImageEffectProperty = new DependencyProperty<GUIImageEffect>(GUIImageEffect.None);
+
+        public static readonly DependencyProperty<GUIFillMethod> FillMethodProperty = new DependencyProperty<GUIFillMethod>(GUIFillMethod.Horizontal);
+
+        public static readonly DependencyProperty<GUIFillOrigin> FillOriginProperty = new DependencyProperty<GUIFillOrigin>(GUIFillOrigin.Top);
+
+        public static readonly DependencyProperty<Sprite> SpriteProperty = new DependencyProperty<Sprite>(defaultValue: null);
+
+        public static readonly DependencyProperty<bool> ClockwiseProperty = new DependencyProperty<bool>(false);
+
+        public static readonly DependencyProperty<bool> PreserveAspectProperty = new DependencyProperty<bool>(false);
+
+        public static readonly DependencyProperty<float> FillAmountProperty = new DependencyProperty<float>(0);
 
         public Color Color
         {
-            get { return GetValue(ColorProperty); }
-            set { SetValue(ColorProperty, value); }
+            get 
+            { 
+                return GetValue(ColorProperty); 
+            }
+            set 
+            { 
+                SetValue(ColorProperty, value); 
+            }
+        }
+
+        public GUIImageType ImageType
+        {
+            get
+            {
+                return GetValue(ImageTypeProperty);
+            }
+            set
+            {
+                SetValue(ImageTypeProperty, value);
+            }
+        }
+
+        public GUIImageEffect ImageEffect
+        {
+            get
+            {
+                return GetValue(ImageEffectProperty);
+            }
+            set
+            {
+                SetValue(ImageEffectProperty, value);
+            }
+        }
+
+        public GUIFillMethod FillMethod
+        {
+            get
+            {
+                return GetValue(FillMethodProperty);
+            }
+            set
+            {
+                SetValue(FillMethodProperty, value);
+            }
+        }
+
+        public GUIFillOrigin FillOrigin
+        {
+            get
+            {
+                return GetValue(FillOriginProperty);
+            }
+            set
+            {
+                SetValue(FillOriginProperty, value);
+            }
+        }
+
+        public Sprite Sprite
+        {
+            get
+            {
+                return GetValue(SpriteProperty);
+            }
+            set
+            {
+                SetValue(SpriteProperty, value);
+            }
+        }
+
+        public bool Clockwise
+        {
+            get
+            {
+                return GetValue(ClockwiseProperty);
+            }
+            set
+            {
+                SetValue(ClockwiseProperty, value);
+            }
+        }
+
+        public bool PreserveAspect
+        {
+            get
+            {
+                return GetValue(PreserveAspectProperty);
+            }
+            set
+            {
+                SetValue(PreserveAspectProperty, value);
+            }
         }
 
         public float FillAmount
         {
             get
             {
-                return fillAmount;
+                return GetValue(FillAmountProperty);
             }
             set
             {
-                fillAmount = MathV.Clamp01(value);
+                SetValue(FillAmountProperty, value);
             }
         }
+
+        private int selectRegion;
 
         public GUIImage()
         {
@@ -83,39 +176,39 @@ namespace Fitamas.UserInterface.Components
             ImageEffect = GUIImageEffect.None;
         }
 
-        protected override void OnDraw(GameTime gameTime, GUIContextRender contextRender)
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
-            Render.Begin(contextRender.Mask);
+            Render.Begin(context.Mask);
 
             if (Sprite != null)
             {
                 TextureRegion2D textureRegion = Sprite.GetRegion(selectRegion);
-                RectangleF rectangle = GetImageRactengle(textureRegion.Bounds, Rectangle);
+                Rectangle rectangle = GetImageRactengle(textureRegion.Bounds, Rectangle);
 
                 switch (ImageType)
                 {
                     case GUIImageType.Simple:
-                        Render.Draw(textureRegion, Color, rectangle, ImageEffect, 1);
+                        Render.Draw(textureRegion, Color, rectangle, ImageEffect);
                         break;
                     case GUIImageType.Sliced: //TODO
                         break;
                     case GUIImageType.Tiled:  //TODO
                         break;
                     case GUIImageType.Filled:
-                        Rectangle mask = GetFilledMask(rectangle.ToRectangle());
-                        Render.Draw(textureRegion, Color, rectangle, ImageEffect, 1);
+                        Rectangle mask = GetFilledMask(rectangle);
+                        Render.Draw(textureRegion, Color, rectangle, ImageEffect);
                         break;
                 }
             }
             else
             {
-                Render.Draw(Texture2DHelper.DefaultTexture, Rectangle, Color, 1);
+                Render.Draw(Texture2DHelper.DefaultTexture, Rectangle, Color);
             }
 
             Render.End();
         }
 
-        private RectangleF GetImageRactengle(Rectangle source, Rectangle destination)
+        private Rectangle GetImageRactengle(Rectangle source, Rectangle destination)
         {
             Vector2 position = destination.Location.ToVector2();
             Vector2 destinationSize = destination.Size.ToVector2();
@@ -139,7 +232,7 @@ namespace Fitamas.UserInterface.Components
                 position = center - destinationSize / 2;
             }
 
-            return new RectangleF(position, destinationSize);
+            return new RectangleF(position, destinationSize).ToRectangle();
         }
 
         private Rectangle GetFilledMask(Rectangle rectangle)
@@ -148,7 +241,7 @@ namespace Fitamas.UserInterface.Components
             {
                 case GUIFillMethod.Horizontal:
                     int width = rectangle.Width;
-                    int maskWidth = (int)(width * fillAmount);
+                    int maskWidth = (int)(width * FillAmount);
                     rectangle.Width = maskWidth;
 
                     if (FillOrigin == GUIFillOrigin.Right)
@@ -158,7 +251,7 @@ namespace Fitamas.UserInterface.Components
                     break;
                 case GUIFillMethod.Verical:
                     int height = rectangle.Height;
-                    int maskHeight = (int)(height * fillAmount);
+                    int maskHeight = (int)(height * FillAmount);
                     rectangle.Height = maskHeight;
 
                     if (FillOrigin == GUIFillOrigin.Bottom)
@@ -179,7 +272,7 @@ namespace Fitamas.UserInterface.Components
 
         public void SetNativeSize()
         {
-            LocalScale = Sprite.GetRegion(selectRegion).Bounds.Size;
+            LocalSize = Sprite.GetRegion(selectRegion).Bounds.Size;
         }
     }
 }

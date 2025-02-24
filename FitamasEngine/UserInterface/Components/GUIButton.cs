@@ -1,11 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input.InputListeners;
-using MonoGame.Extended.Input;
 using System;
 using System.Linq;
 using Fitamas.UserInterface.Themes;
 using R3;
 using Fitamas.Events;
+using Fitamas.Input;
+using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -41,7 +41,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver)
             {
-                if (Interecteble && mouse.Button == MouseButton.Left)
+                if (Interacteble && mouse.Button == MouseButton.Left)
                 {
                     IsPressed = true;
                 }
@@ -53,8 +53,11 @@ namespace Fitamas.UserInterface.Components
             if (IsPressed)
             {
                 IsPressed = false;
-                OnClicked?.Invoke(this);
-                OnClickedButton(mouse);
+                if (IsMouseOver)
+                {
+                    OnClicked.Invoke(this);
+                    OnClickedButton(mouse);
+                }
             }
         }
 

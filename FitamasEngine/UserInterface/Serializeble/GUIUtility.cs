@@ -1,4 +1,4 @@
-﻿using Fitamas.Serializeble;
+﻿using Fitamas.Serialization;
 using System;
 
 namespace Fitamas.UserInterface.Serializeble

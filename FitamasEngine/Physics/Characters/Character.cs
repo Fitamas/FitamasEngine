@@ -1,6 +1,6 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Physics;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using System;
 

@@ -1,75 +1,128 @@
-﻿using Fitamas.Serializeble;
-using Fitamas.UserInterface;
+﻿using Fitamas.UserInterface;
 using Microsoft.Xna.Framework;
-using System;
 using System.Linq;
 
 namespace Fitamas.UserInterface.Components
 {
+    public enum GUIGroupOrientation
+    {
+        Horizontal,
+        Vertical,
+    }
+
     public abstract class GUIGroup : GUIComponent
     {
-        protected int horizontalMaxCount;
-        protected int verticalMaxCount;
+        public static readonly DependencyProperty<Thickness> PaddingProperty = new DependencyProperty<Thickness>(Thickness.Zero);
 
-        public Point CellSize;
-        public Point Spacing;
+        public static readonly DependencyProperty<GUIGroupOrientation> OrientationProperty = new DependencyProperty<GUIGroupOrientation>(GUIGroupOrientation.Horizontal);
 
-        public GUIGroup(int horizontalMaxCount = -1, int verticalMaxCount = -1)
+        public static readonly DependencyProperty<bool> ControlSizeWidthProperty = new DependencyProperty<bool>(false);
+
+        public static readonly DependencyProperty<bool> ControlSizeHeightProperty = new DependencyProperty<bool>(false);
+
+        public Thickness Padding
         {
-            this.horizontalMaxCount = horizontalMaxCount;
-            this.verticalMaxCount = verticalMaxCount;
+            get
+            {
+                return GetValue(PaddingProperty);
+            }
+            set
+            {
+                SetValue(PaddingProperty, value);
+            }
+        }
+
+        public GUIGroupOrientation Orientation
+        {
+            get
+            {
+                return GetValue(OrientationProperty);
+            }
+            set
+            {
+                SetValue(OrientationProperty, value);
+            }
+        }
+
+        public bool ControlSizeWidth
+        {
+            get
+            {
+                return GetValue(ControlSizeWidthProperty);
+            }
+            set
+            {
+                SetValue(ControlSizeWidthProperty, value);
+            }
+        }
+
+        public bool ControlSizeHeight
+        {
+            get
+            {
+                return GetValue(ControlSizeHeightProperty);
+            }
+            set
+            {
+                SetValue(ControlSizeHeightProperty, value);
+            }
         }
 
         protected override void OnAddChild(GUIComponent component)
         {
-            CalculateElementPosition();
+            CalculateComponents();
         }
 
         protected override void OnRemoveChild(GUIComponent component)
         {
-            CalculateElementPosition();
+            CalculateComponents();
         }
 
-        protected void CalculateElementPosition()
+        private void CalculateComponents()
         {
-            Point scale = GetGroupScale();
-            Point offset = new Point(CellSize.X / 2, -CellSize.Y / 2);
-            int i = 0;
-
-            foreach (var component in ChildrensComponent)
+            GUIComponent[] components = ChildrensComponent.ToArray();
+            foreach (var component in components)
             {
-                Point position = new Point(i % scale.X, -i / scale.X) * (CellSize + Spacing);
-
-                component.LocalPosition = position + offset;
-
-                i++;
+                component.HorizontalAlignment = GUIHorizontalAlignment.Left;
+                component.VerticalAlignment = GUIVerticalAlignment.Top;
             }
 
-            LocalScale = GetGroupSize();
+            if (ControlSizeWidth || ControlSizeHeight)
+            {
+                Point newSize = CalculateSize(components, LocalSize);
+                Point size;
+                size.X = ControlSizeWidth ? newSize.X : LocalSize.X;
+                size.Y = ControlSizeHeight ? newSize.Y : LocalSize.Y;
+                LocalSize = size;
+            }
+
+            Rectangle rectangle = Rectangle;
+            Thickness padding = Padding;
+            rectangle.Location += new Point(padding.Left, padding.Top);
+            rectangle.Size -= new Point(padding.Right, padding.Bottom) + new Point(padding.Left, padding.Top);
+            CalculateComponents(components, rectangle);
         }
 
-        public Point GetGroupScale()
-        {
-            int count = ChildrensComponent.Count();
-            Point maxCount = new Point();
+        protected abstract Point CalculateSize(GUIComponent[] components, Point size);
 
-            if (horizontalMaxCount > 0)
-            {
-                maxCount.X = horizontalMaxCount;
-                maxCount.Y = count / horizontalMaxCount + (count % horizontalMaxCount > 0 ? 1 : 0);
-            }
-            else if (verticalMaxCount > 0)
-            {
-                maxCount.X = count / verticalMaxCount + (count % verticalMaxCount > 0 ? 1 : 0);
-                maxCount.Y = verticalMaxCount;
-            }
-
-            return maxCount;
-        }
+        protected abstract void CalculateComponents(GUIComponent[] components, Rectangle rectangle);
 
         public Point GetGroupSize()
         {
-            return GetGroupScale() * (CellSize + Spacing) - Spacing;
+            Rectangle rectangle = new Rectangle();
+            foreach (var component in ChildrensComponent)
+            {
+                if (rectangle.Size == Point.Zero)
+                {
+                    rectangle = component.Rectangle;
+                }
+                else
+                {
+                    rectangle = Rectangle.Union(rectangle, component.Rectangle);
+                }                
+            }
+
+            return rectangle.Size;
         }
     }
 }

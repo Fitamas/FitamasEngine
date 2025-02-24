@@ -1,7 +1,5 @@
-﻿using SharpFont.Bdf;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 
 namespace Fitamas.UserInterface
 {
@@ -45,20 +43,28 @@ namespace Fitamas.UserInterface
         internal static void ProcessTriggers(GUIComponent component, DependencyProperty property, List<TriggerBase> triggers)
         {
             List<TriggerBase> activeTriggers = new List<TriggerBase>();
+            List<TriggerBase> activeTriggers1 = new List<TriggerBase>();
 
             foreach (TriggerBase trigger in triggers)
             {
-                if (trigger.HasPropertyCondition(property))
+                if (trigger.IsActive(component))
                 {
-                    if (trigger.IsActive(component))
+                    if (trigger.HasPropertyCondition(property))
                     {
                         activeTriggers.Add(trigger);
                     }
                     else
                     {
-                        trigger.RestorePropertyValues(component);
+                        activeTriggers1.Add(trigger);
                     }
                 }
+
+                trigger.RestorePropertyValues(component);
+            }
+
+            foreach (TriggerBase trigger in activeTriggers1)
+            {
+                trigger.CheckState(component);
             }
 
             foreach (TriggerBase trigger in activeTriggers)

@@ -1,5 +1,5 @@
 ﻿using Fitamas.Graphics;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.UserInterface.Scripting;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -10,6 +10,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.Events;
+using Fitamas.Serialization.Xml;
 
 namespace Fitamas.UserInterface.Serializeble
 {
@@ -31,7 +32,6 @@ namespace Fitamas.UserInterface.Serializeble
                 { "frame", LoadGUIFrame },
                 { "treenode", LoadGUITeeNode },
                 { "nodeeditor",  LoadGUINodeEditor },
-                { "horizontalgroup", LoadGUIHorizontalGroup },
             };
         }
 
@@ -186,9 +186,9 @@ namespace Fitamas.UserInterface.Serializeble
 
             //component.Stretch = element.GetAttributeEnum<GUIStretch>("stretch", component.Stretch);
             component.LocalPosition = element.GetAttributePoint("pos", component.LocalPosition);
-            component.LocalScale = element.GetAttributePoint("size", component.LocalScale);
+            component.LocalSize = element.GetAttributePoint("size", component.LocalSize);
             component.Enable = element.GetAttributeBool("enable", component.Enable);
-            component.Interecteble = element.GetAttributeBool("enterecteble", component.Interecteble);
+            component.Interacteble = element.GetAttributeBool("enterecteble", component.Interacteble);
             component.IsMask = element.GetAttributeBool("isMask", component.IsMask);
             component.Name = element.GetAttributeString("id", component.Name);
             component.Pivot = element.GetAttributeVector2("pivot", component.Pivot);
@@ -198,7 +198,7 @@ namespace Fitamas.UserInterface.Serializeble
         {
             string text = element.GetAttributeString("text");
             ////text = text.Replace(@"\n", "\n");
-            GUITextBlock textBlock = GUI.CreateTextBlock(text);
+            GUITextBlock textBlock = GUI.CreateTextBlock(Point.Zero, text);
 
             textBlock.TextAligment = element.GetAttributeEnum<GUITextAligment>("textAligment");
             textBlock.Scale = element.GetAttributeFloat("scale", 1.0f);
@@ -283,17 +283,6 @@ namespace Fitamas.UserInterface.Serializeble
             editor.Settings.PinOff = element.GetAttributeMonoObject<Sprite>("pinOff");
 
             return editor;
-        }
-
-        private GUIHorizontalGroup LoadGUIHorizontalGroup(XElement element)
-        {
-            GUIHorizontalGroup group = new GUIHorizontalGroup();
-
-            group.CellSize = element.GetAttributePoint("cellSize", group.CellSize);
-            group.Spacing = element.GetAttributePoint("spacing", group.Spacing);
-            group.Count = element.GetAttributeInt("count", group.Count);
-
-            return group;
         }
     }
 }

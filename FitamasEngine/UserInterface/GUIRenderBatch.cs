@@ -1,9 +1,9 @@
 ﻿using Fitamas.Graphics;
+using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.TextureAtlases;
 using System;
 
 namespace Fitamas.UserInterface
@@ -35,6 +35,7 @@ namespace Fitamas.UserInterface
         {
             if (clipRectangle != Rectangle.Empty)
             {
+                clipRectangle = Transform(clipRectangle);
                 spriteBatch.GraphicsDevice.ScissorRectangle = clipRectangle;
                 this.clipRectangle = clipRectangle;
             }            
@@ -48,47 +49,56 @@ namespace Fitamas.UserInterface
             spriteBatch.End();
         }
 
-        public void Draw(Texture2D texture, Rectangle rectangle, Color color, int layer)
+        public void Draw(Texture2D texture, Rectangle rectangle, Color color)
         {
-            Draw(texture, rectangle, color, layer, 0);
+            Draw(texture, rectangle, color, 0);
         }
 
-        public void Draw(Texture2D texture, Rectangle rectangle, Color color, int layer, float rotation)
+        public void Draw(Texture2D texture, Rectangle rectangle, Color color, float rotation)
         {
-            spriteBatch.Draw(texture, rectangle, null, color, rotation, new Vector2(), SpriteEffects.None, layer);
+            rectangle = Transform(rectangle);
+
+            spriteBatch.Draw(texture, rectangle, null, color, rotation, Vector2.Zero, SpriteEffects.None, 1);
         }
 
-        public void DrawString(SpriteFont font, string text, Vector2 position, Color color, Vector2 origin, float scale, int layer = 0)
+        public void DrawString(SpriteFont font, string text, Point position, Color color, float scale)
         {
-            //if (!spriteBatch.GraphicsDevice.ScissorRectangle.Intersects(ContextRender.Mask))
-            //{
-            //    return;
-            //}
-
-            spriteBatch.DrawString(font, text, position, color, 0, origin, scale, SpriteEffects.None, layer);
+            Rectangle rectangle = Transform(new Rectangle(position, Point.Zero));
+            Vector2 origin = font.MeasureString(text);
+            spriteBatch.DrawString(font, text, rectangle.Location.ToVector2(), color, 0, new Vector2(0, origin.Y), scale, SpriteEffects.None, 1);
         }
 
-        public void FillRectangle(Point positiopn, Point scale, Color color, int layer)
+        public void FillRectangle(Point position, Point scale, Color color)
         {
-            Draw(Texture2DHelper.DefaultTexture, new Rectangle(positiopn, scale), color, layer);
+            Rectangle rectangle = Transform(new Rectangle(position, scale));
+
+            Draw(Texture2DHelper.DefaultTexture, rectangle, color);
         }
 
-        public void Draw(TextureRegion2D textureRegion, Color color, RectangleF rectangle, GUIImageEffect effect, int layer = 0)
+        public void Draw(TextureRegion2D textureRegion, Color color, Rectangle rectangle, GUIImageEffect effect)
         {
+            rectangle = Transform(rectangle);
+            Vector2 position = rectangle.Location.ToVector2();
             Vector2 sourceSize = textureRegion.Bounds.Size.ToVector2();
-            Vector2 scale = rectangle.Size / sourceSize;
+            Vector2 scale = rectangle.Size.ToVector2() / sourceSize;
 
-            spriteBatch.Draw(textureRegion, rectangle.Position, color, 0, Vector2.Zero, scale, (SpriteEffects)effect, layer);
+            spriteBatch.Draw(textureRegion, position, color, 0, Vector2.Zero, scale, (SpriteEffects)effect, 1);
         }
 
-        public Point GetViewportSize()
+        public virtual Point GetViewportSize()
         {
-            if (Camera.Main != null)
+            if (Camera.Current != null)
             {
-                return Camera.Main.VirtualSize.ToPoint();
+                return Camera.Current.VirtualSize.ToPoint();
             }
 
             return Point.Zero;
+        }
+
+        protected virtual Rectangle Transform(Rectangle rectangle)
+        {
+            rectangle.Location = new Point(rectangle.X, (int)Camera.Current.VirtualSize.Y - rectangle.Y - rectangle.Height);
+            return rectangle;
         }
 
         //public void Draw(VertexPositionTexture[] vertices, int[] ind)

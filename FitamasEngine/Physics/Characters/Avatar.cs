@@ -1,6 +1,6 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Physics;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;

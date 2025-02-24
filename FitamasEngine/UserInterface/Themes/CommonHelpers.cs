@@ -1,10 +1,6 @@
 ﻿using Fitamas.UserInterface.Components;
-using Microsoft.Xna.Framework.Input;
-using System;
+using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fitamas.UserInterface.Themes
 {
@@ -15,6 +11,15 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.ButtonStyle] = GUIButtonStyle.Create(dictionary);
             dictionary[CommonResourceKeys.TextBlockStyle] = GUITextBlockStyle.Create(dictionary);
             dictionary[CommonResourceKeys.CheckBoxStyle] = GUICheckBoxStyle.Create(dictionary);
+            dictionary[CommonResourceKeys.ComboBoxStyle] = GUIComboBoxStyle.Create(dictionary);
+            dictionary[CommonResourceKeys.ContextItemStyle] = GUIContextStyle.CreateItem(dictionary);
+            dictionary[CommonResourceKeys.ContextMenuStyle] = GUIContextStyle.CreateMenu(dictionary);
+        }
+
+        public static void CreateVars(ResourceDictionary dictionary)
+        {
+            dictionary[CommonResourceKeys.WindowPadding] = new Point(3, 3);
+            dictionary[CommonResourceKeys.FramePadding] = new Point(10, 10);
         }
 
         public static Trigger CreateTriggerForButton<T>(ResourceDictionary dictionary, DependencyProperty<T> property, T value, string imageColor, string textColor, string targetName = null)

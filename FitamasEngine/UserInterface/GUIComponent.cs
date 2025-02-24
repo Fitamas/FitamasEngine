@@ -1,37 +1,38 @@
 ﻿using Fitamas.Math2D;
-using Fitamas.Serializeble;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Themes;
-using Fitamas.UserInterface;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
+using Microsoft.Win32;
+using System.Linq;
 
 namespace Fitamas.UserInterface
 {
     public abstract class GUIComponent : DependencyObject
     {
+        public static readonly DependencyProperty<Thickness> MarginProperty = new DependencyProperty<Thickness>(MarginChangedCallback, Thickness.Zero, false);
+
+        public static readonly DependencyProperty<Vector2> PivotProperty = new DependencyProperty<Vector2>(PivotChangedCallback, new Vector2(0.5f, 0.5f), false);
+
         public static readonly DependencyProperty<GUIStyle> StyleProperty = new DependencyProperty<GUIStyle>(StyleChangedCallback);
 
-        public static readonly DependencyProperty<GUIHorizontalAlignment> HorizontalAlignmentProperty = new DependencyProperty<GUIHorizontalAlignment>(GUIHorizontalAlignment.Left, false);
+        public static readonly DependencyProperty<GUIHorizontalAlignment> HorizontalAlignmentProperty = new DependencyProperty<GUIHorizontalAlignment>(AlignmentChangedCallback, GUIHorizontalAlignment.Left, false);
 
-        public static readonly DependencyProperty<GUIVerticalAlignment> VerticalAlignmentProperty = new DependencyProperty<GUIVerticalAlignment>(GUIVerticalAlignment.Top, false);
+        public static readonly DependencyProperty<GUIVerticalAlignment> VerticalAlignmentProperty = new DependencyProperty<GUIVerticalAlignment>(AlignmentChangedCallback, GUIVerticalAlignment.Bottom, false);
 
         public static readonly DependencyProperty<bool> IsMouseOverProperty = new DependencyProperty<bool>(false, false);
 
-        public static readonly DependencyProperty<bool> InterectebleProperty = new DependencyProperty<bool>(true, false);
+        public static readonly DependencyProperty<bool> InteractebleProperty = new DependencyProperty<bool>(true, false);
 
         public static readonly DependencyProperty<bool> EnableProperty = new DependencyProperty<bool>(true, false);
 
         private GUISystem system;
         private GUIComponent parent;
         private List<GUIComponent> childrensComponent;
-        private Vector2 pivot;
-        private Rectangle localRectangle;
         private Rectangle absoluteRectangle;
         private Rectangle visibleRectangle;
         private bool isDirty = true;
-        private bool isVisible;
 
         protected EventHandlersStore eventHandlersStore;
 
@@ -39,12 +40,39 @@ namespace Fitamas.UserInterface
         public GUIRenderBatch Render => System.Render;
         public GUIRoot Root => System.Root;
         public bool IsInHierarchy => system != null;
-        public bool IsVisible => isVisible;
-        public bool IsVisibleAndEnable => isVisible && Enable;
+        public Rectangle VisibleRectangle => visibleRectangle;
+        public bool IsVisible => visibleRectangle.Size != Point.Zero;
+        public bool IsVisibleAndEnable => IsVisible && Enable;
 
-        public string Name;
-        public bool RaycastTarget;
-        public bool IsMask;
+        public string Name { get; set; }
+
+        public bool RaycastTarget { get; set; }
+
+        public bool IsMask { get; set; }
+
+        public Thickness Margin
+        {
+            get
+            {
+                return GetValue(MarginProperty);
+            }
+            set
+            {
+                SetValue(MarginProperty, value);
+            }
+        }
+
+        public Vector2 Pivot
+        {
+            get
+            {
+                return GetValue(PivotProperty);
+            }
+            set
+            {
+                SetValue(PivotProperty, value);
+            }
+        }
 
         public GUIStyle Style
         {
@@ -66,7 +94,6 @@ namespace Fitamas.UserInterface
             }
             set
             {
-                SetDirty();
                 SetValue(HorizontalAlignmentProperty, value);
             }
         }
@@ -79,7 +106,6 @@ namespace Fitamas.UserInterface
             }
             set
             {
-                SetDirty();
                 SetValue(VerticalAlignmentProperty, value);
             }
         }
@@ -96,15 +122,15 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public bool Interecteble
+        public bool Interacteble
         {
             get
             {
-                return GetValue(InterectebleProperty);
+                return GetValue(InteractebleProperty);
             }
             set
             {
-                SetValue(InterectebleProperty, value);
+                SetValue(InteractebleProperty, value);
             }
         }
 
@@ -137,64 +163,48 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public Vector2 Pivot
-        {
-            get
-            {
-                return pivot;
-            }
-            set
-            {
-                SetDirty();
-                pivot = value;
-            }
-        }
-
-        public Rectangle LocalRectangle 
-        { 
-            get
-            {
-                return localRectangle;
-            }
-            set
-            {
-                if (localRectangle != value)
-                {
-                    SetDirty();
-                    localRectangle = value;
-                }
-            }
-        }
         public Point LocalPosition
         {
             get
             {
-                return localRectangle.Location;
+                Thickness thickness = Margin;
+                return new Point(thickness.Left, thickness.Bottom);
             }
             set
             {
-                if (localRectangle.Location != value)
+                Thickness thickness = Margin;
+                if (thickness.Left != value.X || thickness.Bottom != value.Y)
                 {
-                    SetDirty();
-                    localRectangle.Location = value;
+                    thickness.Left = value.X;
+                    thickness.Bottom = value.Y;
+                    Margin = thickness;
                 }
             }
         }
-        public Point LocalScale
+
+        public Point LocalSize
         {
             get
             {
-                return localRectangle.Size;
+                Thickness thickness = Margin;
+                Point size;
+                size.X = HorizontalAlignment != GUIHorizontalAlignment.Stretch ? thickness.Right : 0;
+                size.Y = VerticalAlignment != GUIVerticalAlignment.Stretch ? thickness.Top : 0;
+                return size;
             }
             set
             {
-                if (localRectangle.Size != value)
+                Thickness thickness = Margin;
+
+                if (thickness.Right != value.X || thickness.Top != value.Y)
                 {
-                    SetDirty();
-                    localRectangle.Size = value;
+                    thickness.Right = HorizontalAlignment != GUIHorizontalAlignment.Stretch ? value.X : 0;
+                    thickness.Top = VerticalAlignment != GUIVerticalAlignment.Stretch ?  value.Y : 0;
+                    Margin = thickness;
                 }
             }
         }
+
         public GUIComponent Parent
         {
             get
@@ -213,72 +223,77 @@ namespace Fitamas.UserInterface
                 }
             }
         }
+
         public IEnumerable<GUIComponent> ChildrensComponent
         {
             get
             {
-                return childrensComponent.ToArray();
+                return childrensComponent.AsEnumerable();
             }
         }
+
         public Rectangle Rectangle 
         {
             get
             {
                 if (isDirty)
                 {
+                    Thickness thickness = Margin;
+
                     if (parent != null)
                     {
-                        Rectangle parentRectangle = Parent.Rectangle;
+                        Rectangle parentRectangle = parent.Rectangle;
                         Point parentPosition = parentRectangle.Location;
                         Point parentSize = parentRectangle.Size;    
                         Point position = new Point();
-                        Point size = LocalScale;
-                        int pivotX = (int)(LocalScale.X * pivot.X);
-                        int pivotY = (int)(LocalScale.Y * pivot.Y);
+                        Point size = new Point(thickness.Right, thickness.Top);
+                        Vector2 pivot = Pivot;
+                        int pivotX = (int)(size.X * pivot.X);
+                        int pivotY = (int)(size.Y * pivot.Y);
 
                         GUIHorizontalAlignment horizontalAlignment = HorizontalAlignment;
                         if (horizontalAlignment == GUIHorizontalAlignment.Left)
                         {                            
-                            position.X = parentPosition.X + LocalPosition.X - pivotX;
+                            position.X = parentPosition.X + thickness.Left - pivotX;
                         }
                         else if (horizontalAlignment == GUIHorizontalAlignment.Center)
                         {
-                            position.X = parentPosition.X + LocalPosition.X + parentSize.X / 2 - pivotX;
+                            position.X = parentPosition.X + thickness.Left + parentSize.X / 2 - pivotX;
                         }
                         else if (horizontalAlignment == GUIHorizontalAlignment.Right)
                         {
-                            position.X = parentPosition.X + LocalPosition.X + parentSize.X - pivotX;
+                            position.X = parentPosition.X + thickness.Left + parentSize.X - pivotX;
                         }
                         else if (horizontalAlignment == GUIHorizontalAlignment.Stretch)
                         {
-                            position.X = parentPosition.X + LocalPosition.X;
-                            size.X = parentSize.X - LocalScale.X;
+                            position.X = parentPosition.X + thickness.Left;
+                            size.X = parentSize.X - thickness.Right - thickness.Left;
                         }
 
                         GUIVerticalAlignment verticalAlignment = VerticalAlignment;
-                        if (verticalAlignment == GUIVerticalAlignment.Top)
+                        if (verticalAlignment == GUIVerticalAlignment.Bottom)
                         {
-                            position.Y = parentPosition.Y - LocalPosition.Y - pivotY;
+                            position.Y = parentPosition.Y + thickness.Bottom - pivotY;
                         }
                         else if (verticalAlignment == GUIVerticalAlignment.Center)
                         {
-                            position.Y = parentPosition.Y - LocalPosition.Y + parentSize.Y / 2 - pivotY;
+                            position.Y = parentPosition.Y + thickness.Bottom + parentSize.Y / 2 - pivotY;
                         }
-                        else if (verticalAlignment == GUIVerticalAlignment.Bottom)
+                        else if (verticalAlignment == GUIVerticalAlignment.Top)
                         {
-                            position.Y = parentPosition.Y - LocalPosition.Y + parentSize.Y - pivotY;
+                            position.Y = parentPosition.Y + thickness.Bottom + parentSize.Y - pivotY;
                         }
                         else if (verticalAlignment == GUIVerticalAlignment.Stretch)
                         {
-                            position.Y = parentPosition.Y + LocalPosition.Y;
-                            size.Y = parentSize.Y - LocalScale.Y;
+                            position.Y = parentPosition.Y + thickness.Bottom;
+                            size.Y = parentSize.Y - thickness.Bottom - thickness.Top;
                         }
 
                         absoluteRectangle = new Rectangle(position, size);
                     }
                     else
                     {
-                        absoluteRectangle = localRectangle;
+                        absoluteRectangle = new Rectangle(thickness.Left, thickness.Bottom, thickness.Right, thickness.Top);
                     }
 
                     isDirty = false;                   
@@ -288,20 +303,13 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public GUIComponent(Rectangle rectangle = new Rectangle())
+        public GUIComponent()
         {
             childrensComponent = new List<GUIComponent>();
             eventHandlersStore = new EventHandlersStore();
-            pivot = new Vector2(0.5f, 0.5f);
             Name = "Component";
             RaycastTarget = false;
-            localRectangle = rectangle;
             isDirty = true;
-        }
-
-        public GUIComponent(Point positon) : this(new Rectangle(positon, Point.Zero))
-        {
-
         }
 
         protected void SetDirty()
@@ -343,14 +351,43 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public virtual bool Contain(Point mousePosition) 
+        public void SetAsFirstSibling()
+        {
+            if (parent != null)
+            {
+                SetSiblingIndex(parent.childrensComponent.Count - 1);
+            }
+        }
+
+        public void SetAsLastSibling()
+        {
+            SetSiblingIndex(0);
+        }
+
+        public void SetSiblingIndex(int index)
+        {
+            parent?.SetSiblingIndex(this, index);
+        }
+
+        private void SetSiblingIndex(GUIComponent child, int index)
+        {
+            if (index >= 0 && index < childrensComponent.Count)
+            {
+                if (childrensComponent.Remove(child))
+                {
+                    childrensComponent.Insert(index, child);
+                }
+            }
+        }
+
+        public virtual bool Contains(Point mousePosition)
         {
             return visibleRectangle.Contains(mousePosition);
         }
 
         public void RaycastAll(Point point, List<GUIComponent> result)
         {
-            if (IsVisibleAndEnable && RaycastTarget && Contain(point))
+            if (IsVisibleAndEnable && RaycastTarget && Contains(point))
             {
                 result.Add(this);
             }
@@ -361,16 +398,16 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public Point ScreenToLocal(Point screenPoint)
+        public Point ToLocal(Point screenPoint)
         {
             Point leftUp = Rectangle.Location;
-            return new Point(screenPoint.X - leftUp.X, leftUp.Y - screenPoint.Y);
+            return new Point(screenPoint.X - leftUp.X, screenPoint.Y - leftUp.Y);
         }
 
-        public Point LocalToScreen(Point localPoint)
+        public Point FromLocal(Point localPoint)
         {
             Point leftUp = Rectangle.Location;
-            return new Point(localPoint.X + leftUp.X, leftUp.Y - localPoint.Y) ;
+            return new Point(localPoint.X + leftUp.X, localPoint.Y + leftUp.Y) ;
         }
 
         public GUIComponent GetComponentFromName(string name, bool recursion = true)
@@ -462,27 +499,18 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public void Draw(GameTime gameTime)
-        {
-            Rectangle rectangle = new Rectangle(Point.Zero, Render.GetViewportSize());
-            Draw(gameTime, new GUIContextRender(rectangle));
-        }
-
-        private void Draw(GameTime gameTime, GUIContextRender context)
+        public void Draw(GameTime gameTime, GUIContextRender context)
         {
             if (Enable)
             {
                 visibleRectangle = Rectangle.Intersect(Rectangle, context.Mask);
-                isVisible = visibleRectangle.Size != Point.Zero;
 
                 OnDraw(gameTime, context);
 
                 if (IsMask)
                 {
-                    context.SetMask(Rectangle);
+                    context.SetMask(visibleRectangle);
                 }
-
-                //for (int i = 0; i < childrensComponent.Count; i++)
 
                 foreach (var component in childrensComponent)
                 {
@@ -517,6 +545,10 @@ namespace Fitamas.UserInterface
 
         protected virtual void OnRemoveChild(GUIComponent component) { }
 
+        protected virtual void OnChildPositionChanged(GUIComponent component) { }
+
+        protected virtual void OnChildSizeChanged(GUIComponent component) { }
+
         protected virtual void OnUpdate(GameTime gameTime) { }
 
         protected virtual void OnDraw(GameTime gameTime, GUIContextRender context) { }
@@ -525,11 +557,52 @@ namespace Fitamas.UserInterface
 
         public override void OnPropertyChanged<T>(DependencyProperty<T> property)
         {
-            
             if (property.Id != StyleProperty.Id)
             {
                 GUIStyle style = GetValue(StyleProperty);
                 style?.ProcessTriggers(this, property);
+            }
+        }
+
+        private static void MarginChangedCallback(DependencyObject dependencyObject, DependencyProperty<Thickness> property, Thickness oldValue, Thickness newValue)
+        {
+            if (dependencyObject is GUIComponent component)
+            {
+                component.SetDirty();
+
+                if (oldValue.Left != newValue.Left || oldValue.Bottom != newValue.Bottom)
+                {
+                    component.parent?.OnChildPositionChanged(component);
+                }
+
+                if (oldValue.Right != newValue.Right || oldValue.Top != newValue.Top)
+                {
+                    component.parent?.OnChildSizeChanged(component);
+                }
+            }
+        }
+
+        private static void PivotChangedCallback(DependencyObject dependencyObject, DependencyProperty<Vector2> property, Vector2 oldValue, Vector2 newValue)
+        {
+            if (dependencyObject is GUIComponent component)
+            {
+                component.SetDirty();
+            }
+        }
+
+        private static void AlignmentChangedCallback(DependencyObject dependencyObject, DependencyProperty<GUIHorizontalAlignment> property, GUIHorizontalAlignment oldValue, GUIHorizontalAlignment newValue)
+        {
+            if (dependencyObject is GUIComponent component)
+            {
+                component.SetDirty();
+            }
+        }
+
+        private static void AlignmentChangedCallback(DependencyObject dependencyObject, DependencyProperty<GUIVerticalAlignment> property, GUIVerticalAlignment oldValue, GUIVerticalAlignment newValue)
+        {
+            if (dependencyObject is GUIComponent component)
+            {
+                component.SetDirty();
             }
         }
 

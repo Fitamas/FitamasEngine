@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Linq;
 using Fitamas.Entities;
-using Fitamas.Extended.Entities;
+using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
-using Fitamas.Scene;
-using Fitamas.Serializeble;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.TextureAtlases;
 
 namespace Fitamas.Graphics
 {

@@ -1,9 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -44,7 +41,7 @@ namespace Fitamas.UserInterface.Components
         public GUIRoot()
         {
             canvas = new GUICanvas();
-            canvas.Pivot = Vector2.Zero;
+            canvas.Pivot = new Vector2(0, 0);
             AddChild(canvas);
 
             mainFrame = new GUIFrame();
@@ -54,9 +51,6 @@ namespace Fitamas.UserInterface.Components
             popupFrame = new GUIFrame();
             popupFrame.SetAlignment(GUIAlignment.Stretch);
             canvas.AddChild(popupFrame);
-
-
-            //TODO MARGIN
         }
 
         public void AddComponent(GUIComponent component)

@@ -1,15 +1,14 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.Input;
 using Fitamas.Math2D;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Input;
-using MonoGame.Extended.Input.InputListeners;
 using System;
 using System.Collections.Generic;
 using Fitamas.UserInterface.Components.NodeEditor.Controllers;
+using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components.NodeEditor
 {
@@ -98,7 +97,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         {
             selectRegion = new GUIImage();
             selectRegion.Color = Settings.SelectRegionColor;
-            selectRegion.LocalScale = new Point(0, 0);
+            selectRegion.LocalSize = new Point(0, 0);
 
             AddChild(selectRegion);
 
@@ -204,7 +203,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             node.Image.Color = Settings.ImageColor;
             node.SelectedImage.Color = Settings.SelectedImageColor;
             node.SelectedImage.LocalPosition -= Settings.SelectBorderScale;
-            node.SelectedImage.LocalScale -= Settings.SelectBorderScale;
+            node.SelectedImage.LocalSize -= Settings.SelectBorderScale;
 
             Add(node);
             return node;
@@ -257,7 +256,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
             Point mousePosition = InputSystem.mouse.MousePosition;
             Point delta = InputSystem.mouseDelta;
-            Point localPosition = ScreenToLocal(mousePosition);
+            Point localPosition = ToLocal(mousePosition);
             List<GUIComponent> selects = [.. selectComponents];
             selectComponents.Clear();
 
@@ -265,7 +264,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             {
                 bool containNode = selects.Contains(node);
 
-                if (node.Contain(mousePosition))
+                if (node.Contains(mousePosition))
                 {
                     selectComponents.Add(node);
                     if (!containNode)
@@ -279,7 +278,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
                     {
                         bool containPin = selects.Contains(pin);
 
-                        if (pin.Contain(mousePosition))
+                        if (pin.Contains(mousePosition))
                         {
                             selectComponents.Add(pin);
                             if (!containPin)
@@ -315,7 +314,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             {
                 bool containWire = selects.Contains(wire);
 
-                if (wire.Contain(mousePosition))
+                if (wire.Contains(mousePosition))
                 {
                     selectComponents.Add(wire);
                     if (!containWire)
@@ -391,7 +390,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
             System.Focused = this;
 
-            Point localPosition = ScreenToLocal(mouse.Position);
+            Point localPosition = ToLocal(mouse.Position);
             Point delta = mouse.DistanceMoved.ToPoint();
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta, mouse.Button, eventType);
             OnMouseEvent.Invoke(args);
@@ -399,7 +398,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             foreach (var component in selectComponents)
             {
 
-                if (component.Contain(mouse.Position))
+                if (component.Contains(mouse.Position))
                 {
                     args = new GUINodeEditorEventArgs(localPosition, delta, mouse.Button, eventType);
                     args.Component = component;
@@ -429,7 +428,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         {
             Point scale = selectRegion.LocalPosition - mousePosition;
 
-            selectRegion.LocalScale = new Point(Math.Abs(scale.X), Math.Abs(scale.Y));
+            selectRegion.LocalSize = new Point(Math.Abs(scale.X), Math.Abs(scale.Y));
 
             selectRegion.Pivot = new Vector2(scale.X < 0 ? 0 : 1, scale.Y < 0 ? 1 : 0);
         }
@@ -437,7 +436,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public Rectangle EndSelectRegion()
         {
             Rectangle region = selectRegion.Rectangle;
-            selectRegion.LocalScale = new Point();
+            selectRegion.LocalSize = new Point();
 
             return region;
         }

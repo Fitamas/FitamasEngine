@@ -1,8 +1,8 @@
 ﻿using Fitamas.Entities;
+using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.TextureAtlases;
 using System;
 
 namespace Fitamas.Graphics

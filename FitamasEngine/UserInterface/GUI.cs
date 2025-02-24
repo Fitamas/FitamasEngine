@@ -11,34 +11,30 @@ namespace Fitamas.UserInterface
 {
     public static class GUI
     {
-        public static GUIImage CreateImage(Sprite sprite, Rectangle rectangle)
+        public static GUIImage CreateImage(Sprite sprite, Point position, Point size)
         {
             GUIImage image = new GUIImage();
-            image.LocalRectangle = rectangle;
+            image.LocalPosition = position;
+            image.LocalSize = size;
             image.Sprite = sprite;
             return image;
         }
 
-        public static GUIButton CreateButton(Rectangle rectangle, string text)
+        public static GUIButton CreateButton(Point position, string text, Point? size = null)
         {
-            return CreateButton(ResourceDictionary.DefaultResources, rectangle, text);
+            return CreateButton(ResourceDictionary.DefaultResources, position, text, size);
         }
 
-        public static GUIButton CreateButton(ResourceDictionary dictionary, Rectangle rectangle, string text)
+        public static GUIButton CreateButton(ResourceDictionary dictionary, Point position, string text, Point? size = null)
         {
-            if (dictionary.TryGetValue(CommonResourceKeys.ButtonStyle, out object res) && res is GUIStyle style)
-            {
-                return CreateButton(style, rectangle, text);
-            }
-
-            return null;
+            return CreateButton(dictionary[CommonResourceKeys.ButtonStyle] as GUIStyle, position, text, size);
         }
 
-        public static GUIButton CreateButton(GUIStyle style, Rectangle rectangle, string text)
+        public static GUIButton CreateButton(GUIStyle style, Point position, string text, Point? size = null)
         {
             GUIButton button = new GUIButton();
-            button.LocalRectangle = rectangle;
             button.Style = style;
+            button.LocalPosition = position;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -50,52 +46,59 @@ namespace Fitamas.UserInterface
             textBlock.SetAlignment(GUIAlignment.Center);
             button.AddChild(textBlock);
 
+            if (size.HasValue)
+            {
+                button.LocalSize = size.Value;
+            }
+            else if (style != null)
+            {
+                Point padding = style.Resources.FramePadding;
+                Point localSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
+
+                button.LocalSize = localSize;
+            }            
+
             return button;
         }
 
-        public static GUITextBlock CreateTextBlock(string text)
+        public static GUITextBlock CreateTextBlock(Point position, string text)
         {
-            return CreateTextBlock(ResourceDictionary.DefaultResources, text);
+            return CreateTextBlock(ResourceDictionary.DefaultResources, position, text);
         }
 
-        public static GUITextBlock CreateTextBlock(ResourceDictionary dictionary, string text)
+        public static GUITextBlock CreateTextBlock(ResourceDictionary dictionary, Point position, string text)
         {
-            if (dictionary.TryGetValue(CommonResourceKeys.TextBlockStyle, out object res) && res is GUIStyle style)
-            {
-                return CreateTextBlock(style, text);
-            }
-
-            return null;
+            return CreateTextBlock((GUIStyle)dictionary[CommonResourceKeys.TextBlockStyle], position, text);
         }
 
-        public static GUITextBlock CreateTextBlock(GUIStyle style, string text)
+        public static GUITextBlock CreateTextBlock(GUIStyle style, Point position, string text)
         {
             GUITextBlock textBlock = new GUITextBlock();
             textBlock.Style = style;
+            textBlock.LocalPosition = position;
             textBlock.Text = text;
 
             return textBlock;
         }
 
-        public static GUICheckBox CreateCheckBox(Rectangle rectangle)
+        public static GUICheckBox CreateCheckBox(Point position)
         {
-            return CreateCheckBox(ResourceDictionary.DefaultResources, rectangle);
+            return CreateCheckBox(ResourceDictionary.DefaultResources, position);
         }
 
-        public static GUICheckBox CreateCheckBox(ResourceDictionary dictionary, Rectangle rectangle)
+        public static GUICheckBox CreateCheckBox(ResourceDictionary dictionary, Point position)
         {
-            if (dictionary.TryGetValue(CommonResourceKeys.CheckBoxStyle, out object res) && res is GUIStyle style)
-            {
-                return CreateCheckBox(style, rectangle);
-            }
-
-            return null;
+            return CreateCheckBox((GUIStyle)dictionary[CommonResourceKeys.CheckBoxStyle], position);
         }
 
-        public static GUICheckBox CreateCheckBox(GUIStyle style, Rectangle rectangle)
+        public static GUICheckBox CreateCheckBox(GUIStyle style, Point position)
         {
+            Point padding = style.Resources.FramePadding;
+            Point size = new Point(FontManager.GetHeight()) + padding + padding;
+
             GUICheckBox checkBox = new GUICheckBox();
-            checkBox.LocalRectangle = rectangle;
+            checkBox.LocalPosition = position;
+            checkBox.LocalSize = size;
 
             GUIImage backGround = new GUIImage();
             backGround.SetAlignment(GUIAlignment.Stretch);
@@ -111,76 +114,130 @@ namespace Fitamas.UserInterface
             return checkBox;
         }
 
-        public static GUIComboBox CreateComboBox(Rectangle rectangle, IEnumerable<string> items)
+        public static GUIComboBox CreateComboBox(Point position, IEnumerable<string> items, Point? size = null)
         {
-            GUIComboBox comboBox = new GUIComboBox(rectangle, items);
+            return CreateComboBox(ResourceDictionary.DefaultResources, position, items, size);
+        }
 
-            GUIVerticalGroup group = new GUIVerticalGroup();
-            group.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-            group.VerticalAlignment = GUIVerticalAlignment.Bottom;
-            group.Pivot = new Vector2();
-            group.CellSize = new Point(0, rectangle.Height);
-            comboBox.AddChild(group);
-            comboBox.Group = group;
+        public static GUIComboBox CreateComboBox(ResourceDictionary dictionary, Point position, IEnumerable<string> items, Point? size = null)
+        {
+            return CreateComboBox(dictionary[CommonResourceKeys.ComboBoxStyle] as GUIStyle, position, items, size);
+        }
+
+        public static GUIComboBox CreateComboBox(GUIStyle style, Point position, IEnumerable<string> items, Point? size = null)
+        {
+            Point padding = style.Resources.FramePadding;
+
+            GUIComboBox comboBox = new GUIComboBox(items);
+            comboBox.LocalPosition = position;
+            comboBox.Style = style;
+
+            GUIImage image = new GUIImage();
+            image.SetAlignment(GUIAlignment.Stretch);
+            comboBox.AddChild(image);
+
+            GUITextBlock textBlock = new GUITextBlock();
+            textBlock.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            textBlock.VerticalAlignment = GUIVerticalAlignment.Stretch;
+            textBlock.TextAligment = GUITextAligment.Left;
+            textBlock.AutoScale = false;
+            textBlock.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
+            comboBox.AddChild(textBlock);
+
+            if (size.HasValue)
+            {
+                comboBox.LocalSize = size.Value;
+            }
+            else if (style != null)
+            {
+                Point localSize = Point.Zero; //TODO fix
+                foreach (var item in items)
+                {
+                    localSize = textBlock.Font.MeasureString(item).ToPoint();
+                }
+
+                comboBox.LocalSize = padding + padding + localSize;
+            }
 
             return comboBox;
         }
 
-        public static GUIContextMenu CreateContextMenu(Rectangle rectangle)
+        public static GUIContextMenu CreateContextMenu(Point position)
         {
+            return CreateContextMenu(ResourceDictionary.DefaultResources, position);
+        }
+
+        public static GUIContextMenu CreateContextMenu(ResourceDictionary dictionary, Point position)
+        {
+            return CreateContextMenu(dictionary[CommonResourceKeys.ContextMenuStyle] as GUIStyle, position);
+        }
+
+        public static GUIContextMenu CreateContextMenu(GUIStyle style, Point position)
+        {
+            Point padding = style.Resources.WindowPadding;
+
             GUIContextMenu context = new GUIContextMenu();
-            context.LocalRectangle = rectangle;
-            //context.Group.CellSize = GUIStyle.ContextItemSize;
+            context.LocalPosition = position;
+            context.Pivot = new Vector2(0, 1);
+            context.Style = style;
+            context.Padding = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
             context.AddChild(image);
+
+            GUIStack group = new GUIStack();
+            group.LocalPosition = new Point(padding.X, padding.Y);
+            group.Pivot = new Vector2(0, 0);
+            group.Orientation = GUIGroupOrientation.Vertical;
+            group.ControlChildSizeWidth = true;
+            group.ControlSizeWidth = true;
+            group.ControlSizeHeight = true;
+            context.AddChild(group);
+            context.Content = group;
+            context.Group = group;
 
             return context;
         }
 
         public static GUIContextItem CreateContextItem(string text)
         {
+            return CreateContextItem(ResourceDictionary.DefaultResources, text);
+        }
+
+        public static GUIContextItem CreateContextItem(ResourceDictionary dictionary, string text)
+        {
+            return CreateContextItem(dictionary[CommonResourceKeys.ContextItemStyle] as GUIStyle, text);
+        }
+
+        public static GUIContextItem CreateContextItem(GUIStyle style, string text)
+        {
+            Point padding = style.Resources.FramePadding;
+
             GUIContextItem item = new GUIContextItem();
-            item.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-            //button.Style = style;
+            item.Style = style;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
             item.AddChild(image);
 
             GUITextBlock textBlock = new GUITextBlock();
+            textBlock.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
+            textBlock.SetAlignment(GUIAlignment.Stretch);
+            textBlock.AutoScale = false;
             textBlock.Text = text;
-            textBlock.TextAligment = GUITextAligment.Middle;
-            textBlock.SetAlignment(GUIAlignment.Center);
+            textBlock.TextAligment = GUITextAligment.Left;
             item.AddChild(textBlock);
+            
+            item.LocalSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
+
             return item;
-        }
-
-        public static GUIGridGroup CreateGroup(Point maxSize)
-        {
-            GUIGridGroup group = new GUIGridGroup(maxSize);
-
-            return group;
-        }
-
-        public static GUIHorizontalGroup CreateHorizontalGroup()
-        {
-            GUIHorizontalGroup group = new GUIHorizontalGroup();
-
-            return group;
-        }
-
-        public static GUIVerticalGroup CreateVerticalGroup()
-        {
-            GUIVerticalGroup group = new GUIVerticalGroup();
-
-            return group;
         }
 
         public static GUITextInput CreateTextInput(Rectangle rectangle)
         {
-            GUITextInput input = new GUITextInput(rectangle);
+            GUITextInput input = new GUITextInput();
+
             //input.CaretColor = GUIStyle.TextColor;
 
             GUITextBlock textBlock = new GUITextBlock();
@@ -196,7 +253,7 @@ namespace Fitamas.UserInterface
         public static GUIFrame CreateFieldInput(Point scale, MonoAction<GUITextInput, string> onValueChanged = null, string name = "Text", string defoultValue = " ")
         {
             GUIFrame frame = new GUIFrame();
-            frame.LocalScale = scale;
+            frame.LocalSize = scale;
 
             GUITextBlock text = new GUITextBlock();
             text.Text = name;
@@ -208,13 +265,13 @@ namespace Fitamas.UserInterface
             GUITextInput input = CreateTextInput(new Rectangle());
             input.OnTextChanged.AddListener(onValueChanged);
             input.SetAlignment(GUIAlignment.Stretch);
-            input.LocalPosition = new Point(text.LocalScale.X, 0);
+            input.LocalPosition = new Point(text.LocalSize.X, 0);
             input.Text = defoultValue;
             frame.AddChild(input);
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
-            image.LocalPosition = new Point(text.LocalScale.X, 0);
+            image.LocalPosition = new Point(text.LocalSize.X, 0);
             frame.AddChild(image);
 
             return frame;
@@ -230,7 +287,7 @@ namespace Fitamas.UserInterface
             trackBar.SlidingArea = slidingArea;
 
             GUIImage handle = new GUIImage();
-            handle.LocalScale = rectangle.Size;
+            handle.LocalSize = rectangle.Size;
             handle.SetAlignment(GUIAlignment.Center);
             trackBar.AddChild(handle);
             trackBar.Handle = handle;
@@ -242,7 +299,7 @@ namespace Fitamas.UserInterface
 
         public static GUIScrollBar CreateScrollBar(Rectangle rectangle)
         {
-            GUIScrollBar scrollBar = new GUIScrollBar(rectangle);
+            GUIScrollBar scrollBar = new GUIScrollBar();
 
             GUIImage slidingArea = new GUIImage();
             slidingArea.SetAlignment(GUIAlignment.Stretch);
@@ -250,7 +307,7 @@ namespace Fitamas.UserInterface
             scrollBar.SlidingArea = slidingArea;
 
             GUIImage handle = new GUIImage();
-            handle.LocalScale = rectangle.Size;
+            handle.LocalSize = rectangle.Size;
             handle.SetAlignment(GUIAlignment.Center);
             scrollBar.AddChild(handle);
             scrollBar.Handle = handle;
@@ -262,7 +319,7 @@ namespace Fitamas.UserInterface
 
         public static GUIScrollRect CreateScrollRect(GUIComponent content, Rectangle rectangle)
         {
-            GUIScrollRect scrollRect = new GUIScrollRect(content, rectangle);
+            GUIScrollRect scrollRect = new GUIScrollRect(content);
 
             GUIScrollBar horizontalScrollBar = CreateScrollBar(new Rectangle(new Point(), new Point(0, 20)));
             horizontalScrollBar.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
@@ -312,7 +369,7 @@ namespace Fitamas.UserInterface
 
         public static GUINode CreateNode(Rectangle rectangle, string text = "header")
         {
-            GUINode node = new GUINode(rectangle);
+            GUINode node = new GUINode();
 
             GUITextBlock textBlock = new GUITextBlock();
             textBlock.Text = text;
@@ -372,7 +429,7 @@ namespace Fitamas.UserInterface
         public static GUIWire CreateWire()
         {
             GUIWire wire = new GUIWire();
-            wire.LocalScale = new Point(1, 1);
+            wire.LocalSize = new Point(1, 1);
 
             return wire;
         }

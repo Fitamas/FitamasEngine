@@ -50,7 +50,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             }
         }
 
-        public GUINode(Rectangle rectangle = new()) : base(rectangle)
+        public GUINode()
         {
 
         }
@@ -174,11 +174,11 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             int sizeY = 0;
             if (HeaderTextBlock != null)
             {
-                sizeY = (int)(HeaderTextBlock.LocalScale.Y * nodeEditor.Settings.HeaderSize);
+                sizeY = (int)(HeaderTextBlock.LocalSize.Y * nodeEditor.Settings.HeaderSize);
             }
             if (HeaderImage != null)
             {
-                HeaderImage.LocalScale = new Point(0, sizeY);
+                HeaderImage.LocalSize = new Point(0, sizeY);
             }
 
             int spacing = nodeEditor.Settings.PinSpacing;
@@ -189,7 +189,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             foreach (GUIPin pin in pins)
             {
                 Point contentSize = nodeEditor.Settings.PinSize;
-                pin.LocalScale = contentSize;
+                pin.LocalSize = contentSize;
                 contentSize.X += pin.ContentScale.X;
                 contentSize.Y = Math.Max(contentSize.Y, pin.ContentScale.Y);
                 contentSize.Y += spacing;
@@ -218,7 +218,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             size.X = Math.Max(size.X, sizeLeft.X + sizeRight.X + nodeEditor.Settings.SiteSpacing);
             size.Y = Math.Max(size.Y, sizeLeft.Y);
             size.Y = Math.Max(size.Y, sizeRight.Y);
-            LocalScale = size;
+            LocalSize = size;
         }
     }
 }

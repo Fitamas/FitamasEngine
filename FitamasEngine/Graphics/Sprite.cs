@@ -1,9 +1,9 @@
 ﻿using Fitamas.DebugTools;
-using Fitamas.Serializeble;
+using Fitamas.Graphics.TextureAtlases;
+using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended.TextureAtlases;
 using System;
 using System.Collections.Generic;
 

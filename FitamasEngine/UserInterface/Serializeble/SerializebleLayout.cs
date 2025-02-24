@@ -1,5 +1,5 @@
 ﻿using Fitamas.Container;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.UserInterface.Scripting;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;

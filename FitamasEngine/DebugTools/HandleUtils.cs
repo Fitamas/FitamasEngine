@@ -2,7 +2,6 @@
 using Fitamas.DebugTools;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
-using MonoGame.Extended;
 using System;
 
 namespace Fitamas.Editor

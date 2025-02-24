@@ -1,5 +1,4 @@
-﻿using R3;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -62,15 +61,32 @@ namespace Fitamas.UserInterface
 
     public class ValueExpression<T> : Expression
     {
+        private T value;
+
         public new DependencyProperty<T> Property { get; }
-        public ReactiveProperty<T> ReactiveProperty { get; }
+        public T CurrentValue 
+        { 
+            get
+            {
+                return value;
+            }
+            set
+            {
+                if (!IsFrozen)
+                {
+                    this.value = value;
+                }
+            }
+        }
+        public bool IsFrozen { get; set; }
 
-        public override object Value => ReactiveProperty.Value;
+        public override object Value => CurrentValue;
 
-        public ValueExpression(DependencyProperty<T> property, T value) : base(property) 
+        public ValueExpression(DependencyProperty<T> property, T value, bool isFrozen = false) : base(property) 
         {
             Property = property;
-            ReactiveProperty = new ReactiveProperty<T>(value);
+            CurrentValue = value;
+            IsFrozen = isFrozen;
         }
     }
 

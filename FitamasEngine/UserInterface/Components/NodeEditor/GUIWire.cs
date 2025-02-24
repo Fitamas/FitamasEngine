@@ -1,5 +1,5 @@
 ﻿using Fitamas.Math2D;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using System;
@@ -72,8 +72,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             if (PinA != null && PinB != null)
             {
                 //LocalPosition = Parent.ToLocalPosition(PinA.Rectangle.Center);
-                points.Insert(0, Parent.ScreenToLocal(PinA.Rectangle.Center) - LocalPosition);
-                points.Add(Parent.ScreenToLocal(PinB.Rectangle.Center) - LocalPosition);
+                points.Insert(0, Parent.ToLocal(PinA.Rectangle.Center) - LocalPosition);
+                points.Add(Parent.ToLocal(PinB.Rectangle.Center) - LocalPosition);
             }
             else
             {
@@ -90,7 +90,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
                 throw new Exception("Cannot connect pins: pin is null.");
             }
 
-            LocalPosition = Parent.ScreenToLocal(pinA.Rectangle.Center);
+            LocalPosition = Parent.ToLocal(pinA.Rectangle.Center);
 
             PinA = pinA;
             PinB = pinB;
@@ -119,12 +119,12 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             drawToPoint = targetPoint;
         }
 
-        public override bool Contain(Point point)
+        public override bool Contains(Point point)
         {
             for (int i = 1; i < anchors.Count; i++)
             {
-                Point a = LocalToScreen(anchors[i - 1]);
-                Point b = LocalToScreen(anchors[i]);
+                Point a = FromLocal(anchors[i - 1]);
+                Point b = FromLocal(anchors[i]);
                 float distance = MathV.DistancePointToSegment(a.ToVector2(), b.ToVector2(), point.ToVector2());
 
                 if (distance <= (Thickness + ShadowSize) / 2f)

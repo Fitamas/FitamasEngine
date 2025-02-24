@@ -35,12 +35,12 @@ namespace Fitamas.UserInterface
             return false;
         }
 
-        internal virtual bool IsActive(GUIComponent element)
+        internal virtual bool IsActive(GUIComponent component)
         {
             return false;
         }
 
-        internal virtual void CheckState(GUIComponent element)
+        internal virtual void CheckState(GUIComponent component)
         {
         }
 

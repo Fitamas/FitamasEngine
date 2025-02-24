@@ -1,9 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using MonoGame.Extended.Input.InputListeners;
-using MonoGame.Extended.Input;
-using System;
-using Fitamas.Serializeble;
+﻿using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components
 {

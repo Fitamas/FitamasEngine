@@ -6,6 +6,38 @@ namespace Fitamas.UserInterface
     {
         public static readonly string DefaultFont = nameof(DefaultFont);
 
+        //Alpha,
+        //DisabledAlpha,
+        
+        public static readonly string WindowPadding = nameof(WindowPadding);
+
+        //WindowBorderSize,
+        //WindowMinSize,
+        //WindowTitleAlign,
+        //ChildBorderSize,
+        //PopupBorderSize,
+
+        public static readonly string FramePadding = nameof(FramePadding);
+
+        //FrameBorderSize,
+        //ItemSpacing,
+        //ItemInnerSpacing,
+        //IndentSpacing,
+        //CellPadding,
+        //ScrollbarSize,
+        //GrabMinSize,
+        //TabBorderSize,
+        //TabBarBorderSize,
+        //TabBarOverlineSize,
+        //TableAngledHeadersAngle,
+        //TableAngledHeadersTextAlign,
+        //ButtonTextAlign,
+        //SelectableTextAlign,
+        //SeparatorTextBorderSize,
+        //SeparatorTextAlign,
+        //SeparatorTextPadding,
+        //DockingSeparatorSize,
+
 
         public static readonly string ButtonStyle = nameof(ButtonStyle);
 
@@ -25,11 +57,36 @@ namespace Fitamas.UserInterface
 
         public static readonly string ButtonTextDisableColor = nameof(ButtonTextDisableColor);
 
-        //public static readonly string ButtonBackgroundFocusedBrushKey = "ButtonBackgroundFocusedBrush";
+        //public static readonly string ButtonBackgroundFocusedColor = "ButtonBackgroundColor";
 
-        //public static readonly string ButtonBorderFocusedBrushKey = "ButtonBorderFocusedBrush";
+        //public static readonly string ButtonBorderFocusedColor = "ButtonBorderFocusedColor";
 
-        //public static readonly string ButtonTextFocusedColorKey = "ButtonTextFocusedColor";
+        //public static readonly string ButtonTextFocusedColor = "ButtonTextFocusedColor";
+
+
+        public static readonly string ItemStyle = nameof(ItemStyle);
+
+        public static readonly string ItemDefaultColor = nameof(ItemDefaultColor);
+
+        public static readonly string ItemHoverColor = nameof(ItemHoverColor);
+
+        public static readonly string ItemPressedColor = nameof(ItemPressedColor);
+
+        public static readonly string ItemDisableColor = nameof(ItemDisableColor);
+
+        public static readonly string ItemTextDefaultColor = nameof(ItemTextDefaultColor);
+
+        public static readonly string ItemTextHoverColor = nameof(ItemTextHoverColor);
+
+        public static readonly string ItemTextPressedColor = nameof(ItemTextPressedColor);
+
+        public static readonly string ItemTextDisableColor = nameof(ItemTextDisableColor);
+
+        //public static readonly string ItemBackgroundFocusedColor = "ItemBackgroundColor";
+
+        //public static readonly string ItemBorderFocusedColor = "ItemBorderFocusedColor";
+
+        //public static readonly string ItemTextFocusedColor = "ItemTextFocusedColor";
 
 
         public static readonly string TextBlockStyle = nameof(TextBlockStyle);
@@ -48,5 +105,33 @@ namespace Fitamas.UserInterface
         public static readonly string CheckBoxDisableColor = nameof(CheckBoxDisableColor);
 
         public static readonly string CheckBoxMarkColor = nameof(CheckBoxMarkColor);
+
+
+        public static readonly string ComboBoxStyle = nameof(ComboBoxStyle);
+
+        public static readonly string ComboBoxDefaultColor = nameof(ComboBoxDefaultColor);
+
+        public static readonly string ComboBoxHoverColor = nameof(ComboBoxHoverColor);
+
+        public static readonly string ComboBoxDisableColor = nameof(ComboBoxDisableColor);
+
+        public static readonly string ComboBoxTextDefaultColor = nameof(ComboBoxTextDefaultColor);
+
+        public static readonly string ComboBoxTextHoverColor = nameof(ComboBoxTextHoverColor);
+
+        public static readonly string ComboBoxTextDisableColor = nameof(ComboBoxTextDisableColor);
+
+        //public static readonly string ButtonBackgroundFocusedColor = "ButtonBackgroundColor";
+
+        //public static readonly string ButtonBorderFocusedColor = "ButtonBorderFocusedColor";
+
+        //public static readonly string ButtonTextFocusedColor = "ButtonTextFocusedColor";
+
+
+        public static readonly string ContextMenuStyle = nameof(ContextMenuStyle);
+
+        public static readonly string ContextItemStyle = nameof(ContextItemStyle);
+
+        public static readonly string ContextMenuDefaultColor = nameof(ContextMenuDefaultColor);
     }
 }

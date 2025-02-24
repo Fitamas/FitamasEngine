@@ -1,5 +1,5 @@
 ﻿using Fitamas.Math2D;
-using Fitamas.Serializeble;
+using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -23,7 +23,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public GUIScrollBar(Rectangle rectangle) : base(rectangle, 0, 1)
+        public GUIScrollBar() : base(0, 1)
         {
 
         }
