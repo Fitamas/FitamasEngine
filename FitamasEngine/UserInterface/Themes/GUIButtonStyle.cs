@@ -31,10 +31,6 @@ namespace Fitamas.UserInterface.Themes
                 CommonResourceKeys.ButtonHoverColor, CommonResourceKeys.ButtonTextHoverColor);
             style.Trigges.Add(trigger);
 
-
-
-
-
             return style;
         }
     }

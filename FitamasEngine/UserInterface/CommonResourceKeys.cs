@@ -24,7 +24,9 @@ namespace Fitamas.UserInterface
         //ItemInnerSpacing,
         //IndentSpacing,
         //CellPadding,
-        //ScrollbarSize,
+
+        public static readonly string ScrollbarSize = nameof(ScrollbarSize);
+
         //GrabMinSize,
         //TabBorderSize,
         //TabBarBorderSize,
@@ -89,11 +91,6 @@ namespace Fitamas.UserInterface
         //public static readonly string ItemTextFocusedColor = "ItemTextFocusedColor";
 
 
-        public static readonly string TextBlockStyle = nameof(TextBlockStyle);
-
-        public static readonly string TextBlockDefaultColor = nameof(TextBlockDefaultColor);
-
-
         public static readonly string CheckBoxStyle = nameof(CheckBoxStyle);
 
         public static readonly string CheckBoxDefaultColor = nameof(CheckBoxDefaultColor);
@@ -133,5 +130,38 @@ namespace Fitamas.UserInterface
         public static readonly string ContextItemStyle = nameof(ContextItemStyle);
 
         public static readonly string ContextMenuDefaultColor = nameof(ContextMenuDefaultColor);
+
+
+        public static readonly string TextBlockStyle = nameof(TextBlockStyle);
+
+        public static readonly string TextBlockDefaultColor = nameof(TextBlockDefaultColor);
+
+        
+        public static readonly string TrackBarStyle = nameof(TrackBarStyle);
+
+        public static readonly string TrackBarDefaultColor = nameof(TrackBarDefaultColor);
+
+        public static readonly string TrackBarThumbStyle = nameof(TrackBarThumbStyle);
+
+        public static readonly string TrackBarThumbDefaultColor = nameof(TrackBarThumbDefaultColor);
+
+        public static readonly string TrackBarThumbHoverColor = nameof(TrackBarThumbHoverColor);
+
+        public static readonly string TrackBarThumbPressedColor = nameof(TrackBarThumbPressedColor);
+
+        public static readonly string TrackBarThumbDisableColor = nameof(TrackBarThumbDisableColor);
+
+
+
+
+        public static readonly string SliderTrackBackgroundBrushKey = "SliderTrackBackgroundBrush";
+
+        public static readonly string SliderThumbBrushKey = "SliderThumbBrush";
+
+        public static readonly string ScrollBarThumbBackgroundKey = "ScrollBarThumbBackgroundKey";
+
+        public static readonly string ScrollBarThumbBorderBrushKey = "ScrollBarThumbBorderBrush";
+
+        public static readonly string ScrollBarThumbHoverBackgroundKey = "ScrollBarThumbHoverBackground";
     }
 }

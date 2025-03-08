@@ -1,8 +1,7 @@
-﻿using Fitamas.Serialization;
-using Fitamas.UserInterface.Themes;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -165,15 +164,15 @@ namespace Fitamas.UserInterface.Components
             Render.Begin(context.Mask);
             Render.DrawString(font, text, position, Color, Scale);
             Render.End();
+
+            base.OnDraw(gameTime, context);
         }
 
-        public int GetCaretIndexFromScreenPos(Point position) // TDOD fix caret position
+        public int GetCaretIndexFromScreenPos(Point position)
         {
-            Rectangle rectangle = Rectangle;
-
-            if (rectangle.Contains(position))
+            if (Contains(position))
             {
-                return GetCaretIndexFromLocalPos(position - rectangle.Location);
+                return GetCaretIndexFromLocalPos(ToLocal(position));
             }
 
             return Text.Length;
@@ -187,61 +186,42 @@ namespace Fitamas.UserInterface.Components
                 return 0;
             }
 
-            Vector2[] positions = GetAllCaretPositions();
-            if (positions == null || positions.Length == 0) 
-            { 
-                return 0; 
+            string text = Text;
+            if (string.IsNullOrEmpty(text))
+            {
+                return 0;
             }
 
+            Dictionary<char, SpriteFont.Glyph> glyphs = font.GetGlyphs();
+            float xPos = 0;
+            float yPos = font.MeasureString(text).Y;
             float closestXDist = float.PositiveInfinity;
             float closestYDist = float.PositiveInfinity;
             int closestIndex = -1;
-            for (int i = 0; i < positions.Length; i++)
+
+            for (int i = 0; i < text.Length; i++)
             {
-                float xDist = Math.Abs(position.X - positions[i].X);
-                float yDist = Math.Abs(position.Y - (positions[i].Y + font.MeasureString(Text).Y /*LineHeight*/ * 0.5f));
+                float xDist = Math.Abs(position.X - xPos);
+                float yDist = Math.Abs(position.Y - yPos);
                 if (yDist < closestYDist || (NearlyEqual(yDist, closestYDist) && xDist < closestXDist))
                 {
                     closestIndex = i;
                     closestXDist = xDist;
                     closestYDist = yDist;
                 }
-            }
 
-            return closestIndex >= 0 ? closestIndex : Text.Length;
-        }
-
-        public Vector2[] GetAllCaretPositions()
-        {
-            SpriteFont font = Font;
-            if (font == null)
-            {
-                return null;
-            }
-
-            string text = Text;
-            if (string.IsNullOrEmpty(text))
-            {
-                return null;
-            }
-
-            Vector2[] vectors = new Vector2[text.Length];
-
-            float xPos = 0;
-
-            for (int i = 0; i < vectors.Length; i++)
-            {
-                if (i > 0)
+                if (glyphs.TryGetValue(text[i], out SpriteFont.Glyph glyph))
                 {
-                    char c = text[i - 1];
-                    var region = font.GetGlyphs()[c].Cropping;// GetCharacterRegion(c);
-                    xPos += region != null ? region.Width : 0;
+                    xPos += glyph.WidthIncludingBearings + font.Spacing;
                 }
-
-                vectors[i] = new Vector2(xPos, font.MeasureString(text).Y/*LineHeight*/);
             }
 
-            return vectors;
+            if (Math.Abs(position.X - xPos) < closestXDist)
+            {
+                closestIndex = text.Length;
+            }
+
+            return closestIndex;
         }
 
         public bool NearlyEqual(double? value1, double? value2, double unimportantDifference = 0.0001)

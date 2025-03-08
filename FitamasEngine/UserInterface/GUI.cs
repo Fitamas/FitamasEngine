@@ -97,6 +97,7 @@ namespace Fitamas.UserInterface
             Point size = new Point(FontManager.GetHeight()) + padding + padding;
 
             GUICheckBox checkBox = new GUICheckBox();
+            checkBox.Style = style;
             checkBox.LocalPosition = position;
             checkBox.LocalSize = size;
 
@@ -108,8 +109,6 @@ namespace Fitamas.UserInterface
             checkmark.Name = GUICheckBoxStyle.CheckMark;
             checkmark.SetAlignment(GUIAlignment.Stretch);
             checkBox.AddChild(checkmark);
-
-            checkBox.Style = style;
 
             return checkBox;
         }
@@ -129,8 +128,8 @@ namespace Fitamas.UserInterface
             Point padding = style.Resources.FramePadding;
 
             GUIComboBox comboBox = new GUIComboBox(items);
-            comboBox.LocalPosition = position;
             comboBox.Style = style;
+            comboBox.LocalPosition = position;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -150,7 +149,7 @@ namespace Fitamas.UserInterface
             }
             else if (style != null)
             {
-                Point localSize = Point.Zero; //TODO fix
+                Point localSize = FontManager.GetDefaultCharacterSize(textBlock.Font);
                 foreach (var item in items)
                 {
                     localSize = textBlock.Font.MeasureString(item).ToPoint();
@@ -177,9 +176,9 @@ namespace Fitamas.UserInterface
             Point padding = style.Resources.WindowPadding;
 
             GUIContextMenu context = new GUIContextMenu();
+            context.Style = style;
             context.LocalPosition = position;
             context.Pivot = new Vector2(0, 1);
-            context.Style = style;
             context.Padding = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
 
             GUIImage image = new GUIImage();
@@ -234,11 +233,29 @@ namespace Fitamas.UserInterface
             return item;
         }
 
-        public static GUITextInput CreateTextInput(Rectangle rectangle)
+        public static GUITextInput CreateTextInput(Point position, int lenght = 0)
         {
-            GUITextInput input = new GUITextInput();
+            return CreateTextInput(ResourceDictionary.DefaultResources, position, lenght);
+        }
 
-            //input.CaretColor = GUIStyle.TextColor;
+        public static GUITextInput CreateTextInput(ResourceDictionary dictionary, Point position, int lenght = 0)
+        {
+            return CreateTextInput(dictionary[CommonResourceKeys.ButtonStyle] as GUIStyle, position, lenght);
+        }
+
+        public static GUITextInput CreateTextInput(GUIStyle style, Point position, int lenght = 0)
+        {
+            Point padding = style.Resources.FramePadding;
+            Point size = new Point(lenght, FontManager.GetHeight()) + padding + padding;
+
+            GUITextInput input = new GUITextInput();
+            input.LocalPosition = position;
+            input.LocalSize = size;
+            input.Style = style;
+
+            GUIImage image = new GUIImage();
+            image.SetAlignment(GUIAlignment.Stretch);
+            input.AddChild(image);
 
             GUITextBlock textBlock = new GUITextBlock();
             textBlock.Text = "Text";
@@ -250,92 +267,132 @@ namespace Fitamas.UserInterface
             return input;
         }
 
-        public static GUIFrame CreateFieldInput(Point scale, MonoAction<GUITextInput, string> onValueChanged = null, string name = "Text", string defoultValue = " ")
+        //public static GUIFrame CreateFieldInput(Point scale, MonoAction<GUITextInput, string> onValueChanged = null, string name = "Text", string defoultValue = " ")
+        //{
+        //    GUIFrame frame = new GUIFrame();
+        //    frame.LocalSize = scale;
+
+        //    GUITextBlock text = new GUITextBlock();
+        //    text.Text = name;
+        //    text.AutoScale = true;
+        //    text.Pivot = new Vector2(0, 0.5f);
+        //    text.VerticalAlignment = GUIVerticalAlignment.Center;
+        //    frame.AddChild(text);
+
+        //    GUITextInput input = CreateTextInput(new Rectangle());
+        //    input.OnTextChanged.AddListener(onValueChanged);
+        //    input.SetAlignment(GUIAlignment.Stretch);
+        //    input.LocalPosition = new Point(text.LocalSize.X, 0);
+        //    input.Text = defoultValue;
+        //    frame.AddChild(input);
+
+        //    GUIImage image = new GUIImage();
+        //    image.SetAlignment(GUIAlignment.Stretch);
+        //    image.LocalPosition = new Point(text.LocalSize.X, 0);
+        //    frame.AddChild(image);
+
+        //    return frame;
+        //}
+
+        public static GUISlider CreateSlider(Point position, GUISliderDirection direction = GUISliderDirection.LeftToRight, int lenght = 0)
         {
-            GUIFrame frame = new GUIFrame();
-            frame.LocalSize = scale;
+            return CreateSlider(ResourceDictionary.DefaultResources, position, direction, lenght);
+        }
 
-            GUITextBlock text = new GUITextBlock();
-            text.Text = name;
-            text.AutoScale = true;
-            text.Pivot = new Vector2(0, 0.5f);
-            text.VerticalAlignment = GUIVerticalAlignment.Center;
-            frame.AddChild(text);
+        public static GUISlider CreateSlider(ResourceDictionary dictionary, Point position, GUISliderDirection direction = GUISliderDirection.LeftToRight, int lenght = 0)
+        {
+            return CreateSlider(dictionary[CommonResourceKeys.TrackBarStyle] as GUIStyle, dictionary[CommonResourceKeys.TrackBarThumbStyle] as GUIStyle, position, direction, lenght);
+        }
 
-            GUITextInput input = CreateTextInput(new Rectangle());
-            input.OnTextChanged.AddListener(onValueChanged);
-            input.SetAlignment(GUIAlignment.Stretch);
-            input.LocalPosition = new Point(text.LocalSize.X, 0);
-            input.Text = defoultValue;
-            frame.AddChild(input);
+        public static GUISlider CreateSlider(GUIStyle sliderStyle, GUIStyle thumbStyle, Point position, GUISliderDirection direction = GUISliderDirection.LeftToRight, int lenght = 0)
+        {
+            Point padding = sliderStyle.Resources.FramePadding;
+            Point size;
+            int size1 = FontManager.GetDefaultCharacterSize().Y + padding.Y * 2;
+
+            if (direction == GUISliderDirection.LeftToRight || direction == GUISliderDirection.RightToLeft)
+            {
+                size = new Point(lenght + padding.X * 2, size1);
+            }
+            else
+            {
+                size = new Point(size1, lenght + padding.X * 2);
+            }
+
+            GUISlider slider = new GUISlider();
+            slider.Style = sliderStyle;
+            slider.LocalPosition = position;
+            slider.LocalSize = size;
+
+            GUIImage slidingArea = new GUIImage();
+            slidingArea.SetAlignment(GUIAlignment.Stretch);
+            slidingArea.Name = GUITrackBarStyle.SlidingArea;
+            slider.AddChild(slidingArea);
+
+            GUITrack track = new GUITrack();
+            track.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
+            track.SetAlignment(GUIAlignment.Stretch);
+
+            GUIThumb thumb = new GUIThumb();
+            thumb.Margin = new Thickness(-padding.X, -padding.Y, -padding.X, -padding.Y);
+            thumb.Name = GUITrackBarStyle.Thumb;
+            thumb.Style = thumbStyle;
+            thumb.SetAlignment(GUIAlignment.Stretch);
+            track.Direction = direction;
+            track.AddChild(thumb);
+            track.Thumb = thumb;
+            slider.AddChild(track);
+            slider.Track = track;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
-            image.LocalPosition = new Point(text.LocalSize.X, 0);
-            frame.AddChild(image);
+            thumb.AddChild(image);
 
-            return frame;
+            return slider;
         }
 
-        public static GUITrackBar CreateTrackBar(Rectangle rectangle)
+        public static GUIScrollRect CreateScrollRect(Point position, Point size)
         {
-            GUITrackBar trackBar = new GUITrackBar(rectangle);
-
-            GUIImage slidingArea = new GUIImage();
-            slidingArea.SetAlignment(GUIAlignment.Stretch);
-            trackBar.AddChild(slidingArea);
-            trackBar.SlidingArea = slidingArea;
-
-            GUIImage handle = new GUIImage();
-            handle.LocalSize = rectangle.Size;
-            handle.SetAlignment(GUIAlignment.Center);
-            trackBar.AddChild(handle);
-            trackBar.Handle = handle;
-
-            trackBar.HandleSize = new Point(30, 50);
-
-            return trackBar;    
+            return CreateScrollRect(ResourceDictionary.DefaultResources, position, size);
         }
 
-        public static GUIScrollBar CreateScrollBar(Rectangle rectangle)
+        public static GUIScrollRect CreateScrollRect(ResourceDictionary dictionary, Point position, Point size)
         {
-            GUIScrollBar scrollBar = new GUIScrollBar();
-
-            GUIImage slidingArea = new GUIImage();
-            slidingArea.SetAlignment(GUIAlignment.Stretch);
-            scrollBar.AddChild(slidingArea);
-            scrollBar.SlidingArea = slidingArea;
-
-            GUIImage handle = new GUIImage();
-            handle.LocalSize = rectangle.Size;
-            handle.SetAlignment(GUIAlignment.Center);
-            scrollBar.AddChild(handle);
-            scrollBar.Handle = handle;
-
-            scrollBar.HandleSize = new Point(30, 50);
-
-            return scrollBar;
+            return CreateScrollRect(dictionary[CommonResourceKeys.TrackBarStyle] as GUIStyle, dictionary[CommonResourceKeys.TrackBarThumbStyle] as GUIStyle, position, size);
         }
 
-        public static GUIScrollRect CreateScrollRect(GUIComponent content, Rectangle rectangle)
+        public static GUIScrollRect CreateScrollRect(GUIStyle sliderStyle, GUIStyle thumbStyle, Point position, Point size)
         {
-            GUIScrollRect scrollRect = new GUIScrollRect(content);
+            Point padding = sliderStyle.Resources.FramePadding;
+            int size1 = FontManager.GetDefaultCharacterSize().Y + padding.Y * 2;
 
-            GUIScrollBar horizontalScrollBar = CreateScrollBar(new Rectangle(new Point(), new Point(0, 20)));
+            GUIScrollRect scrollRect = new GUIScrollRect();
+            scrollRect.LocalPosition = position;
+            scrollRect.LocalSize = size;
+
+            GUISlider horizontalScrollBar = CreateSlider(sliderStyle, thumbStyle, new Point(), GUISliderDirection.LeftToRight);
+            horizontalScrollBar.Margin = new Thickness(0, horizontalScrollBar.Margin.Top, size1, 0);
+            horizontalScrollBar.Pivot = new Vector2(0, 0);
             horizontalScrollBar.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-            horizontalScrollBar.VerticalAlignment = GUIVerticalAlignment.Top;
-            horizontalScrollBar.Pivot = new Vector2(0, 1);
-            horizontalScrollBar.Direction = GUISliderDirection.LeftToRight;
+            horizontalScrollBar.VerticalAlignment = GUIVerticalAlignment.Bottom;
             scrollRect.AddChild(horizontalScrollBar);
-            scrollRect.HorizontalScrollBar = horizontalScrollBar;
+            scrollRect.HorizontalSlider = horizontalScrollBar;
 
-            GUIScrollBar verticalScrollBar = CreateScrollBar(new Rectangle(new Point(), new Point(0, 20)));
+            GUISlider verticalScrollBar = CreateSlider(sliderStyle, thumbStyle, new Point(), GUISliderDirection.BottomToTop);
+            verticalScrollBar.Margin = new Thickness(0, 0, horizontalScrollBar.Margin.Top, size1);
+            verticalScrollBar.Pivot = new Vector2(1, 0);
             verticalScrollBar.HorizontalAlignment = GUIHorizontalAlignment.Right;
             verticalScrollBar.VerticalAlignment = GUIVerticalAlignment.Stretch;            
-            verticalScrollBar.Pivot = new Vector2(1, 0);
-            verticalScrollBar.Direction = GUISliderDirection.TopToBottom;
             scrollRect.AddChild(verticalScrollBar);
-            scrollRect.VerticalScrollBar = verticalScrollBar;
+            scrollRect.VerticalSlider = verticalScrollBar;
+
+            GUIFrame viewport = new GUIFrame();
+            viewport.SetAlignment(GUIAlignment.Stretch);
+            viewport.IsMask = true;
+            viewport.Margin = new Thickness(0, 0, verticalScrollBar.Rectangle.Width, horizontalScrollBar.Rectangle.Height);
+            scrollRect.AddChild(viewport);
+            scrollRect.Viewport = viewport;
+            viewport.SetAsLastSibling();
 
             return scrollRect;
         }

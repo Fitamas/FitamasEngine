@@ -1,13 +1,12 @@
 ﻿using Fitamas.Math2D;
-using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
-using Microsoft.Win32;
 using System.Linq;
 
-namespace Fitamas.UserInterface
+namespace Fitamas.UserInterface.Components
 {
     public abstract class GUIComponent : DependencyObject
     {
@@ -20,6 +19,8 @@ namespace Fitamas.UserInterface
         public static readonly DependencyProperty<GUIHorizontalAlignment> HorizontalAlignmentProperty = new DependencyProperty<GUIHorizontalAlignment>(AlignmentChangedCallback, GUIHorizontalAlignment.Left, false);
 
         public static readonly DependencyProperty<GUIVerticalAlignment> VerticalAlignmentProperty = new DependencyProperty<GUIVerticalAlignment>(AlignmentChangedCallback, GUIVerticalAlignment.Bottom, false);
+
+        public static readonly DependencyProperty<bool> IsFocusedProperty = new DependencyProperty<bool>(false, false);
 
         public static readonly DependencyProperty<bool> IsMouseOverProperty = new DependencyProperty<bool>(false, false);
 
@@ -49,6 +50,7 @@ namespace Fitamas.UserInterface
         public bool RaycastTarget { get; set; }
 
         public bool IsMask { get; set; }
+        public Stack<TriggerBase> ActiveTriggers { get; set; }
 
         public Thickness Margin
         {
@@ -107,6 +109,18 @@ namespace Fitamas.UserInterface
             set
             {
                 SetValue(VerticalAlignmentProperty, value);
+            }
+        }
+
+        public bool IsFocused
+        {
+            get
+            {
+                return GetValue(IsFocusedProperty);
+            }
+            set
+            {
+                SetValue(IsFocusedProperty, value);
             }
         }
 
@@ -242,7 +256,7 @@ namespace Fitamas.UserInterface
 
                     if (parent != null)
                     {
-                        Rectangle parentRectangle = parent.Rectangle;
+                        Rectangle parentRectangle = parent.AvailableRectangle();
                         Point parentPosition = parentRectangle.Location;
                         Point parentSize = parentRectangle.Size;    
                         Point position = new Point();
@@ -310,6 +324,35 @@ namespace Fitamas.UserInterface
             Name = "Component";
             RaycastTarget = false;
             isDirty = true;
+            ActiveTriggers = new Stack<TriggerBase>();
+        }
+
+        public void Focus()
+        {
+            system.Focused = this;
+            IsFocused = true;
+            OnFocus();
+        }
+
+        protected virtual void OnFocus()
+        {
+
+        }
+
+        public void Unfocus()
+        {
+            IsFocused = false;
+            OnUnfocus();
+        }
+
+        protected virtual void OnUnfocus()
+        {
+
+        }
+
+        protected virtual Rectangle AvailableRectangle()
+        {
+            return Rectangle;
         }
 
         protected void SetDirty()
@@ -336,6 +379,8 @@ namespace Fitamas.UserInterface
                                 
                 component.Init(System);
                 component.Parent = this;
+                
+                Style?.ApplySetters(this);
 
                 OnAddChild(component);
             }
@@ -412,6 +457,11 @@ namespace Fitamas.UserInterface
 
         public GUIComponent GetComponentFromName(string name, bool recursion = true)
         {
+            if (Name == name)
+            {
+                return this;
+            }
+
             foreach (var component in childrensComponent)
             {
                 if (component.Name == name)
@@ -506,16 +556,19 @@ namespace Fitamas.UserInterface
                 visibleRectangle = Rectangle.Intersect(Rectangle, context.Mask);
 
                 OnDraw(gameTime, context);
+            }
+        }
 
-                if (IsMask)
-                {
-                    context.SetMask(visibleRectangle);
-                }
+        protected virtual void OnDraw(GameTime gameTime, GUIContextRender context)
+        {
+            if (IsMask)
+            {
+                context.SetMask(visibleRectangle);
+            }
 
-                foreach (var component in childrensComponent)
-                {
-                    component.Draw(gameTime, context);
-                }
+            foreach (var component in childrensComponent)
+            {
+                component.Draw(gameTime, context);
             }
         }
 
@@ -550,8 +603,6 @@ namespace Fitamas.UserInterface
         protected virtual void OnChildSizeChanged(GUIComponent component) { }
 
         protected virtual void OnUpdate(GameTime gameTime) { }
-
-        protected virtual void OnDraw(GameTime gameTime, GUIContextRender context) { }
 
         protected virtual void OnDestroy() { }
 

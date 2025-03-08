@@ -16,17 +16,6 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.ButtonTextPressedColor] = Color.White;
             dictionary[CommonResourceKeys.ButtonTextDisableColor] = Color.Black;
 
-            dictionary[CommonResourceKeys.ItemDefaultColor] = Color.White;
-            dictionary[CommonResourceKeys.ItemHoverColor] = Color.DeepSkyBlue;
-            dictionary[CommonResourceKeys.ItemPressedColor] = Color.LightSkyBlue;
-            dictionary[CommonResourceKeys.ItemDisableColor] = new Color(0.75f, 0.75f, 0.75f);
-            dictionary[CommonResourceKeys.ItemTextDefaultColor] = Color.Black;
-            dictionary[CommonResourceKeys.ItemTextHoverColor] = Color.White;
-            dictionary[CommonResourceKeys.ItemTextPressedColor] = Color.White;
-            dictionary[CommonResourceKeys.ItemTextDisableColor] = Color.Black;
-
-            dictionary[CommonResourceKeys.TextBlockDefaultColor] = Color.Black;
-
             dictionary[CommonResourceKeys.CheckBoxDefaultColor] = Color.White;
             dictionary[CommonResourceKeys.CheckBoxHoverColor] = Color.DeepSkyBlue;
             dictionary[CommonResourceKeys.CheckBoxPressedColor] = Color.LightSkyBlue;
@@ -40,7 +29,24 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.ComboBoxTextHoverColor] = Color.White;
             dictionary[CommonResourceKeys.ComboBoxTextDisableColor] = Color.Black;
 
+            dictionary[CommonResourceKeys.ItemDefaultColor] = Color.White;
+            dictionary[CommonResourceKeys.ItemHoverColor] = Color.DeepSkyBlue;
+            dictionary[CommonResourceKeys.ItemPressedColor] = Color.LightSkyBlue;
+            dictionary[CommonResourceKeys.ItemDisableColor] = new Color(0.75f, 0.75f, 0.75f);
+            dictionary[CommonResourceKeys.ItemTextDefaultColor] = Color.Black;
+            dictionary[CommonResourceKeys.ItemTextHoverColor] = Color.White;
+            dictionary[CommonResourceKeys.ItemTextPressedColor] = Color.White;
+            dictionary[CommonResourceKeys.ItemTextDisableColor] = Color.Black;
+
             dictionary[CommonResourceKeys.ContextMenuDefaultColor] = Color.LightGray;
+
+            dictionary[CommonResourceKeys.TextBlockDefaultColor] = Color.Black;
+
+            dictionary[CommonResourceKeys.TrackBarDefaultColor] = new Color(0.75f, 0.75f, 0.75f);
+            dictionary[CommonResourceKeys.TrackBarThumbDefaultColor] = Color.White;
+            dictionary[CommonResourceKeys.TrackBarThumbDisableColor] = new Color(0.75f, 0.75f, 0.75f);
+            dictionary[CommonResourceKeys.TrackBarThumbHoverColor] = Color.DeepSkyBlue;
+            dictionary[CommonResourceKeys.TrackBarThumbPressedColor] = Color.LightSkyBlue;
         }
     }
 }

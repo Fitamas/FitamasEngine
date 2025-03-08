@@ -20,5 +20,7 @@ namespace Fitamas.UserInterface
         public Point WindowPadding => (Point)this[CommonResourceKeys.WindowPadding];
 
         public Point FramePadding => (Point)this[CommonResourceKeys.FramePadding];
+
+        public int ScrollbarSize => (int)this[CommonResourceKeys.ScrollbarSize];
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Fitamas.UserInterface.Components;
 
 namespace Fitamas.UserInterface
 {
@@ -45,6 +46,7 @@ namespace Fitamas.UserInterface
         {
             if (IsActive(component))
             {
+                component.ActiveTriggers.Push(this); //AddToFront(this);
                 ProcessSettersCollection(component);
             }
         }

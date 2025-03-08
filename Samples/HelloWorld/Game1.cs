@@ -76,6 +76,29 @@ namespace Fitamas.Samples.HelloWorld
             group.AddChild(GUI.CreateButton(Point.Zero, "D"));
             group.AddChild(GUI.CreateButton(Point.Zero, "E"));
 
+            GUISlider slider = GUI.CreateSlider(new Point(50, -300), GUISliderDirection.BottomToTop, lenght: 200);
+            slider.Pivot = new Vector2(0, 1);
+            slider.SetAlignment(GUIAlignment.LeftTop);
+            slider.Track.OnValueChanged.AddListener((s, v) => { Debug.Log(v); });
+            slider.Track.MaxValue = 10;
+            slider.WholeNumbers = true;
+            system.AddComponent(slider);
+
+            GUIImage image = new GUIImage();
+            image.LocalSize = new Point(600, 600);
+
+            GUIScrollRect rect = GUI.CreateScrollRect(new Point(50, -550), new Point(400, 400));
+            rect.Pivot = new Vector2(0, 1);
+            rect.SetAlignment(GUIAlignment.LeftTop);
+            rect.Viewport.AddChild(image);
+            rect.Content = image;
+            system.AddComponent(rect);
+
+            GUITextInput input = GUI.CreateTextInput(new Point(500, -50), 200);
+            input.Pivot = new Vector2(0, 1);
+            input.SetAlignment(GUIAlignment.LeftTop);
+            system.AddComponent(input);
+
             InputSystem.mouse.MouseUp += (s, e) =>
             {
                 if (e.Button == MouseButton.Right)

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Fitamas.UserInterface.Components;
 
 namespace Fitamas.UserInterface
 {
@@ -28,12 +26,12 @@ namespace Fitamas.UserInterface
             return false;
         }
 
-        internal override bool IsActive(GUIComponent element)
+        internal override bool IsActive(GUIComponent component)
         {
             bool flag = true;
             foreach (TriggerCondition condition in Conditions)
             {
-                if (!Equals(element.GetValue(condition.Property), condition.Value))
+                if (!Equals(component.GetValue(condition.Property), condition.Value))
                 {
                     flag = false;
                 }
@@ -42,11 +40,12 @@ namespace Fitamas.UserInterface
             return flag;
         }
 
-        internal override void CheckState(GUIComponent element)
+        internal override void CheckState(GUIComponent component)
         {
-            if (IsActive(element))
+            if (IsActive(component))
             {
-                ProcessSettersCollection(element);
+                component.ActiveTriggers.Push(this);// AddToFront(this);
+                ProcessSettersCollection(component);
             }
         }
     }

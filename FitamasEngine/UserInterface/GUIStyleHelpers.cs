@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Fitamas.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Fitamas.UserInterface.Components;
 
 namespace Fitamas.UserInterface
 {
@@ -23,67 +26,76 @@ namespace Fitamas.UserInterface
 
         internal static void UpdateTriggers(GUIComponent component, List<TriggerBase> triggers)
         {
+            List<TriggerBase> list = new List<TriggerBase>(1);
             foreach (TriggerBase item in triggers)
             {
+                list.Add(item);
                 if (item is Trigger trigger)
                 {
-                    ProcessTrigger(component, trigger.Property, trigger);
+                    ProcessTriggers(component, trigger.Property, list);
                 }
 
                 if (item is MultiTrigger multiTrigger)
                 {
                     foreach (var condition in multiTrigger.Conditions)
                     {
-                        ProcessTrigger(component, condition.Property, multiTrigger);
+                        ProcessTriggers(component, condition.Property, list);
                     }
                 }
+                list.Clear();
             }
         }
 
         internal static void ProcessTriggers(GUIComponent component, DependencyProperty property, List<TriggerBase> triggers)
         {
-            List<TriggerBase> activeTriggers = new List<TriggerBase>();
-            List<TriggerBase> activeTriggers1 = new List<TriggerBase>();
-
-            foreach (TriggerBase trigger in triggers)
+            foreach (TriggerBase item in triggers)
             {
-                if (trigger.IsActive(component))
+                if (item.HasPropertyCondition(property) && !component.ActiveTriggers.Contains(item))
                 {
-                    if (trigger.HasPropertyCondition(property))
-                    {
-                        activeTriggers.Add(trigger);
-                    }
-                    else
-                    {
-                        activeTriggers1.Add(trigger);
-                    }
+                    item.CheckState(component);
+                }
+            }
+
+            if (component.ActiveTriggers.Count <= 0)
+            {
+                return;
+            }
+
+            if (component.ActiveTriggers.Peek().HasPropertyCondition(property))
+            {
+                while (component.ActiveTriggers.Count > 0 && !component.ActiveTriggers.Peek().IsActive(component))
+                {
+                    component.ActiveTriggers.Pop().RestorePropertyValues(component);
                 }
 
-                trigger.RestorePropertyValues(component);
+                return;
             }
 
-            foreach (TriggerBase trigger in activeTriggers1)
+            TriggerBase triggerBase = null;
+            foreach (TriggerBase activeTrigger in component.ActiveTriggers)
             {
-                trigger.CheckState(component);
-            }
-
-            foreach (TriggerBase trigger in activeTriggers)
-            {
-                trigger.CheckState(component);
-            }
-        }
-
-        internal static void ProcessTrigger(GUIComponent component, DependencyProperty property, TriggerBase trigger)
-        {
-            if (trigger.HasPropertyCondition(property))
-            {
-                if (trigger.IsActive(component))
+                if (activeTrigger.HasPropertyCondition(property))
                 {
-                    trigger.CheckState(component);
+                    triggerBase = activeTrigger;
+                    break;
                 }
-                else
+            }
+
+            if (triggerBase != null && !triggerBase.IsActive(component))
+            {
+                List<TriggerBase> list = new List<TriggerBase>();
+                while (component.ActiveTriggers.Count > 0 && component.ActiveTriggers.Peek() != triggerBase)
                 {
-                    trigger.RestorePropertyValues(component);
+                    TriggerBase triggerBase2 = component.ActiveTriggers.Pop();
+                    list.Add(triggerBase2);
+                    triggerBase2.RestorePropertyValues(component);
+                }
+
+                triggerBase = component.ActiveTriggers.Pop();
+                triggerBase.RestorePropertyValues(component);
+                foreach (var item in list)
+                {
+                    item.CheckState(component);
                 }
             }
         }

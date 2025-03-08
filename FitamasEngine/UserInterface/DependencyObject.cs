@@ -90,9 +90,12 @@ namespace Fitamas.UserInterface
                     if (!valueExpression.IsFrozen)
                     {
                         T oldValue = valueExpression.CurrentValue;
-                        valueExpression.CurrentValue = value;
-                        property.PropertyChangedCallback?.Invoke(this, property, oldValue, value);
-                        OnPropertyChanged(property);
+                        if (!oldValue.Equals(value))
+                        {
+                            valueExpression.CurrentValue = value;
+                            property.PropertyChangedCallback?.Invoke(this, property, oldValue, value);
+                            OnPropertyChanged(property);
+                        }
                         return;
                     }
                 }
@@ -105,6 +108,11 @@ namespace Fitamas.UserInterface
         }
 
         public virtual void OnPropertyChanged<T>(DependencyProperty<T> property) { }
+
+        public bool ContainsProperty(DependencyProperty property)
+        {
+            return expressionMap.ContainsKey(property.Id);
+        }
 
         public Expression GetExpression(DependencyProperty property)
         {

@@ -67,6 +67,8 @@ namespace Fitamas.UserInterface.Components
             }
 
             Render.End();
+
+            base.OnDraw(gameTime, context);
         }
 
         private void DrawLine(Point lastAnchor, Point currentAnchor, Point position, Color color, int thickness)

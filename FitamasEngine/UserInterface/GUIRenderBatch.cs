@@ -70,7 +70,7 @@ namespace Fitamas.UserInterface
 
         public void FillRectangle(Point position, Point scale, Color color)
         {
-            Rectangle rectangle = Transform(new Rectangle(position, scale));
+            Rectangle rectangle = new Rectangle(position, scale);
 
             Draw(Texture2DHelper.DefaultTexture, rectangle, color);
         }

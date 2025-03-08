@@ -1,5 +1,4 @@
-﻿using Assimp;
-using Fitamas.Container;
+﻿using Fitamas.Container;
 using Fitamas.Entities;
 using Fitamas.Extended.Entities;
 using Fitamas.Input;
@@ -26,26 +25,37 @@ namespace Fitamas.UserInterface
         private GUIDebug debug;
         private GUIRoot root;
         private GUIScripting scripting;
+        private GUIComponent focused;
 
-        public GUIComponent Focused { get; set; }
-        public GUIComponent OnMouse { get; set; }
-
-        private List<IMouseEvent> clickedMouse = new List<IMouseEvent>();
+        private List<IKeyboardEvent> keyboard = new List<IKeyboardEvent>();
+        private List<IMouseEvent> mouse = new List<IMouseEvent>();
         private List<IDragMouseEvent> dragMouse = new List<IDragMouseEvent>();
 
         public bool IsFocused => Focused != null;
+        public bool MouseOnGUI => OnMouse != null;
         public GraphicsDevice GraphicsDevice => graphics;
         public GUIRenderBatch Render => render;
         public DIContainer Container => container;
         public GUIRoot Root => root;
 
-        public bool MouseOnGUI
-        {
+        public GUIComponent Focused 
+        { 
             get
             {
-                return OnMouse != null;
+                return focused;
+            }
+            set
+            {
+                if (focused != value)
+                {
+                    focused?.Unfocus();
+                    focused = value;
+                    focused?.Focus();
+                }
             }
         }
+
+        public GUIComponent OnMouse { get; set; }
 
         public GUISystem(GraphicsDevice graphicsDevice, DIContainer container)
         {
@@ -70,33 +80,42 @@ namespace Fitamas.UserInterface
         {
             InputSystem.keyboard.KeyTyped += (s, e) =>
             {
-                //keyboardSubscriber?.OnKeyDown(e);
+                foreach (var typed in keyboard.ToList())
+                {
+                    typed.OnKeyDown(e);
+                }
             };
             InputSystem.keyboard.KeyReleased += (s, e) =>
             {
-                //keyboardSubscriber?.OnKeyUP(e);
+                foreach (var released in keyboard.ToList())
+                {
+                    released.OnKeyUP(e);
+                }
             };
             InputSystem.keyboard.KeyPressed += (s, e) =>
             {
-                //keyboardSubscriber?.OnKey(e);
+                foreach (var pressed in keyboard.ToList())
+                {
+                    pressed.OnKey(e);
+                }
             };
             InputSystem.mouse.MouseDown += (s, e) =>
             {
-                foreach (var clicked in clickedMouse.ToList())
+                foreach (var clicked in mouse.ToList())
                 {
                     clicked.OnClickedMouse(e);
                 }
             };
             InputSystem.mouse.MouseUp += (s, e) =>
             {
-                foreach (var release in clickedMouse.ToList())
+                foreach (var release in mouse.ToList())
                 {
                     release.OnReleaseMouse(e);
                 }
             };
             InputSystem.mouse.MouseWheelMoved += (s, e) =>
             {
-                foreach (var scroll in clickedMouse.ToList())
+                foreach (var scroll in mouse.ToList())
                 {
                     scroll.OnScrollMouse(e);
                 }
@@ -181,9 +200,14 @@ namespace Fitamas.UserInterface
 
         public void SubscribeInput(GUIComponent component)
         {
+            if (component is IKeyboardEvent key)
+            {
+                keyboard.Add(key);
+            }
+
             if (component is IMouseEvent clicked)
             {
-                clickedMouse.Add(clicked);
+                mouse.Add(clicked);
             }
 
             if (component is IDragMouseEvent drag)
@@ -194,9 +218,14 @@ namespace Fitamas.UserInterface
 
         public void UnsubscribeInput(GUIComponent component)
         {
+            if (component is IKeyboardEvent key)
+            {
+                keyboard.Remove(key);
+            }
+
             if (component is IMouseEvent clicked)
             {
-                clickedMouse.Remove(clicked);
+                mouse.Remove(clicked);
             }
 
             if (component is IDragMouseEvent drag)

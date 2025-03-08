@@ -1,4 +1,5 @@
 ﻿using Fitamas.Events;
+using Fitamas.UserInterface.Components;
 using System;
 
 namespace Fitamas.UserInterface

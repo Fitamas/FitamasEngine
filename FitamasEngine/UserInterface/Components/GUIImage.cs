@@ -206,6 +206,8 @@ namespace Fitamas.UserInterface.Components
             }
 
             Render.End();
+
+            base.OnDraw(gameTime, context);
         }
 
         private Rectangle GetImageRactengle(Rectangle source, Rectangle destination)

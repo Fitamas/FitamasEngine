@@ -9,7 +9,7 @@ namespace Fitamas.UserInterface.Components
 
         public void OnClickedMouse(MouseEventArgs mouse)
         {
-            if (!Contains(mouse.Position)) //TODO fix
+            if (!Contains(mouse.Position))
             {
                 Close();
             }

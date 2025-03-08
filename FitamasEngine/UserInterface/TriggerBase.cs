@@ -1,6 +1,7 @@
 ﻿using Fitamas.UserInterface.Themes;
 using System;
 using System.Collections.Generic;
+using Fitamas.UserInterface.Components;
 
 namespace Fitamas.UserInterface
 {
@@ -56,21 +57,15 @@ namespace Fitamas.UserInterface
 
             foreach (Setter setter in Setters)
             {
-                GUIComponent component1;
-
+                GUIComponent component1 = component;
                 if (!string.IsNullOrEmpty(setter.TargetName))
                 {
                     component1 = component.GetComponentFromName(setter.TargetName, false);
                 }
-                else
-                {
-                    component1 = component;
-                }
 
                 if (component1 != null)
                 {
-                    Store store = new Store(component1, setter.Property, component1.GetExpression(setter.Property));
-                    properies.Add(store);
+                    properies.Add(new Store(component1, setter.Property, component1.GetExpression(setter.Property)));
                     component1.SetExpression(setter.Property, setter.Expression);
                 }
             }

@@ -1,10 +1,11 @@
 ﻿using Fitamas.Input.InputListeners;
+using Fitamas.Math2D;
 
 namespace Fitamas.UserInterface.Components
 {
     public class GUICheckBox : GUIButton
     {
-        public static readonly DependencyProperty<bool> ValueProperty = new DependencyProperty<bool>();
+        public static readonly DependencyProperty<bool> ValueProperty = new DependencyProperty<bool>(ValueChangedCallback, false, false);
 
         public static readonly RoutedEvent OnValueChangedEvent = new RoutedEvent();
 
@@ -18,11 +19,7 @@ namespace Fitamas.UserInterface.Components
             }
             set
             {
-                if (this.Value != value)
-                {
-                    SetValue(ValueProperty, value);
-                    OnValueChanged?.Invoke(this, value);
-                }
+                SetValue(ValueProperty, value);
             }
         }
 
@@ -34,6 +31,17 @@ namespace Fitamas.UserInterface.Components
         protected override void OnClickedButton(MouseEventArgs mouse)
         {
             Value = !Value;
+        }
+
+        private static void ValueChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (oldValue != newValue)
+            {
+                if (dependencyObject is GUICheckBox checkBox)
+                {
+                    checkBox.OnValueChanged.Invoke(checkBox, newValue);
+                }
+            }
         }
     }
 }

@@ -82,12 +82,6 @@ namespace Fitamas.UserInterface.Components
                 GUIContextMenu menu = GUI.CreateContextMenu(Rectangle.Location);
                 menu.OnSelectItem.AddListener(SelectItem);
                 menu.SetFixedWidth(LocalSize.X);
-                //if (menu.Content is GUIStack stack)
-                //{
-                //    Thickness thickness = menu.Padding;
-                //    stack.ControlSizeWidth = false;
-                //    stack.LocalSize = LocalSize - new Point(thickness.Left + thickness.Right, thickness.Bottom + thickness.Top);
-                //}
 
                 for (int i = 0; i < items.Length; i++)
                 {
