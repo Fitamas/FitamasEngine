@@ -142,7 +142,7 @@ namespace Fitamas.UserInterface.Components
                 }
 
                 Vector2 pivot = component.Pivot;
-                Point localPosition = new Point((int)(size.X * pivot.X), - (int)(size.Y * pivot.Y));
+                Point localPosition = new Point((int)(size.X * pivot.X), (int)(size.Y * pivot.Y));
                 component.LocalSize = size;
                 component.LocalPosition = position + localPosition;
 
@@ -152,7 +152,7 @@ namespace Fitamas.UserInterface.Components
                 }
                 else
                 {
-                    position += new Point(0, - size.Y - spacing);
+                    position += new Point(0, size.Y + spacing);
                 }
             }
         }

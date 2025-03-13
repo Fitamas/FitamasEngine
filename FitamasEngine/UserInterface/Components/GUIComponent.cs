@@ -18,7 +18,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<GUIHorizontalAlignment> HorizontalAlignmentProperty = new DependencyProperty<GUIHorizontalAlignment>(AlignmentChangedCallback, GUIHorizontalAlignment.Left, false);
 
-        public static readonly DependencyProperty<GUIVerticalAlignment> VerticalAlignmentProperty = new DependencyProperty<GUIVerticalAlignment>(AlignmentChangedCallback, GUIVerticalAlignment.Bottom, false);
+        public static readonly DependencyProperty<GUIVerticalAlignment> VerticalAlignmentProperty = new DependencyProperty<GUIVerticalAlignment>(AlignmentChangedCallback, GUIVerticalAlignment.Top, false);
 
         public static readonly DependencyProperty<bool> IsFocusedProperty = new DependencyProperty<bool>(false, false);
 
@@ -182,15 +182,15 @@ namespace Fitamas.UserInterface.Components
             get
             {
                 Thickness thickness = Margin;
-                return new Point(thickness.Left, thickness.Bottom);
+                return new Point(thickness.Left, thickness.Top);
             }
             set
             {
                 Thickness thickness = Margin;
-                if (thickness.Left != value.X || thickness.Bottom != value.Y)
+                if (thickness.Left != value.X || thickness.Top != value.Y)
                 {
                     thickness.Left = value.X;
-                    thickness.Bottom = value.Y;
+                    thickness.Top = value.Y;
                     Margin = thickness;
                 }
             }
@@ -203,17 +203,17 @@ namespace Fitamas.UserInterface.Components
                 Thickness thickness = Margin;
                 Point size;
                 size.X = HorizontalAlignment != GUIHorizontalAlignment.Stretch ? thickness.Right : 0;
-                size.Y = VerticalAlignment != GUIVerticalAlignment.Stretch ? thickness.Top : 0;
+                size.Y = VerticalAlignment != GUIVerticalAlignment.Stretch ? thickness.Bottom : 0;
                 return size;
             }
             set
             {
                 Thickness thickness = Margin;
 
-                if (thickness.Right != value.X || thickness.Top != value.Y)
+                if (thickness.Right != value.X || thickness.Bottom != value.Y)
                 {
                     thickness.Right = HorizontalAlignment != GUIHorizontalAlignment.Stretch ? value.X : 0;
-                    thickness.Top = VerticalAlignment != GUIVerticalAlignment.Stretch ?  value.Y : 0;
+                    thickness.Bottom = VerticalAlignment != GUIVerticalAlignment.Stretch ?  value.Y : 0;
                     Margin = thickness;
                 }
             }
@@ -260,7 +260,7 @@ namespace Fitamas.UserInterface.Components
                         Point parentPosition = parentRectangle.Location;
                         Point parentSize = parentRectangle.Size;    
                         Point position = new Point();
-                        Point size = new Point(thickness.Right, thickness.Top);
+                        Point size = new Point(thickness.Right, thickness.Bottom);
                         Vector2 pivot = Pivot;
                         int pivotX = (int)(size.X * pivot.X);
                         int pivotY = (int)(size.Y * pivot.Y);
@@ -287,19 +287,19 @@ namespace Fitamas.UserInterface.Components
                         GUIVerticalAlignment verticalAlignment = VerticalAlignment;
                         if (verticalAlignment == GUIVerticalAlignment.Bottom)
                         {
-                            position.Y = parentPosition.Y + thickness.Bottom - pivotY;
+                            position.Y = parentPosition.Y + thickness.Top + parentSize.Y - pivotY;
                         }
                         else if (verticalAlignment == GUIVerticalAlignment.Center)
                         {
-                            position.Y = parentPosition.Y + thickness.Bottom + parentSize.Y / 2 - pivotY;
+                            position.Y = parentPosition.Y + thickness.Top + parentSize.Y / 2 - pivotY;
                         }
                         else if (verticalAlignment == GUIVerticalAlignment.Top)
                         {
-                            position.Y = parentPosition.Y + thickness.Bottom + parentSize.Y - pivotY;
+                            position.Y = parentPosition.Y + thickness.Top - pivotY;
                         }
                         else if (verticalAlignment == GUIVerticalAlignment.Stretch)
                         {
-                            position.Y = parentPosition.Y + thickness.Bottom;
+                            position.Y = parentPosition.Y + thickness.Top;
                             size.Y = parentSize.Y - thickness.Bottom - thickness.Top;
                         }
 
@@ -307,7 +307,7 @@ namespace Fitamas.UserInterface.Components
                     }
                     else
                     {
-                        absoluteRectangle = new Rectangle(thickness.Left, thickness.Bottom, thickness.Right, thickness.Top);
+                        absoluteRectangle = new Rectangle(thickness.Left, thickness.Top, thickness.Right, thickness.Bottom);
                     }
 
                     isDirty = false;                   
@@ -555,17 +555,17 @@ namespace Fitamas.UserInterface.Components
             {
                 visibleRectangle = Rectangle.Intersect(Rectangle, context.Mask);
 
+                if (IsMask)
+                {
+                    context.SetMask(visibleRectangle);
+                }
+
                 OnDraw(gameTime, context);
             }
         }
 
         protected virtual void OnDraw(GameTime gameTime, GUIContextRender context)
         {
-            if (IsMask)
-            {
-                context.SetMask(visibleRectangle);
-            }
-
             foreach (var component in childrensComponent)
             {
                 component.Draw(gameTime, context);
@@ -621,12 +621,12 @@ namespace Fitamas.UserInterface.Components
             {
                 component.SetDirty();
 
-                if (oldValue.Left != newValue.Left || oldValue.Bottom != newValue.Bottom)
+                if (oldValue.Left != newValue.Left || oldValue.Top != newValue.Top)
                 {
                     component.parent?.OnChildPositionChanged(component);
                 }
 
-                if (oldValue.Right != newValue.Right || oldValue.Top != newValue.Top)
+                if (oldValue.Right != newValue.Right || oldValue.Bottom != newValue.Bottom)
                 {
                     component.parent?.OnChildSizeChanged(component);
                 }

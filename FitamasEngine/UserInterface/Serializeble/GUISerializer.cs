@@ -200,7 +200,7 @@ namespace Fitamas.UserInterface.Serializeble
             ////text = text.Replace(@"\n", "\n");
             GUITextBlock textBlock = GUI.CreateTextBlock(Point.Zero, text);
 
-            textBlock.TextAligment = element.GetAttributeEnum<GUITextAligment>("textAligment");
+            textBlock.TextHorisontalAlignment = element.GetAttributeEnum<GUITextHorisontalAlignment>("textHorisontalAlignment");
             textBlock.Scale = element.GetAttributeFloat("scale", 1.0f);
             textBlock.AutoScale = element.GetAttributeBool("autoScale");
 

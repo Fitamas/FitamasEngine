@@ -136,13 +136,13 @@ namespace Fitamas.Graphics
                 Matrix.CreateTranslation(new Vector3(Origin, 0.0f));
         }
 
-        public static Matrix GetProjectionMatrix()
+        public Matrix GetProjectionMatrix()
         {
-            Vector2 viewportSize = Current.ViewportSize;
+            Vector2 viewportSize = ViewportSize;
             return Matrix.CreateOrthographicOffCenter(0, viewportSize.X, viewportSize.Y, 0, -1, 0);
         }
 
-        public static Matrix GetProjectionMatrix(Matrix viewMatrix)
+        public Matrix GetProjectionMatrix(Matrix viewMatrix)
         {
             var projection = GetProjectionMatrix();
             Matrix.Multiply(ref viewMatrix, ref projection, out Matrix result);

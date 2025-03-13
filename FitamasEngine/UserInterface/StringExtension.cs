@@ -1,4 +1,5 @@
-﻿using Fitamas.Events;
+﻿using Assimp;
+using Fitamas.Events;
 using System;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
@@ -7,7 +8,7 @@ namespace Fitamas.UserInterface
 {
     public static class StringExtension
     {
-        public static int ConvertToInt(this string input) //TODO fix
+        public static int ConvertToInt(this string input)
         {
             input = Regex.Replace(input, "[^0-9-]", "");
 
@@ -21,7 +22,7 @@ namespace Fitamas.UserInterface
             return 0;
         }
 
-        public static float ConvertToFloat(this string input) //TODO fix
+        public static float ConvertToFloat(this string input)
         {
             input = Regex.Replace(input, "[^0-9.-]", "");
 
@@ -58,6 +59,86 @@ namespace Fitamas.UserInterface
             }
 
             return input;
+        }
+
+        public static int CountOf(this string input, char countChar)
+        {
+            return input.CountOf(countChar, 0, input.Length);
+        }
+
+        public static int CountOf(this string input, char countChar, int indexFrom)
+        {
+            return input.CountOf(countChar, indexFrom, input.Length - indexFrom);
+        }
+
+        public static int CountOf(this string input, char countChar, int indexFrom, int lenght)
+        {
+            if (indexFrom + lenght > input.Length)
+            {
+                throw new Exception();
+            }
+            
+            int count = 0;
+            for (int i = indexFrom; i < lenght; i++)
+            {
+                if (input[i] == countChar)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public static int FirstIndexOfLine(this string input, int lineIndex)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return -1;
+            }
+
+            if (lineIndex == 0)
+            {
+                return 0;
+            }
+
+            char nextLine = '\n';
+            int count = 0;
+            int result = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (nextLine == input[i])
+                {
+                    count++;
+                    result = i + 1;
+
+                    if (count == lineIndex)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public static string SubstringLine(this string input, int startIndex)
+        {
+            char nextLine = '\n';
+            int num = input.IndexOf(nextLine, startIndex);
+
+            if (input.Length == startIndex)
+            {
+                return "";
+            }
+            else if (num != -1)
+            {
+                return input.Substring(startIndex, num - startIndex);
+            }
+            else
+            {
+                return input;
+            }
         }
     }
 }

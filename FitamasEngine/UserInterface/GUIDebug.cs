@@ -27,7 +27,7 @@ namespace Fitamas.UserInterface
         public void Render(GUIComponent component)
         {
             Matrix view = Camera.Main.ViewportScaleMatrix;
-            Matrix projection = Camera.GetProjectionMatrix();
+            Matrix projection = Camera.Current.GetProjectionMatrix();
 
             primitiveBatch.Begin(ref projection, ref view);
 
@@ -41,15 +41,15 @@ namespace Fitamas.UserInterface
             Color color = component.Enable ? EnableColor : DisableColor;
             Rectangle rectangle = component.Rectangle;
             Vector2 pivot = component.Pivot;
-            Vector2 position = new Vector2(rectangle.X, (int)Camera.Current.VirtualSize.Y - rectangle.Y);
-            primitiveDrawing.DrawRectangle(position - new Vector2(0, rectangle.Height), rectangle.Width, rectangle.Height, Color.Blue);
+            Vector2 position = new Vector2(rectangle.X, rectangle.Y);
+            primitiveDrawing.DrawRectangle(position, rectangle.Width, rectangle.Height, Color.Blue);
+
+            Vector2 centerPosition = position + new Vector2(rectangle.Width * pivot.X, rectangle.Height * pivot.Y);
+            primitiveDrawing.DrawSolidCircle(centerPosition, centerScale, color);
 
             Rectangle rectangle1 = component.VisibleRectangle;
-            Vector2 position1 = new Vector2(rectangle1.X, (int)Camera.Current.VirtualSize.Y - rectangle1.Y);
-            primitiveDrawing.DrawRectangle(position1 - new Vector2(0, rectangle1.Height), rectangle1.Width, rectangle1.Height, color);
-
-            Vector2 centerPosition = position + new Vector2(rectangle.Width * pivot.X, -rectangle.Height * pivot.Y);
-            primitiveDrawing.DrawSolidCircle(centerPosition, centerScale, color);
+            Vector2 position1 = new Vector2(rectangle1.X, rectangle1.Y);
+            primitiveDrawing.DrawRectangle(position1, rectangle1.Width, rectangle1.Height, color);
 
             foreach (var child in component.ChildrensComponent)
             {

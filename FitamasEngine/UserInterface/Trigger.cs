@@ -46,7 +46,7 @@ namespace Fitamas.UserInterface
         {
             if (IsActive(component))
             {
-                component.ActiveTriggers.Push(this); //AddToFront(this);
+                component.ActiveTriggers.Push(this);
                 ProcessSettersCollection(component);
             }
         }

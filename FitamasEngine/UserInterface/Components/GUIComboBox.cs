@@ -79,7 +79,7 @@ namespace Fitamas.UserInterface.Components
             {
                 dictionary = new Dictionary<GUIContextItem, int>();
 
-                GUIContextMenu menu = GUI.CreateContextMenu(Rectangle.Location);
+                GUIContextMenu menu = GUI.CreateContextMenu(new Point(Rectangle.Left, Rectangle.Bottom));
                 menu.OnSelectItem.AddListener(SelectItem);
                 menu.SetFixedWidth(LocalSize.X);
 

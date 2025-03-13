@@ -1,11 +1,9 @@
-﻿using Fitamas.Events;
-using Fitamas.Graphics;
-using Fitamas.Input;
+﻿using Fitamas.Graphics;
 using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using Fitamas.UserInterface.Components.NodeEditor;
 
 namespace Fitamas.UserInterface
 {
@@ -42,7 +40,7 @@ namespace Fitamas.UserInterface
 
             GUITextBlock textBlock = new GUITextBlock();
             textBlock.Text = text;
-            textBlock.TextAligment = GUITextAligment.Middle;
+            textBlock.TextHorisontalAlignment = GUITextHorisontalAlignment.Middle;
             textBlock.SetAlignment(GUIAlignment.Center);
             button.AddChild(textBlock);
 
@@ -136,9 +134,8 @@ namespace Fitamas.UserInterface
             comboBox.AddChild(image);
 
             GUITextBlock textBlock = new GUITextBlock();
-            textBlock.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-            textBlock.VerticalAlignment = GUIVerticalAlignment.Stretch;
-            textBlock.TextAligment = GUITextAligment.Left;
+            textBlock.SetAlignment(GUIAlignment.Stretch);
+            textBlock.TextHorisontalAlignment = GUITextHorisontalAlignment.Left;
             textBlock.AutoScale = false;
             textBlock.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
             comboBox.AddChild(textBlock);
@@ -178,7 +175,7 @@ namespace Fitamas.UserInterface
             GUIContextMenu context = new GUIContextMenu();
             context.Style = style;
             context.LocalPosition = position;
-            context.Pivot = new Vector2(0, 1);
+            context.Pivot = new Vector2(0, 0);
             context.Padding = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
 
             GUIImage image = new GUIImage();
@@ -225,7 +222,7 @@ namespace Fitamas.UserInterface
             textBlock.SetAlignment(GUIAlignment.Stretch);
             textBlock.AutoScale = false;
             textBlock.Text = text;
-            textBlock.TextAligment = GUITextAligment.Left;
+            textBlock.TextHorisontalAlignment = GUITextHorisontalAlignment.Left;
             item.AddChild(textBlock);
             
             item.LocalSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
@@ -240,17 +237,16 @@ namespace Fitamas.UserInterface
 
         public static GUITextInput CreateTextInput(ResourceDictionary dictionary, Point position, int lenght = 0)
         {
-            return CreateTextInput(dictionary[CommonResourceKeys.ButtonStyle] as GUIStyle, position, lenght);
+            return CreateTextInput(dictionary[CommonResourceKeys.TextInputStyle] as GUIStyle, position, lenght);
         }
 
         public static GUITextInput CreateTextInput(GUIStyle style, Point position, int lenght = 0)
         {
             Point padding = style.Resources.FramePadding;
-            Point size = new Point(lenght, FontManager.GetHeight()) + padding + padding;
 
             GUITextInput input = new GUITextInput();
             input.LocalPosition = position;
-            input.LocalSize = size;
+            input.LocalSize = new Point(lenght, FontManager.GetHeight()) + padding + padding;
             input.Style = style;
 
             GUIImage image = new GUIImage();
@@ -258,41 +254,19 @@ namespace Fitamas.UserInterface
             input.AddChild(image);
 
             GUITextBlock textBlock = new GUITextBlock();
-            textBlock.Text = "Text";
-            textBlock.VerticalAlignment = GUIVerticalAlignment.Center;
-            textBlock.Pivot = new Vector2(0, 0.5f);
+            textBlock.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
+            textBlock.SetAlignment(GUIAlignment.Stretch);
             input.AddChild(textBlock);
             input.TextBlock = textBlock;
 
+            textBlock = new GUITextBlock();
+            textBlock.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
+            textBlock.SetAlignment(GUIAlignment.Stretch);
+            //input.AddChild(textBlock);
+            //input.TextBlock = textBlock;
+
             return input;
         }
-
-        //public static GUIFrame CreateFieldInput(Point scale, MonoAction<GUITextInput, string> onValueChanged = null, string name = "Text", string defoultValue = " ")
-        //{
-        //    GUIFrame frame = new GUIFrame();
-        //    frame.LocalSize = scale;
-
-        //    GUITextBlock text = new GUITextBlock();
-        //    text.Text = name;
-        //    text.AutoScale = true;
-        //    text.Pivot = new Vector2(0, 0.5f);
-        //    text.VerticalAlignment = GUIVerticalAlignment.Center;
-        //    frame.AddChild(text);
-
-        //    GUITextInput input = CreateTextInput(new Rectangle());
-        //    input.OnTextChanged.AddListener(onValueChanged);
-        //    input.SetAlignment(GUIAlignment.Stretch);
-        //    input.LocalPosition = new Point(text.LocalSize.X, 0);
-        //    input.Text = defoultValue;
-        //    frame.AddChild(input);
-
-        //    GUIImage image = new GUIImage();
-        //    image.SetAlignment(GUIAlignment.Stretch);
-        //    image.LocalPosition = new Point(text.LocalSize.X, 0);
-        //    frame.AddChild(image);
-
-        //    return frame;
-        //}
 
         public static GUISlider CreateSlider(Point position, GUISliderDirection direction = GUISliderDirection.LeftToRight, int lenght = 0)
         {
@@ -371,15 +345,15 @@ namespace Fitamas.UserInterface
             scrollRect.LocalSize = size;
 
             GUISlider horizontalScrollBar = CreateSlider(sliderStyle, thumbStyle, new Point(), GUISliderDirection.LeftToRight);
-            horizontalScrollBar.Margin = new Thickness(0, horizontalScrollBar.Margin.Top, size1, 0);
-            horizontalScrollBar.Pivot = new Vector2(0, 0);
+            horizontalScrollBar.Margin = new Thickness(0, 0, size1, size1);
+            horizontalScrollBar.Pivot = new Vector2(0, 1);
             horizontalScrollBar.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
             horizontalScrollBar.VerticalAlignment = GUIVerticalAlignment.Bottom;
             scrollRect.AddChild(horizontalScrollBar);
             scrollRect.HorizontalSlider = horizontalScrollBar;
 
             GUISlider verticalScrollBar = CreateSlider(sliderStyle, thumbStyle, new Point(), GUISliderDirection.BottomToTop);
-            verticalScrollBar.Margin = new Thickness(0, 0, horizontalScrollBar.Margin.Top, size1);
+            verticalScrollBar.Margin = new Thickness(0, 0, size1, size1);
             verticalScrollBar.Pivot = new Vector2(1, 0);
             verticalScrollBar.HorizontalAlignment = GUIHorizontalAlignment.Right;
             verticalScrollBar.VerticalAlignment = GUIVerticalAlignment.Stretch;            
@@ -424,34 +398,34 @@ namespace Fitamas.UserInterface
             return node;
         }
 
-        public static GUINode CreateNode(Rectangle rectangle, string text = "header")
-        {
-            GUINode node = new GUINode();
+        //public static GUINode CreateNode(Rectangle rectangle, string text = "header")
+        //{
+        //    GUINode node = new GUINode();
 
-            GUITextBlock textBlock = new GUITextBlock();
-            textBlock.Text = text;
-            textBlock.SetAlignment(GUIAlignment.Center);
-            node.HeaderTextBlock = textBlock;
+        //    GUITextBlock textBlock = new GUITextBlock();
+        //    textBlock.Text = text;
+        //    textBlock.SetAlignment(GUIAlignment.Center);
+        //    node.HeaderTextBlock = textBlock;
 
-            GUIImage image = new GUIImage();
-            image.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-            image.Pivot = new Vector2(0, 0);
-            node.HeaderImage = image;
-            node.AddChild(image);
-            image.AddChild(textBlock);
+        //    GUIImage image = new GUIImage();
+        //    image.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+        //    image.Pivot = new Vector2(0, 0);
+        //    node.HeaderImage = image;
+        //    node.AddChild(image);
+        //    image.AddChild(textBlock);
 
-            image = new GUIImage();
-            image.SetAlignment(GUIAlignment.Stretch);
-            node.Image = image;
-            node.AddChild(image);
+        //    image = new GUIImage();
+        //    image.SetAlignment(GUIAlignment.Stretch);
+        //    node.Image = image;
+        //    node.AddChild(image);
 
-            image = new GUIImage();
-            image.SetAlignment(GUIAlignment.Stretch);
-            node.SelectedImage = image;
-            node.AddChild(image);
+        //    image = new GUIImage();
+        //    image.SetAlignment(GUIAlignment.Stretch);
+        //    node.SelectedImage = image;
+        //    node.AddChild(image);
 
-            return node;
-        }
+        //    return node;
+        //}
 
         public static GUIPin CreatePin(string text, GUIPinType type, GUIPinAlignment pinAlignment)
         {

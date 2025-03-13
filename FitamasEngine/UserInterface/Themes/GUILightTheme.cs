@@ -42,6 +42,11 @@ namespace Fitamas.UserInterface.Themes
 
             dictionary[CommonResourceKeys.TextBlockDefaultColor] = Color.Black;
 
+            dictionary[CommonResourceKeys.TextInputDefaultColor] = Color.White;
+            dictionary[CommonResourceKeys.TextInputFocusedColor] = Color.LightSkyBlue;
+            dictionary[CommonResourceKeys.TextInputDisableColor] = new Color(0.75f, 0.75f, 0.75f);
+            dictionary[CommonResourceKeys.TextInputTextDefaultColor] = Color.Black;
+
             dictionary[CommonResourceKeys.TrackBarDefaultColor] = new Color(0.75f, 0.75f, 0.75f);
             dictionary[CommonResourceKeys.TrackBarThumbDefaultColor] = Color.White;
             dictionary[CommonResourceKeys.TrackBarThumbDisableColor] = new Color(0.75f, 0.75f, 0.75f);

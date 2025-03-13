@@ -121,10 +121,10 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public override bool Contains(Point point)
         {
-            for (int i = 1; i < anchors.Count; i++)
+            for (int i = 1; i < Anchors.Count; i++)
             {
-                Point a = FromLocal(anchors[i - 1]);
-                Point b = FromLocal(anchors[i]);
+                Point a = FromLocal(Anchors[i - 1]);
+                Point b = FromLocal(Anchors[i]);
                 float distance = MathV.DistancePointToSegment(a.ToVector2(), b.ToVector2(), point.ToVector2());
 
                 if (distance <= (Thickness + ShadowSize) / 2f)

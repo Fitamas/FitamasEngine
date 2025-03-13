@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Fitamas.Input.InputListeners;
+using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -12,7 +14,7 @@ namespace Fitamas.UserInterface.Components
         Integer,
     }
 
-    public class GUITextInput : GUIComponent, IMouseEvent, IKeyboardEvent
+    public class GUITextInput : GUIComponent, IMouseEvent, IDragMouseEvent, IKeyboardEvent
     {
         public static readonly DependencyProperty<bool> OneLineProperty = new DependencyProperty<bool>(true);
 
@@ -22,16 +24,25 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<Color> CaretColorProperty = new DependencyProperty<Color>(Color.Black);
 
+        public static readonly DependencyProperty<Color> SelectColorProperty = new DependencyProperty<Color>(new Color(0, 0, 0.5f, 0.2f));
+
+        public static readonly RoutedEvent OnSelectEvent = new RoutedEvent();
+
+        public static readonly RoutedEvent OnDeselectEvent = new RoutedEvent();
+
+        public static readonly RoutedEvent OnValueChangedEvent = new RoutedEvent();
+
+        public static readonly RoutedEvent OnEndEditEvent = new RoutedEvent();
+
         private bool caretEnable;
         private int caretIndex;
-        private Point caretPosition;
-        private Point caretSize;
-        private bool selectText;
+        private bool isSelect;
+        private int startSelectIndex;
 
         public GUITextBlock TextBlock { get; set; }
 
-        public GUIEvent<GUITextInput, string> OnSelect { get; }
-        public GUIEvent<GUITextInput, string> OnDeselect { get; }
+        public GUIEvent<GUITextInput> OnSelect { get; }
+        public GUIEvent<GUITextInput> OnDeselect { get; }
         public GUIEvent<GUITextInput, string> OnValueChanged { get; }
         public GUIEvent<GUITextInput, string> OnEndEdit { get; }
 
@@ -83,6 +94,18 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public Color SelectColor
+        { 
+            get
+            {
+                return GetValue(SelectColorProperty);
+            }
+            set
+            {
+                SetValue(SelectColorProperty, value);
+            }
+        }
+
         public string Text
         {
             get
@@ -92,6 +115,7 @@ namespace Fitamas.UserInterface.Components
             set
             {
                 TextBlock.Text = value;
+                OnValueChanged.Invoke(this, value);
             }
         }
 
@@ -107,31 +131,168 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public int CaretIndex
+        {
+            get
+            {
+                return caretIndex;
+            }
+            set
+            {
+                caretIndex = Math.Clamp(value, 0, TextLenght);
+            }
+        }
+
+        public int CaretIndexOnLine
+        {
+            get
+            {
+                string text = Text;
+                int start = Math.Clamp(caretIndex - 1, 0, text.Length > 0 ? text.Length - 1 : 0);
+                int index = text.LastIndexOf('\n', start);
+                return index == -1 ? caretIndex : caretIndex - index - 1;
+            }
+        }
+
         public GUITextInput()
         {
             IsMask = true;
             RaycastTarget = true;
+
+            OnSelect = eventHandlersStore.Create<GUITextInput>(OnSelectEvent);
+            OnDeselect = eventHandlersStore.Create<GUITextInput>(OnDeselectEvent);
+            OnValueChanged = eventHandlersStore.Create<GUITextInput, string>(OnValueChangedEvent);
+            OnEndEdit = eventHandlersStore.Create<GUITextInput, string>(OnEndEditEvent);
+        }
+
+        protected override void OnFocus()
+        {
+            caretEnable = true;
+
+            Unselect();
+        }
+
+        protected override void OnUnfocus()
+        {
+            caretEnable = false;
+
+            Unselect();
+
+            switch (ContentType)
+            {
+                case GUIContentType.Integer:
+                    int valueInt = Text.ConvertToInt();
+                    Text = valueInt.ToString();
+                    break;
+                case GUIContentType.Float:
+                    float valueFloat = Text.ConvertToInt();
+                    Text = valueFloat.ToString();
+                    break;
+            }
+            OnEndEdit.Invoke(this, Text);
         }
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
             base.OnDraw(gameTime, context);
 
+            SpriteFont font = TextBlock.Font;
+            if (font == null)
+            {
+                return;
+            }
+
+            string text = Text;
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            int lineHeight = FontManager.GetHeight(font);
+
+            if (isSelect)
+            {
+                int min = Math.Min(startSelectIndex, CaretIndex);
+                int max = Math.Max(startSelectIndex, CaretIndex);
+                int lineCount = 0;
+                int lineStart = 0;
+
+                for (int i = 0; i < text.Length + 1; i++)
+                {
+                    if (i == text.Length || text[i] == '\n')
+                    {
+                        bool before = false;
+                        int start = -1;
+                        int end = -1;
+
+                        if (i > min && lineStart < max)
+                        {
+                            if (min > lineStart)
+                            {
+                                start = min;
+                                before = true;
+                            }
+                            else
+                            {
+                                start = lineStart;
+                            }
+                        }
+
+                        if (lineStart < max)
+                        {
+                            if (i == text.Length && i <= max)
+                            {
+                                end = text.Length;
+                            }
+                            else if (i > max)
+                            {
+                                end = max;
+                            }
+                            else
+                            {
+                                end = i;
+                            }
+                        }
+
+                        if (start != -1 && end != -1)
+                        {
+                            int indent = before ? (int)font.MeasureString(text.Substring(lineStart, start - lineStart)).X : 0;
+                            string line = text.Substring(start, end - start);
+                            if (string.IsNullOrEmpty(line))
+                            {
+                                line = font.DefaultCharacter.Value.ToString();
+                            }
+                            Point lineSize = font.MeasureString(line).ToPoint();
+                            Point linePosition = TextBlock.TextPostion + new Point(indent, lineCount * lineHeight);
+
+                            Render.Begin(context.Mask);
+                            Render.FillRectangle(linePosition, lineSize, SelectColor);
+                            Render.End();
+                        }
+
+                        lineStart = i + 1;
+                        lineCount++;
+                    }
+                }
+            }
+
             if (caretEnable)
             {
-                CalculateCaret();
+                int start = CaretIndex == 0 ? 0 : text.LastIndexOf('\n', CaretIndex - 1);
+                if (start == -1)
+                {
+                    start = 0;
+                }
 
-                Rectangle rectangle = Rectangle;
-                if (caretPosition.X < rectangle.Left)
-                {
-                    TextBlock.LocalPosition += new Point((rectangle.Left - caretPosition.X), 0);
-                    CalculateCaret();
-                }
-                else if (caretPosition.X > rectangle.Right)
-                {
-                    TextBlock.LocalPosition -= new Point((caretPosition.X - rectangle.Right), 0);
-                    CalculateCaret();
-                }
+                int lineIndex = text.CountOf('\n', 0, CaretIndex);
+                int stringY = lineHeight * lineIndex;
+                string textBefore = text.Substring(start, CaretIndex - start);
+                Point stringSize = font.MeasureString(textBefore).ToPoint();
+
+                CalculateTextOffset(new Point(stringSize.X, stringY), lineHeight);
+
+                Point caretSize = new Point(CaretWidth, lineHeight);
+                Point caretPosition = TextBlock.TextPostion + new Point(stringSize.X + (int)font.Spacing / 2 - caretSize.X / 2, stringY);
 
                 Render.Begin(context.Mask);
                 Render.FillRectangle(caretPosition, caretSize, CaretColor);
@@ -139,22 +300,16 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        protected override void OnDestroy()
-        {
-            Unselect();
-        }
-
         public void OnClickedMouse(MouseEventArgs mouse)
         {
             if (IsMouseOver)
             {
                 Focus();
-                caretEnable = true;
-                caretIndex = TextBlock.GetCaretIndexFromScreenPos(mouse.Position);
+                CaretIndex = TextBlock.GetIndexFromScreenPos(mouse.Position);
             }
             else if (IsFocused)
             {
-                Unselect();
+                Unfocus();
             }
         }
 
@@ -168,28 +323,28 @@ namespace Fitamas.UserInterface.Components
 
         }
 
-        //private int FindNearestGlyphIndex(IGuiContext context, Point position)
-        //{
-        //    var font = Font ?? context.DefaultFont;
-        //    var textInfo = GetTextInfo(context, Text, ContentRectangle, HorizontalTextAlignment, VerticalTextAlignment);
-        //    var i = 0;
+        public void OnStartDragMouse(MouseEventArgs mouse)
+        {
+            if (IsMouseOver)
+            {
+                startSelectIndex = TextBlock.GetIndexFromScreenPos(mouse.Position);
+                Select();
+            }
+        }
 
-        //    foreach (var glyph in font.GetGlyphs(textInfo.Text, textInfo.Position))
-        //    {
-        //        var fontRegionWidth = glyph.FontRegion?.Width ?? 0;
-        //        var glyphMiddle = (int)(glyph.Position.X + fontRegionWidth * 0.5f);
+        public void OnDragMouse(MouseEventArgs mouse)
+        {
+            if (isSelect)
+            {
+                CaretIndex = TextBlock.GetIndexFromScreenPos(mouse.Position);
+                Select();
+            }
+        }
 
-        //        if (position.X >= glyphMiddle)
-        //        {
-        //            i++;
-        //            continue;
-        //        }
+        public void OnEndDragMouse(MouseEventArgs mouse)
+        {
 
-        //        return i;
-        //    }
-
-        //    return i;
-        //}
+        }
 
         public void OnKeyDown(KeyboardEventArgs keyboard)
         {
@@ -211,46 +366,48 @@ namespace Fitamas.UserInterface.Components
             switch (keyboard.Key)
             {
                 case Keys.Left:
-                    caretIndex--;
+                    CaretLeft();
                     break;
                 case Keys.Right:
-                    caretIndex++;
+                    CaretRight();
                     break;
                 case Keys.Up:
+                    CaretUp();
                     break;
                 case Keys.Down:
+                    CaretDown();
                     break;
                 case Keys.Back:
-                    if (selectText)
+                    if (isSelect)
                     {
                         RemoveSelectedText();
                     }
                     else
                     {
-                        RemoveChar(caretIndex - 1);
-                        caretIndex--;
+                        RemoveChar(CaretIndex - 1);
+                        CaretIndex--;
                     }
                     break;
                 case Keys.Delete:
-                    if (selectText)
+                    if (isSelect)
                     {
                         RemoveSelectedText();
                     }
                     else
                     {
-                        RemoveChar(caretIndex);
+                        RemoveChar(CaretIndex);
                     }
                     break;
                 case Keys.Escape:
                     {
-                        Unselect();
+                        Unfocus();
                         break;
                     }
                 case Keys.Tab:
                     {
                         if (OneLine)
                         {
-                            Unselect();
+                            Unfocus();
                         }
                         else
                         {
@@ -262,7 +419,7 @@ namespace Fitamas.UserInterface.Components
                     {
                         if (OneLine)
                         {
-                            Unselect();
+                            Unfocus();
                         }
                         else
                         {
@@ -274,53 +431,65 @@ namespace Fitamas.UserInterface.Components
                     ReceiveTextInput(keyboard.Character);
                     break;
             }
+
+            Unselect();
+        }
+
+        public void Select()
+        {
+            isSelect = true;
+            OnSelect.Invoke(this);
         }
 
         public void Unselect()
         {
-            if (IsFocused)
-            {
-                Unfocus();
-                caretEnable = false;
-
-                switch (ContentType)
-                {
-                    case GUIContentType.Integer:
-                        int valueInt = TextBlock.Text.ConvertToInt();
-                        SetText(valueInt.ToString());
-                        break;
-                    case GUIContentType.Float:
-                        float valueFloat = TextBlock.Text.ConvertToInt();
-                        SetText(valueFloat.ToString());
-                        break;
-                }
-            }
+            isSelect = false;
+            OnDeselect.Invoke(this);
         }
 
-        private void CalculateCaret()
+        public void RemoveSelectedText()
         {
-            SpriteFont font = TextBlock.Font;
-            caretSize = new Point(CaretWidth, font.MeasureString(TextBlock.Text).ToPoint().Y);
-            Point textPosition = TextBlock.Rectangle.Location;
-            Point caretOffset = Point.Zero;
+            int min = Math.Min(startSelectIndex, CaretIndex);
+            int max = Math.Max(startSelectIndex, CaretIndex);
+            Unselect();
+            CaretIndex = min;
+            Text = Text.Remove(min, max - min);
+        }
 
-            if (caretIndex < 0)
+        private void CalculateTextOffset(Point caretLocalPosition, int lineHeight)
+        {
+            Rectangle rectangle = TextBlock.Rectangle;
+            Point caretPosition = TextBlock.TextPostion + caretLocalPosition;
+            Point textSize = TextBlock.ScaledTextSize;
+            Point offset = TextBlock.Offset;
+
+            if (textSize.X < rectangle.Width)
             {
-                caretIndex = 0;
+                offset.X = 0;
             }
-            else if (caretIndex > TextLenght) 
-            { 
-                caretIndex = TextLenght;
-            }
-
-            if (TextLenght > 0)
+            else if (caretPosition.X < rectangle.Left)
             {
-                string textBefore = TextBlock.Text.Substring(0, caretIndex);
-                Point stringSize = font.MeasureString(textBefore).ToPoint();
-                caretOffset = new Point(stringSize.X + (int)font.Spacing / 2 - caretSize.X / 2, 0);
+                offset.X += rectangle.Left - caretPosition.X;
+            }
+            else if (caretPosition.X > rectangle.Right)
+            {
+                offset.X += rectangle.Right - caretPosition.X;
             }
 
-            caretPosition = textPosition + caretOffset;
+            if (textSize.Y < rectangle.Height)
+            {
+                offset.Y = 0;
+            }
+            else if (caretPosition.Y > rectangle.Bottom - lineHeight)
+            {
+                offset.Y += rectangle.Bottom - caretPosition.Y - lineHeight;
+            }
+            else if (caretPosition.Y < rectangle.Top)
+            {
+                offset.Y += rectangle.Top - caretPosition.Y;
+            }
+
+            TextBlock.Offset = offset;
         }
 
         private void ReceiveTextInput(char? c)
@@ -330,29 +499,25 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
+            if (isSelect)
+            {
+                RemoveSelectedText();
+            }
+
             string text = c.Value.ToString();
 
-            RemoveSelectedText();
-
             int num = string.IsNullOrEmpty(text) ? 0 : text.Length;
-            string currentText = TextBlock.Text;
+            string currentText = Text;
             if (string.IsNullOrEmpty(currentText))
             {
-                SetText(text);
+                Text = text;
             }
             else
             {
-                TextBlock.Text = currentText.Insert(caretIndex, text);
-                OnValueChanged?.Invoke(this, TextBlock.Text);
+                Text = currentText.Insert(CaretIndex, text);
             }
 
-            caretIndex += num;
-        }
-
-        private void SetText(string text)
-        {
-            TextBlock.Text = text;
-            OnValueChanged?.Invoke(this, TextBlock.Text);
+            CaretIndex += num;
         }
 
         private void RemoveChar(int position)
@@ -362,17 +527,56 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
-            string currentText = TextBlock.Text;
+            string currentText = Text;
             if (!string.IsNullOrEmpty(currentText))
             {
-                TextBlock.Text = currentText.Remove(position, 1);
-                OnValueChanged?.Invoke(this, TextBlock.Text);
+                Text = currentText.Remove(position, 1);
             }
         }
 
-        private void RemoveSelectedText()
+        public void CaretLeft()
         {
+            CaretIndex--;
+        }
 
+        public void CaretRight()
+        {
+            CaretIndex++;
+        }
+
+        public void CaretUp()
+        {
+            if (CaretIndex == 0)
+            {
+                return;
+            }
+
+            string text = Text;
+            int end = text.LastIndexOf('\n', CaretIndex - 1);
+
+            if (end != -1)
+            {
+                int start = text.LastIndexOf('\n', end - 1) + 1;
+                CaretIndex = Math.Clamp(CaretIndexOnLine + start, start, end);
+            }
+        }
+
+        public void CaretDown()
+        {
+            string text = Text;
+            int start = text.IndexOf('\n', CaretIndex);
+
+            if (start != -1)
+            {
+                start++;
+                int end = text.IndexOf('\n', start);
+                if (end == -1)
+                {
+                    end = text.Length;
+                }
+
+                CaretIndex = Math.Clamp(CaretIndexOnLine + start, start, end);
+            }
         }
     }
 }

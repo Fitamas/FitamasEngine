@@ -196,7 +196,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public GUINode CreateDefoultNode(string name = "Node")
         {
-            GUINode node = GUI.CreateNode(new Rectangle(new Point(), Settings.NodeSize), name);
+            GUINode node = null;// GUI.CreateNode(new Rectangle(new Point(), Settings.NodeSize), name);
 
             node.HeaderTextBlock.Color = Settings.HeaderTextBlockColor;
             node.HeaderImage.Color = Settings.HeaderImageColor;

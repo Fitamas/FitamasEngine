@@ -10,14 +10,79 @@ namespace Fitamas.UserInterface.Components
 {
     public class GUILineRenderer : GUIComponent
     {
-        [SerializableField] protected List<Point> anchors = new List<Point>();
-        [SerializableField] protected Texture2D texture;
+        public static readonly DependencyProperty<Color> ColorProperty = new DependencyProperty<Color>(Color.White);
 
-        public Color Color = Color.White;
-        public Color ShadowColor = Color.Black;
-        public int Thickness = 10;
-        public int ShadowSize = 10;
-        public bool ShadowEnable = false;
+        public static readonly DependencyProperty<Color> ShadowColorProperty = new DependencyProperty<Color>(Color.Black);
+
+        public static readonly DependencyProperty<int> ThicknessProperty = new DependencyProperty<int>(1);
+
+        public static readonly DependencyProperty<int> ShadowSizeProperty = new DependencyProperty<int>(1);
+
+        public static readonly DependencyProperty<bool> ShadowEnableProperty = new DependencyProperty<bool>(false);
+
+        protected Texture2D texture;
+
+        public List<Point> Anchors;
+
+        public Color Color
+        {
+            get
+            {
+                return GetValue(ColorProperty);
+            }
+            set
+            {
+                SetValue(ColorProperty, value);
+            }
+        }
+
+        public Color ShadowColor
+        {
+            get
+            {
+                return GetValue(ShadowColorProperty);
+            }
+            set
+            {
+                SetValue(ShadowColorProperty, value);
+            }
+        }
+
+        public int Thickness
+        {
+            get
+            {
+                return GetValue(ThicknessProperty);
+            }
+            set
+            {
+                SetValue(ThicknessProperty, value);
+            }
+        }
+
+        public int ShadowSize
+        {
+            get
+            {
+                return GetValue(ShadowSizeProperty);
+            }
+            set
+            {
+                SetValue(ShadowSizeProperty, value);
+            }
+        }
+
+        public bool ShadowEnable
+        {
+            get
+            {
+                return GetValue(ShadowEnableProperty);
+            }
+            set
+            {
+                SetValue(ShadowEnableProperty, value);
+            }
+        }
 
         public GUILineRenderer()
         {
@@ -26,28 +91,30 @@ namespace Fitamas.UserInterface.Components
 
         public void SetAnchorPoints(IEnumerable<Point> anchors)
         {
-            this.anchors = anchors.ToList();
+            Anchors = anchors.ToList();
 
-            if (this.anchors.Count >= 2)
-            {
-                Point min = this.anchors[0];
-                Point max = this.anchors[0];
+            //if (this.anchors.Count >= 2)
+            //{
+            //    Point min = this.anchors[0];
+            //    Point max = this.anchors[0];
 
-                foreach (Point anchor in anchors)
-                {
-                    if (anchor.X < min.X) min.X = anchor.X;
-                    if (anchor.Y < min.Y) min.Y = anchor.Y;
-                    if (anchor.X > max.X) max.X = anchor.X;
-                    if (anchor.Y > max.Y) max.Y = anchor.Y;
-                }
-
-                //LocalScale = 
-            }
-            //LocalScale = new Point();
+            //    foreach (Point anchor in anchors)
+            //    {
+            //        if (anchor.X < min.X) min.X = anchor.X;
+            //        if (anchor.Y < min.Y) min.Y = anchor.Y;
+            //        if (anchor.X > max.X) max.X = anchor.X;
+            //        if (anchor.Y > max.Y) max.Y = anchor.Y;
+            //    }
+            //}
         }
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
+            if (Anchors == null || Anchors.Count == 0)
+            {
+                return;
+            }
+
             Rectangle rectangle = Rectangle;
             Point position = rectangle.Location;
 
@@ -55,15 +122,15 @@ namespace Fitamas.UserInterface.Components
 
             if (ShadowEnable)
             {
-                for (int i = 1; i < anchors.Count; i++)
+                for (int i = 1; i < Anchors.Count; i++)
                 {
-                    DrawLine(anchors[i - 1], anchors[i], position, ShadowColor, Thickness + ShadowSize);
+                    DrawLine(Anchors[i - 1], Anchors[i], position, ShadowColor, Thickness + ShadowSize);
                 }
             }
 
-            for (int i = 1; i < anchors.Count; i++)
+            for (int i = 1; i < Anchors.Count; i++)
             {
-                DrawLine(anchors[i - 1], anchors[i], position, Color, Thickness);
+                DrawLine(Anchors[i - 1], Anchors[i], position, Color, Thickness);
             }
 
             Render.End();
@@ -73,8 +140,6 @@ namespace Fitamas.UserInterface.Components
 
         private void DrawLine(Point lastAnchor, Point currentAnchor, Point position, Color color, int thickness)
         {
-            lastAnchor.Y = -lastAnchor.Y;
-            currentAnchor.Y = -currentAnchor.Y;
             Vector2 v1 = lastAnchor.ToVector2();
             Vector2 v2 = currentAnchor.ToVector2();
             Vector2 direction = v2 - v1;

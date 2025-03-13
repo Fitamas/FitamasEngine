@@ -1,8 +1,6 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.Input;
 using Fitamas.Input.InputListeners;
-using Fitamas.Serialization;
-using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -68,25 +66,12 @@ namespace Fitamas.UserInterface.Components
             //node.SelectTextColor = treeView.SelectTextColor;
             //node.DisableTextColor = treeView.DisableTextColor;
 
-            node.FolderIconOpen.Sprite = treeView.FolderIconOpen;
-            node.FolderIconClose.Sprite = treeView.FolderIconClose;
-            node.Icon.Sprite = treeView.Icon;
+            //node.FolderIconOpen.Sprite = treeView.FolderIconOpen;
+            //node.FolderIconClose.Sprite = treeView.FolderIconClose;
+            //node.Icon.Sprite = treeView.Icon;
 
             Add(node);
             return node;
-        }
-
-        public GUITreeNode FindChildrenWithName(string name)
-        {
-            //foreach (var item in nodes)
-            //{
-            //    if (item.TextBlock.Text == name)
-            //    {
-            //        return item;
-            //    }
-            //}
-
-            return null;
         }
 
         public void Add(GUITreeNode node)
@@ -292,38 +277,6 @@ namespace Fitamas.UserInterface.Components
             }
 
             return nodeSize;
-        }
-
-        public GUITreeNode AddNode(string nodeName)
-        {
-            if (string.IsNullOrEmpty(nodeName))
-            {
-                return null;
-            }
-
-            GUITreeNode node = root;
-
-            int startIndex = 0;
-            int length = nodeName.Length;
-            while (startIndex < length)
-            {
-                int endIndex = nodeName.IndexOf('\\', startIndex);
-                int subLength = endIndex == -1 ? length - startIndex : endIndex - startIndex;
-                string directory = nodeName.Substring(startIndex, subLength);
-
-                //AssetData pathNode = new AssetData(directory, assetPath.Substring(0, endIndex == -1 ? length : endIndex), node.Level == 0);
-
-                GUITreeNode child = node.FindChildrenWithName(directory);
-                if (child == null)
-                {
-                    child = node.CreateNode(directory);
-                }
-
-                node = child;
-                startIndex += subLength + 1;
-            }
-
-            return node;
         }
     }
 }

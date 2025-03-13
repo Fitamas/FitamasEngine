@@ -56,7 +56,7 @@ namespace Fitamas.Graphics.ViewportAdapters
         {
             var scaleMatrix = GetScaleMatrix();
             var invertedMatrix = Matrix.Invert(scaleMatrix);
-            return Vector2.Transform(new Vector2(x, ViewportHeight - y), invertedMatrix).ToPoint();
+            return Vector2.Transform(new Vector2(x, y), invertedMatrix).ToPoint();
         }
 
         private void OnClientSizeChanged(object sender, EventArgs eventArgs)

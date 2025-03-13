@@ -136,7 +136,18 @@ namespace Fitamas.UserInterface
 
         public static readonly string TextBlockDefaultColor = nameof(TextBlockDefaultColor);
 
-        
+
+        public static readonly string TextInputStyle = nameof(TextInputStyle);
+
+        public static readonly string TextInputDefaultColor = nameof(TextInputDefaultColor);
+
+        public static readonly string TextInputFocusedColor = nameof(TextInputFocusedColor);
+
+        public static readonly string TextInputDisableColor = nameof(TextInputDisableColor);
+
+        public static readonly string TextInputTextDefaultColor = nameof(TextInputTextDefaultColor);
+
+
         public static readonly string TrackBarStyle = nameof(TrackBarStyle);
 
         public static readonly string TrackBarDefaultColor = nameof(TrackBarDefaultColor);
@@ -154,14 +165,14 @@ namespace Fitamas.UserInterface
 
 
 
-        public static readonly string SliderTrackBackgroundBrushKey = "SliderTrackBackgroundBrush";
+        //public static readonly string SliderTrackBackgroundBrushKey = "SliderTrackBackgroundBrush";
 
-        public static readonly string SliderThumbBrushKey = "SliderThumbBrush";
+        //public static readonly string SliderThumbBrushKey = "SliderThumbBrush";
 
-        public static readonly string ScrollBarThumbBackgroundKey = "ScrollBarThumbBackgroundKey";
+        //public static readonly string ScrollBarThumbBackgroundKey = "ScrollBarThumbBackgroundKey";
 
-        public static readonly string ScrollBarThumbBorderBrushKey = "ScrollBarThumbBorderBrush";
+        //public static readonly string ScrollBarThumbBorderBrushKey = "ScrollBarThumbBorderBrush";
 
-        public static readonly string ScrollBarThumbHoverBackgroundKey = "ScrollBarThumbHoverBackground";
+        //public static readonly string ScrollBarThumbHoverBackgroundKey = "ScrollBarThumbHoverBackground";
     }
 }

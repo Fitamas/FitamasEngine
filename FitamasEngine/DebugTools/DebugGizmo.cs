@@ -37,7 +37,7 @@ namespace Fitamas.DebugTools
             }
 
             Matrix view = Camera.Current.GetViewMatrix();
-            Matrix projection = Camera.GetProjectionMatrix();
+            Matrix projection = Camera.Current.GetProjectionMatrix();
             
             primitiveBatch.Begin(ref projection, ref view);
         }

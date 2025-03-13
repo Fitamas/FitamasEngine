@@ -4,14 +4,13 @@ using Fitamas.Math2D;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 namespace Fitamas.UserInterface
 {
     public class GUIRenderBatch
     {
         private GraphicsDevice graphicsDevice;
-        private BasicEffect effect;
+        private SpriteEffect effect;
         private SpriteBatch spriteBatch;
         private RasterizerState rasterState;
         private Rectangle clipRectangle;
@@ -19,7 +18,8 @@ namespace Fitamas.UserInterface
         public GUIRenderBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
-            effect = new BasicEffect(graphicsDevice);
+            effect = new SpriteEffect(graphicsDevice);
+            //effect.VertexColorEnabled = true;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             rasterState = new RasterizerState();
@@ -35,37 +35,26 @@ namespace Fitamas.UserInterface
         {
             if (clipRectangle != Rectangle.Empty)
             {
-                clipRectangle = Transform(clipRectangle);
                 spriteBatch.GraphicsDevice.ScissorRectangle = clipRectangle;
                 this.clipRectangle = clipRectangle;
-            }            
+            }
+
+
+            //effect.View = Camera.Current.ViewportScaleMatrix;
+            //effect.Projection = Camera.Current.GetProjectionMatrix();
+            //effect.CurrentTechnique.Passes[0].Apply();
+
+            //spriteBatch.
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointWrap,
                               DepthStencilState.DepthRead, rasterState);
+
+            //FillRectangle(new Point(50, 50), new Point(200, 200), Color.White);
         }
 
         public void End()
         {
             spriteBatch.End();
-        }
-
-        public void Draw(Texture2D texture, Rectangle rectangle, Color color)
-        {
-            Draw(texture, rectangle, color, 0);
-        }
-
-        public void Draw(Texture2D texture, Rectangle rectangle, Color color, float rotation)
-        {
-            rectangle = Transform(rectangle);
-
-            spriteBatch.Draw(texture, rectangle, null, color, rotation, Vector2.Zero, SpriteEffects.None, 1);
-        }
-
-        public void DrawString(SpriteFont font, string text, Point position, Color color, float scale)
-        {
-            Rectangle rectangle = Transform(new Rectangle(position, Point.Zero));
-            Vector2 origin = font.MeasureString(text);
-            spriteBatch.DrawString(font, text, rectangle.Location.ToVector2(), color, 0, new Vector2(0, origin.Y), scale, SpriteEffects.None, 1);
         }
 
         public void FillRectangle(Point position, Point scale, Color color)
@@ -75,9 +64,24 @@ namespace Fitamas.UserInterface
             Draw(Texture2DHelper.DefaultTexture, rectangle, color);
         }
 
+        public void Draw(Texture2D texture, Rectangle rectangle, Color color)
+        {
+            Draw(texture, rectangle, color, 0);
+        }
+
+        public void Draw(Texture2D texture, Rectangle rectangle, Color color, float rotation)
+        {
+            spriteBatch.Draw(texture, rectangle, null, color, rotation, Vector2.Zero, SpriteEffects.None, 1);
+        }
+
+        public void DrawString(SpriteFont font, string text, Point position, Color color, float scale)
+        {
+            Vector2 origin = font.MeasureString(text);
+            spriteBatch.DrawString(font, text, position.ToVector2(), color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 1);
+        }
+
         public void Draw(TextureRegion2D textureRegion, Color color, Rectangle rectangle, GUIImageEffect effect)
         {
-            rectangle = Transform(rectangle);
             Vector2 position = rectangle.Location.ToVector2();
             Vector2 sourceSize = textureRegion.Bounds.Size.ToVector2();
             Vector2 scale = rectangle.Size.ToVector2() / sourceSize;
@@ -93,12 +97,6 @@ namespace Fitamas.UserInterface
             }
 
             return Point.Zero;
-        }
-
-        protected virtual Rectangle Transform(Rectangle rectangle)
-        {
-            rectangle.Location = new Point(rectangle.X, (int)Camera.Current.VirtualSize.Y - rectangle.Y - rectangle.Height);
-            return rectangle;
         }
 
         //public void Draw(VertexPositionTexture[] vertices, int[] ind)

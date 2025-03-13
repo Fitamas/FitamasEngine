@@ -68,7 +68,7 @@ namespace Fitamas.Graphics
             }
 
             basicEffect.View = Camera.Current.GetViewMatrix();
-            basicEffect.Projection = Camera.GetProjectionMatrix();
+            basicEffect.Projection = Camera.Current.GetProjectionMatrix();
 
             SetStates();
 

@@ -14,6 +14,7 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.ContextItemStyle] = GUIContextStyle.CreateItem(dictionary);
             dictionary[CommonResourceKeys.ContextMenuStyle] = GUIContextStyle.CreateMenu(dictionary);
             dictionary[CommonResourceKeys.TextBlockStyle] = GUITextBlockStyle.Create(dictionary);
+            dictionary[CommonResourceKeys.TextInputStyle] = GUITextInputStyle.Create(dictionary);
             dictionary[CommonResourceKeys.TrackBarStyle] = GUITrackBarStyle.CreateTrackBar(dictionary);
             dictionary[CommonResourceKeys.TrackBarThumbStyle] = GUITrackBarStyle.CreateThumb(dictionary);
         }

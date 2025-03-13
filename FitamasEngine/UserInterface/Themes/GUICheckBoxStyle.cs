@@ -33,10 +33,6 @@ namespace Fitamas.UserInterface.Themes
                 CommonResourceKeys.CheckBoxHoverColor, null);
             style.Trigges.Add(trigger);
 
-            trigger = new Trigger(GUICheckBox.ValueProperty, true);
-            trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, true, true), CheckMark));
-            style.Trigges.Add(trigger);
-
             trigger = new Trigger(GUICheckBox.ValueProperty, false);
             trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, false, true), CheckMark));
             style.Trigges.Add(trigger);

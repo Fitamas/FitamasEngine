@@ -5,11 +5,18 @@ using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Components
 {
-    public enum GUITextAligment
+    public enum GUITextHorisontalAlignment
     {
         Left,
         Middle,
         Right,
+    }
+
+    public enum GUITextVerticalAlignment
+    {
+        Top,
+        Middle,
+        Bottom,
     }
 
     public class GUITextBlock : GUIComponent
@@ -22,9 +29,13 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<Color> ColorProperty = new DependencyProperty<Color>(Color.Black);
 
-        public static readonly DependencyProperty<GUITextAligment> TextAligmentProperty = new DependencyProperty<GUITextAligment>(GUITextAligment.Left);
+        public static readonly DependencyProperty<GUITextHorisontalAlignment> TextHorisontalAlignmentProperty = new DependencyProperty<GUITextHorisontalAlignment>(GUITextHorisontalAlignment.Left);
+
+        public static readonly DependencyProperty<GUITextVerticalAlignment> TextVerticalAlignmentProperty = new DependencyProperty<GUITextVerticalAlignment>(GUITextVerticalAlignment.Top);
 
         public static readonly DependencyProperty<SpriteFont> FontProperty = new DependencyProperty<SpriteFont>(FontChangedCallback, FontExpressionChangedCallback);
+
+        public Point Offset { get; set; }
 
         public string Text
         {
@@ -74,15 +85,27 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public GUITextAligment TextAligment
+        public GUITextHorisontalAlignment TextHorisontalAlignment
         {
             get
             {
-                return GetValue(TextAligmentProperty);
+                return GetValue(TextHorisontalAlignmentProperty);
             }
             set
             {
-                SetValue(TextAligmentProperty, value);
+                SetValue(TextHorisontalAlignmentProperty, value);
+            }
+        }
+
+        public GUITextVerticalAlignment TextVerticalAlignment
+        {
+            get
+            {
+                return GetValue(TextVerticalAlignmentProperty);
+            }
+            set
+            {
+                SetValue(TextVerticalAlignmentProperty, value);
             }
         }
 
@@ -98,37 +121,94 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public Point TextSize
+        {
+            get
+            {
+                SpriteFont font = Font;
+                if (font == null)
+                {
+                    return Point.Zero;
+                }
+
+                string text = Text;
+                if (string.IsNullOrEmpty(text))
+                {
+                    return FontManager.GetDefaultCharacterSize(font);
+                }
+
+                return font.MeasureString(text).ToPoint();
+            }
+        }
+
+        public Point ScaledTextSize
+        {
+            get
+            {
+                Vector2 textSize = TextSize.ToVector2();
+                float scale = Scale;
+                return (textSize * scale).ToPoint();
+            }
+        }
+
+        public Point TextPostion
+        {
+            get
+            {
+                Point position = Rectangle.Location + Offset;
+                Point textScale = ScaledTextSize;
+
+                switch (TextHorisontalAlignment)
+                {
+                    case GUITextHorisontalAlignment.Left:
+                        break;
+                    case GUITextHorisontalAlignment.Middle:
+                        position.X += Rectangle.Width / 2 - textScale.X / 2;
+                        break;
+                    case GUITextHorisontalAlignment.Right:
+                        position.X += Rectangle.Width - textScale.X;
+                        break;
+                }
+
+                switch (TextVerticalAlignment)
+                {
+                    case GUITextVerticalAlignment.Top:
+                        break;
+                    case GUITextVerticalAlignment.Middle:
+                        position.Y += Rectangle.Height / 2 - textScale.Y / 2;
+                        break;
+                    case GUITextVerticalAlignment.Bottom:
+                        position.Y += Rectangle.Height - textScale.Y;
+                        break;
+                }
+
+                return position;
+            }
+        }
+
         public GUITextBlock()
         {
-            Scale = 1f;
+
         }
 
         protected override void OnUpdate(GameTime gameTime)
         {
             if (AutoScale)
             {
-                SpriteFont font = Font;
-                string text = Text;
-                if (font == null || string.IsNullOrEmpty(text))
-                {
-                    LocalSize = Point.Zero;
-                    return;
-                }
-
                 Point localScale = LocalSize;
-                Point scale = (font.MeasureString(text) * Scale).ToPoint();
+                Point scale = ScaledTextSize;
 
                 if (HorizontalAlignment != GUIHorizontalAlignment.Stretch)
                 {
                     localScale.X = scale.X;
+                    LocalSize = localScale;
                 }
 
                 if (VerticalAlignment != GUIVerticalAlignment.Stretch)
                 {
                     localScale.Y = scale.Y;
+                    LocalSize = localScale;
                 }
-
-                LocalSize = localScale;
             }
         }
 
@@ -146,40 +226,22 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
-            Point position = Rectangle.Location;
-            Point textScale = font.MeasureString(text).ToPoint();
-
-            switch (TextAligment)
-            {
-                case GUITextAligment.Left:
-                    break;
-                case GUITextAligment.Middle:
-                    position.X += Rectangle.Width / 2 - textScale.X / 2;
-                    break;
-                case GUITextAligment.Right:
-                    position.X += Rectangle.Width - textScale.X;
-                    break;
-            }
-
             Render.Begin(context.Mask);
-            Render.DrawString(font, text, position, Color, Scale);
+            Render.DrawString(font, text, TextPostion, Color, Scale);
             Render.End();
 
             base.OnDraw(gameTime, context);
         }
 
-        public int GetCaretIndexFromScreenPos(Point position)
+        public int GetIndexFromScreenPos(Point position)
         {
-            if (Contains(position))
-            {
-                return GetCaretIndexFromLocalPos(ToLocal(position));
-            }
-
-            return Text.Length;
+            return GetIndexFromLocalPos(ToLocal(position));
         }
 
-        public int GetCaretIndexFromLocalPos(Point position) 
+        public int GetIndexFromLocalPos(Point position)
         {
+            position -= Offset;
+
             SpriteFont font = Font;
             if (font == null)
             {
@@ -192,33 +254,49 @@ namespace Fitamas.UserInterface.Components
                 return 0;
             }
 
+            int height = FontManager.GetHeight(font) + (int)font.Spacing;
+            //int lineIndex = position.Y / height;                      //TODO OPTIMIZATION
+            //int startIndex = text.FirstIndexOfLine(lineIndex);
+            //string line = text.SubstringLine(startIndex);
+
             Dictionary<char, SpriteFont.Glyph> glyphs = font.GetGlyphs();
             float xPos = 0;
-            float yPos = font.MeasureString(text).Y;
+            float yPos = height / 2;
             float closestXDist = float.PositiveInfinity;
             float closestYDist = float.PositiveInfinity;
             int closestIndex = -1;
 
-            for (int i = 0; i < text.Length; i++)
+            for (int i = 0; i < text.Length + 1; i++)
             {
                 float xDist = Math.Abs(position.X - xPos);
                 float yDist = Math.Abs(position.Y - yPos);
-                if (yDist < closestYDist || (NearlyEqual(yDist, closestYDist) && xDist < closestXDist))
+
+                if (yDist < closestYDist)
+                {
+                    closestYDist = yDist;
+                    closestXDist = float.PositiveInfinity;
+                }
+
+                if (NearlyEqual(yDist, closestYDist) && xDist < closestXDist)
                 {
                     closestIndex = i;
                     closestXDist = xDist;
-                    closestYDist = yDist;
                 }
 
-                if (glyphs.TryGetValue(text[i], out SpriteFont.Glyph glyph))
+                if (i == text.Length)
+                {
+                    break;
+                }
+
+                if (text[i] == '\n')
+                {
+                    yPos += height;
+                    xPos = 0;
+                }
+                else if (glyphs.TryGetValue(text[i], out SpriteFont.Glyph glyph))
                 {
                     xPos += glyph.WidthIncludingBearings + font.Spacing;
                 }
-            }
-
-            if (Math.Abs(position.X - xPos) < closestXDist)
-            {
-                closestIndex = text.Length;
             }
 
             return closestIndex;
@@ -239,7 +317,7 @@ namespace Fitamas.UserInterface.Components
 
         private static void FontChangedCallback(DependencyObject dependencyObject, DependencyProperty<SpriteFont> property, SpriteFont oldValue, SpriteFont newValue)
         {
-
+            //TODO
         }
 
         private static void FontExpressionChangedCallback(DependencyObject dependencyObject, DependencyProperty property, Expression oldExpression, Expression newExpression)
