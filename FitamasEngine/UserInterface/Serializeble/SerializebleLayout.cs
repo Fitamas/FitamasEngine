@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Serializeble
 {
-    public class SerializebleLayout : MonoObject
+    public class SerializebleLayout
     {
         public GUIScripting Scripting { get; }
 

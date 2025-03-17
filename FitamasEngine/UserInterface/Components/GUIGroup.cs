@@ -78,6 +78,11 @@ namespace Fitamas.UserInterface.Components
             CalculateComponents();
         }
 
+        protected override void OnChildSizeChanged(GUIComponent component)
+        {
+            CalculateComponents();
+        }
+
         private void CalculateComponents()
         {
             GUIComponent[] components = ChildrensComponent.ToArray();

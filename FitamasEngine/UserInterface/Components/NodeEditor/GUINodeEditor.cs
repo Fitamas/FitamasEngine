@@ -247,7 +247,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             return false;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected void OnUpdate(GameTime gameTime)
         {
             foreach (var controller in controllers)
             {

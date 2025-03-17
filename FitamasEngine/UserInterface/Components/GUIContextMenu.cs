@@ -56,7 +56,7 @@ namespace Fitamas.UserInterface.Components
         {
             Thickness thickness = Padding;
             Group.ControlSizeWidth = false;
-            Group.LocalSize = new Point(width - thickness.Left - thickness.Right, 0); /*- new Point(thickness.Left + thickness.Right, thickness.Bottom + thickness.Top);*/
+            Group.LocalSize = new Point(width - thickness.Left - thickness.Right, 0);
         }
 
         public void SetFixedHeight(int height)

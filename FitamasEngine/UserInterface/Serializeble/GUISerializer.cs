@@ -254,9 +254,9 @@ namespace Fitamas.UserInterface.Serializeble
             //node.DefoultTextColor = element.GetAttributeColor("textColor", node.DefoultTextColor);
             //node.SelectColor = element.GetAttributeColor("selectColor", node.SelectColor);
             //node.SelectTextColor = element.GetAttributeColor("selectTextColor", node.SelectTextColor);
-            node.FolderIconOpen = (GUIImage)FromId(iconOpenId);
-            node.FolderIconClose = (GUIImage)FromId(iconClosedId);
-            node.Icon = (GUIImage)FromId(iconId);
+            //node.FolderIconOpen = (GUIImage)FromId(iconOpenId);
+            //node.FolderIconClose = (GUIImage)FromId(iconClosedId);
+            //node.Icon = (GUIImage)FromId(iconId);
 
             string onClicked = element.GetAttributeString("onClicked");
             //node.OnClicked.AddListener(scripting.CreateAction<GUIButton>(onClicked));

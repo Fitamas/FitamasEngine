@@ -103,16 +103,8 @@ namespace Fitamas.Serialization
                     return null;
                 }
 
-                MonoObject monoObject;
-                if (type == typeof(SerializebleLayout))
-                {
-                    monoObject = GUIUtility.Load(path);
-                }
-                else
-                {
-                    monoObject = (MonoObject)JsonUtility.Load(this, path, type);
-                }
-                
+                MonoObject monoObject = (MonoObject)JsonUtility.Load(this, path, type);
+
                 loadObjects.Add(path, monoObject);
                 return monoObject;
             }

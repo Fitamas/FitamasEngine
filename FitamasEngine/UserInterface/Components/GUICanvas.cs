@@ -12,9 +12,11 @@ namespace Fitamas.UserInterface.Components
             Interacteble = false;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
             LocalSize = Render.GetViewportSize();
+
+            base.OnDraw(gameTime, context);
         }
     }
 }

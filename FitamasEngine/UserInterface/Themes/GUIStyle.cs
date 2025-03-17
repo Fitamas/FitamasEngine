@@ -46,17 +46,18 @@ namespace Fitamas.UserInterface.Themes
 
         internal void ApplySetters(GUIComponent component)
         {
+            if (component == null)
+            {
+                return;
+            }
+
             foreach (var setter in Setters)
             {
-                GUIComponent component1;
+                GUIComponent component1 = component;
 
-                if (!string.IsNullOrEmpty(setter.TargetName))
+                if (!string.IsNullOrEmpty(setter.TargetName) && component.ControlTemplate != null)
                 {
-                    component1 = component.GetComponentFromName(setter.TargetName, false);
-                }
-                else
-                {
-                    component1 = component;
+                    component1 = component.ControlTemplate[setter.TargetName];
                 }
 
                 if (component1 != null)

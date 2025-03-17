@@ -17,7 +17,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly RoutedEvent OnClickedEvent = new RoutedEvent();
 
-        public GUIEvent<GUIButton> OnClicked { get; }
+        public GUIEvent<GUIButton, ClickButtonEventArgs> OnClicked { get; }
 
         public bool IsPressed
         {
@@ -34,7 +34,7 @@ namespace Fitamas.UserInterface.Components
         public GUIButton()
         {
             RaycastTarget = true;
-            OnClicked = eventHandlersStore.Create<GUIButton>(OnClickedEvent);
+            OnClicked = eventHandlersStore.Create<GUIButton, ClickButtonEventArgs>(OnClickedEvent);
         }
 
         public void OnClickedMouse(MouseEventArgs mouse)
@@ -55,7 +55,7 @@ namespace Fitamas.UserInterface.Components
                 IsPressed = false;
                 if (IsMouseOver)
                 {
-                    OnClicked.Invoke(this);
+                    OnClicked.Invoke(this, new ClickButtonEventArgs() { MousePosition = mouse.Position, Button = mouse.Button});
                     OnClickedButton(mouse);
                 }
             }
@@ -70,5 +70,11 @@ namespace Fitamas.UserInterface.Components
         {
 
         }
+    }
+
+    public class ClickButtonEventArgs
+    {
+        public Point MousePosition { get; set; }
+        public MouseButton Button { get; set; }
     }
 }

@@ -33,9 +33,9 @@ namespace Fitamas.UserInterface.Themes
 
             style.TriggerEvents.Add(new TriggerEvent(GUIComboBox.OnSelectItemEvent, SetText));
 
-            void SetText(GUIComboBox comboBox, string item)
+            void SetText(GUIComboBox comboBox, ComboBoxEventArgs args)
             {
-                comboBox.SetValue(GUITextBlock.TextProperty, item);
+                comboBox.SetValue(GUITextBlock.TextProperty, args.Item);
             }
 
             return style;

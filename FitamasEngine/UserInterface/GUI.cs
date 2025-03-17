@@ -3,6 +3,7 @@ using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 
 namespace Fitamas.UserInterface
@@ -98,6 +99,7 @@ namespace Fitamas.UserInterface
             checkBox.Style = style;
             checkBox.LocalPosition = position;
             checkBox.LocalSize = size;
+            checkBox.ControlTemplate = new ControlTemplate();
 
             GUIImage backGround = new GUIImage();
             backGround.SetAlignment(GUIAlignment.Stretch);
@@ -106,28 +108,30 @@ namespace Fitamas.UserInterface
             GUIImage checkmark = new GUIImage();
             checkmark.Name = GUICheckBoxStyle.CheckMark;
             checkmark.SetAlignment(GUIAlignment.Stretch);
+            checkBox.ControlTemplate.Add(checkmark);
             checkBox.AddChild(checkmark);
 
             return checkBox;
         }
 
-        public static GUIComboBox CreateComboBox(Point position, IEnumerable<string> items, Point? size = null)
+        public static GUIComboBox CreateComboBox(Point position, IEnumerable<string> items = null, Point? size = null)
         {
             return CreateComboBox(ResourceDictionary.DefaultResources, position, items, size);
         }
 
-        public static GUIComboBox CreateComboBox(ResourceDictionary dictionary, Point position, IEnumerable<string> items, Point? size = null)
+        public static GUIComboBox CreateComboBox(ResourceDictionary dictionary, Point position, IEnumerable<string> items = null, Point? size = null)
         {
             return CreateComboBox(dictionary[CommonResourceKeys.ComboBoxStyle] as GUIStyle, position, items, size);
         }
 
-        public static GUIComboBox CreateComboBox(GUIStyle style, Point position, IEnumerable<string> items, Point? size = null)
+        public static GUIComboBox CreateComboBox(GUIStyle style, Point position, IEnumerable<string> items = null, Point? size = null)
         {
             Point padding = style.Resources.FramePadding;
 
-            GUIComboBox comboBox = new GUIComboBox(items);
+            GUIComboBox comboBox = new GUIComboBox();
             comboBox.Style = style;
             comboBox.LocalPosition = position;
+            comboBox.SetItems(items);
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -297,10 +301,12 @@ namespace Fitamas.UserInterface
             slider.Style = sliderStyle;
             slider.LocalPosition = position;
             slider.LocalSize = size;
+            slider.ControlTemplate = new ControlTemplate();
 
             GUIImage slidingArea = new GUIImage();
             slidingArea.SetAlignment(GUIAlignment.Stretch);
             slidingArea.Name = GUITrackBarStyle.SlidingArea;
+            slider.ControlTemplate.Add(slidingArea);
             slider.AddChild(slidingArea);
 
             GUITrack track = new GUITrack();
@@ -309,9 +315,8 @@ namespace Fitamas.UserInterface
 
             GUIThumb thumb = new GUIThumb();
             thumb.Margin = new Thickness(-padding.X, -padding.Y, -padding.X, -padding.Y);
-            thumb.Name = GUITrackBarStyle.Thumb;
-            thumb.Style = thumbStyle;
             thumb.SetAlignment(GUIAlignment.Stretch);
+            thumb.Style = thumbStyle;
             track.Direction = direction;
             track.AddChild(thumb);
             track.Thumb = thumb;
@@ -371,61 +376,118 @@ namespace Fitamas.UserInterface
             return scrollRect;
         }
 
-        public static GUITreeNode CreateTreeNode(string text = "item")
+        public static GUITreeView CreateTreeView(Point position, Point size)
         {
-            GUITreeNode node = new GUITreeNode();
+            return CreateTreeView(ResourceDictionary.DefaultResources, position, size);
+        }
 
-            GUITextBlock textBlock = new GUITextBlock();
-            textBlock.Text = text;
-            node.AddChild(textBlock);            
+        public static GUITreeView CreateTreeView(ResourceDictionary dictionary, Point position, Point size)
+        {
+            return CreateTreeView(dictionary[CommonResourceKeys.TreeViewStyle] as GUIStyle, position, size);
+        }
+
+        public static GUITreeView CreateTreeView(GUIStyle style, Point position, Point size)
+        {
+            GUITreeView tree = new GUITreeView();
+            tree.LocalPosition = position;
+            tree.LocalSize = size;
+            tree.Style = style;
 
             GUIImage image = new GUIImage();
-            node.FolderIconOpen = image;
-            node.AddChild(image);            
-
-            image = new GUIImage();
-            node.FolderIconClose = image;
-            node.AddChild(image);            
-
-            image = new GUIImage();
-            node.Icon = image;
-            node.AddChild(image);
-
-            image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
-            node.AddChild(image);
+            tree.AddChild(image);
+
+            GUIStack stack = new GUIStack();
+            stack.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            stack.Orientation = GUIGroupOrientation.Vertical;
+            stack.ControlChildSizeWidth = true;
+            tree.AddChild(stack);
+            tree.Container = stack;
+
+            return tree;
+        }
+
+        public static GUITreeNode CreateTreeNode(string text)
+        {
+            return CreateTreeNode(ResourceDictionary.DefaultResources, text);
+        }
+
+        public static GUITreeNode CreateTreeNode(ResourceDictionary dictionary, string text)
+        {
+            return CreateTreeNode(dictionary[CommonResourceKeys.TreeNodeStyle] as GUIStyle, text);
+        }
+
+        public static GUITreeNode CreateTreeNode(GUIStyle style, string text)
+        {
+            Point padding = style.Resources.FramePadding;
+            int height = FontManager.GetHeight() + padding.Y * 2;
+
+            GUITreeNode node = new GUITreeNode();
+            node.Margin = new Thickness(0, 0, 20, height);
+            node.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            node.Pivot = new Vector2(0, 0);
+            node.Style = style;
+            node.ControlTemplate = new ControlTemplate();
+
+            GUIStack stack = new GUIStack();
+            stack.Name = GUITreeStyle.Container;
+            stack.LocalPosition = new Point(0, height);
+            stack.Pivot = new Vector2(0, 0);
+            stack.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            stack.Orientation = GUIGroupOrientation.Vertical;
+            stack.ControlChildSizeWidth = true;
+            stack.ControlSizeHeight = true;
+            node.ControlTemplate.Add(stack);
+            node.AddChild(stack);
+            node.Container = stack;
+
+            GUIButton button = new GUIButton();
+            button.Margin = new Thickness(0, 0, 0, height);
+            button.Pivot = new Vector2(0, 0);
+            button.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            button.OnClicked.AddListener((b, a) => 
+            { 
+                node.IsOpen = !node.IsOpen;
+                node.TreeView.Select(node, a);
+            });
+            node.AddChild(button);
+            node.Header = button;
+
+            GUIImage image = new GUIImage();
+            image.SetAlignment(GUIAlignment.Stretch);
+            button.AddChild(image);
+
+            Point size = new Point(FontManager.GetHeight());
+            Point position = padding;
+
+            GUIImage image0 = new GUIImage();
+            image0.Name = GUITreeStyle.ArrowIcon;
+            image0.LocalPosition = position;
+            image0.LocalSize = size;
+            image0.Pivot = new Vector2(0, 0);
+            node.ControlTemplate.Add(image0);
+            node.AddChild(image0);
+
+            position.X += size.X + padding.X;
+
+            GUIImage image1 = new GUIImage();
+            image1.Name = GUITreeStyle.Icon;
+            image1.LocalPosition = position;
+            image1.LocalSize = size;
+            image1.Pivot = new Vector2(0, 0);
+            node.ControlTemplate.Add(image1);
+            node.AddChild(image1);
+
+            position.X += size.X + padding.X;
+
+            GUITextBlock textBlock = new GUITextBlock();
+            textBlock.Margin = new Thickness(position.X, padding.Y, padding.X, padding.Y);
+            textBlock.SetAlignment(GUIAlignment.Stretch);
+            textBlock.Text = text;
+            button.AddChild(textBlock);
 
             return node;
         }
-
-        //public static GUINode CreateNode(Rectangle rectangle, string text = "header")
-        //{
-        //    GUINode node = new GUINode();
-
-        //    GUITextBlock textBlock = new GUITextBlock();
-        //    textBlock.Text = text;
-        //    textBlock.SetAlignment(GUIAlignment.Center);
-        //    node.HeaderTextBlock = textBlock;
-
-        //    GUIImage image = new GUIImage();
-        //    image.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-        //    image.Pivot = new Vector2(0, 0);
-        //    node.HeaderImage = image;
-        //    node.AddChild(image);
-        //    image.AddChild(textBlock);
-
-        //    image = new GUIImage();
-        //    image.SetAlignment(GUIAlignment.Stretch);
-        //    node.Image = image;
-        //    node.AddChild(image);
-
-        //    image = new GUIImage();
-        //    image.SetAlignment(GUIAlignment.Stretch);
-        //    node.SelectedImage = image;
-        //    node.AddChild(image);
-
-        //    return node;
-        //}
 
         public static GUIPin CreatePin(string text, GUIPinType type, GUIPinAlignment pinAlignment)
         {

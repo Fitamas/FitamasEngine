@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -26,7 +27,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<bool> InteractebleProperty = new DependencyProperty<bool>(true, false);
 
-        public static readonly DependencyProperty<bool> EnableProperty = new DependencyProperty<bool>(true, false);
+        public static readonly DependencyProperty<bool> EnableProperty = new DependencyProperty<bool>(EnableChangedCallback, true, false);
 
         private GUISystem system;
         private GUIComponent parent;
@@ -46,10 +47,9 @@ namespace Fitamas.UserInterface.Components
         public bool IsVisibleAndEnable => IsVisible && Enable;
 
         public string Name { get; set; }
-
         public bool RaycastTarget { get; set; }
-
         public bool IsMask { get; set; }
+        public ControlTemplate ControlTemplate { get; set; }
         public Stack<TriggerBase> ActiveTriggers { get; set; }
 
         public Thickness Margin
@@ -156,24 +156,7 @@ namespace Fitamas.UserInterface.Components
             }
             set
             {
-                if (Enable != value)
-                {
-                    SetValue(EnableProperty, value);
- 
-                    if (value)
-                    {
-                        system?.SubscribeInput(this);
-                    }
-                    else
-                    {
-                        system?.UnsubscribeInput(this);
-                    }
-
-                    foreach (var child in childrensComponent)
-                    {
-                        child.Enable = value;
-                    }
-                }
+                SetValue(EnableProperty, value);
             }
         }
 
@@ -366,7 +349,7 @@ namespace Fitamas.UserInterface.Components
 
         public void AddChild(GUIComponent component)
         {
-            if (component == null)
+            if (component == null || component == this)
             {
                 return;
             }
@@ -455,7 +438,7 @@ namespace Fitamas.UserInterface.Components
             return new Point(localPoint.X + leftUp.X, localPoint.Y + leftUp.Y) ;
         }
 
-        public GUIComponent GetComponentFromName(string name, bool recursion = true)
+        public GUIComponent GetComponentFromName(string name)
         {
             if (Name == name)
             {
@@ -469,10 +452,7 @@ namespace Fitamas.UserInterface.Components
                     return component;
                 }
 
-                if (recursion)
-                {
-                    return component.GetComponentFromName(name, recursion);
-                }
+                return component.GetComponentFromName(name);
             }
 
             return null;
@@ -536,19 +516,6 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void Update(GameTime gameTime)
-        {
-            if (Enable)
-            {
-                OnUpdate(gameTime);
-
-                foreach (var component in childrensComponent)
-                {
-                    component.Update(gameTime);
-                }
-            }
-        }
-
         public void Draw(GameTime gameTime, GUIContextRender context)
         {
             if (Enable)
@@ -601,8 +568,6 @@ namespace Fitamas.UserInterface.Components
         protected virtual void OnChildPositionChanged(GUIComponent component) { }
 
         protected virtual void OnChildSizeChanged(GUIComponent component) { }
-
-        protected virtual void OnUpdate(GameTime gameTime) { }
 
         protected virtual void OnDestroy() { }
 
@@ -667,6 +632,29 @@ namespace Fitamas.UserInterface.Components
                 }
 
                 newValue.ApplyStyle(component);
+            }
+        }
+
+        private static void EnableChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (oldValue != newValue)
+            {
+                if (dependencyObject is GUIComponent component)
+                {
+                    if (newValue)
+                    {
+                        component.system?.SubscribeInput(component);
+                    }
+                    else
+                    {
+                        component.system?.UnsubscribeInput(component);
+                    }
+
+                    foreach (var child in component.childrensComponent)
+                    {
+                        child.Enable = newValue;
+                    }
+                }
             }
         }
     }

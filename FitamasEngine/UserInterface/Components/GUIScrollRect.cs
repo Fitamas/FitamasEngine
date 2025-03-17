@@ -120,11 +120,6 @@ namespace Fitamas.UserInterface.Components
             UpdateContent();
         }
 
-        protected override void OnUpdate(GameTime gameTime)
-        {
-            UpdateContent();
-        }
-
         private void UpdateContent()
         {
             if (Content == null || Viewport == null)

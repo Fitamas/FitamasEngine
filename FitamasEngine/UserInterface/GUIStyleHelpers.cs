@@ -1,7 +1,4 @@
-﻿using Fitamas.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Fitamas.UserInterface.Components;
 
 namespace Fitamas.UserInterface
@@ -70,6 +67,7 @@ namespace Fitamas.UserInterface
 
                 return;
             }
+
 
             TriggerBase triggerBase = null;
             foreach (TriggerBase activeTrigger in component.ActiveTriggers)

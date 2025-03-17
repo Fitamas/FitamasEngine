@@ -7,11 +7,15 @@ using Fitamas.Input.InputListeners;
 
 namespace Fitamas.UserInterface.Components
 {
+    public class ComboBoxEventArgs
+    {
+        public int Index { get; set; }
+        public string Item { get; set; }
+    }
+
     public class GUIComboBox : GUIButton
     {
-        public static readonly DependencyProperty<int> SelectItemProperty = new DependencyProperty<int>(-1, false);
-
-        public static readonly RoutedEvent OnSelectItemIndexEvent = new RoutedEvent();
+        public static readonly DependencyProperty<int> SelectItemProperty = new DependencyProperty<int>(SelectItemChangedCallback, 0, false);
 
         public static readonly RoutedEvent OnSelectItemEvent = new RoutedEvent();
 
@@ -21,9 +25,7 @@ namespace Fitamas.UserInterface.Components
 
         public bool IsOpenMenu => contextMenu != null && contextMenu.IsActive;
 
-        public GUIEvent<GUIComboBox, int> OnSelectItemIndex { get; }
-
-        public GUIEvent<GUIComboBox, string> OnSelectItem { get; }
+        public GUIEvent<GUIComboBox, ComboBoxEventArgs> OnSelectItem { get; }
 
         public int SelectedItem 
         { 
@@ -37,39 +39,30 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public GUIComboBox(IEnumerable<string> items)
+        public GUIComboBox()
         {
-            OnSelectItemIndex = eventHandlersStore.Create<GUIComboBox, int>(OnSelectItemIndexEvent);
-            OnSelectItem = eventHandlersStore.Create<GUIComboBox, string>(OnSelectItemEvent);
-
-            SetItems(items);
+            OnSelectItem = eventHandlersStore.Create<GUIComboBox, ComboBoxEventArgs>(OnSelectItemEvent);
         }
 
         protected override void OnClickedButton(MouseEventArgs mouse)
         {
             OpenMenu();
-
-            //TODO CLOSE ON CLICK
-
-            //if (!IsOpenMenu)
-            //{
-            //    OpenMenu();
-            //}
-            //else
-            //{
-            //    CloseMenu();
-            //}
         }
 
-        public void SetItems<T>() where T : Enum
+        public void SetItems<T>() where T : struct, Enum
         {
-            //TODO add enum
+            var names = Enum.GetNames<T>();
+            SetItems(names);
         }
 
         public void SetItems(IEnumerable<string> items)
         {
-            CloseMenu();
+            if (items == null)
+            {
+                return;
+            }
 
+            CloseMenu();
             this.items = items.ToArray();
         }
 
@@ -106,11 +99,28 @@ namespace Fitamas.UserInterface.Components
         {
             if (dictionary.TryGetValue(contextItem, out int index))
             {
-                OnSelectItemIndex.Invoke(this, index);
+                SelectedItem = index;
+            }
+        }
 
-                string item = items[index];
+        private static void SelectItemChangedCallback(DependencyObject dependencyObject, DependencyProperty<int> property, int oldValue, int newValue)
+        {
+            if (dependencyObject is GUIComboBox comboBox)
+            {
+                ComboBoxEventArgs args = new ComboBoxEventArgs();
 
-                OnSelectItem.Invoke(this, item);
+                if (newValue >= 0 && comboBox.items.Length > newValue)
+                {
+                    args.Index = newValue;
+                    args.Item = comboBox.items[newValue];
+                }
+                else
+                {
+                    args.Index = -1;
+                    args.Item = "";
+                }
+
+                comboBox.OnSelectItem.Invoke(comboBox, args);
             }
         }
     }

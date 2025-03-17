@@ -57,10 +57,18 @@ namespace Fitamas.UserInterface
 
             foreach (Setter setter in Setters)
             {
-                GUIComponent component1 = component;
+                GUIComponent component1 = null;
+
                 if (!string.IsNullOrEmpty(setter.TargetName))
                 {
-                    component1 = component.GetComponentFromName(setter.TargetName, false);
+                    if (component.ControlTemplate != null)
+                    {
+                        component1 = component.ControlTemplate[setter.TargetName];
+                    }
+                }
+                else
+                {
+                    component1 = component;
                 }
 
                 if (component1 != null)

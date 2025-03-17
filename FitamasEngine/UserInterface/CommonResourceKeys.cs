@@ -163,7 +163,11 @@ namespace Fitamas.UserInterface
         public static readonly string TrackBarThumbDisableColor = nameof(TrackBarThumbDisableColor);
 
 
+        public static readonly string TreeViewStyle = nameof(TreeViewStyle);
 
+        public static readonly string TreeViewIndent = nameof(TreeViewIndent);
+
+        public static readonly string TreeNodeStyle = nameof(TreeNodeStyle);
 
         //public static readonly string SliderTrackBackgroundBrushKey = "SliderTrackBackgroundBrush";
 

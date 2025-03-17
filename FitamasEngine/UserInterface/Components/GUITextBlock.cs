@@ -21,11 +21,11 @@ namespace Fitamas.UserInterface.Components
 
     public class GUITextBlock : GUIComponent
     {
-        public static readonly DependencyProperty<string> TextProperty = new DependencyProperty<string>();
+        public static readonly DependencyProperty<string> TextProperty = new DependencyProperty<string>(TextChangedCallback);
 
-        public static readonly DependencyProperty<bool> AutoScaleProperty = new DependencyProperty<bool>(true, false);
+        public static readonly DependencyProperty<bool> AutoScaleProperty = new DependencyProperty<bool>(AutoScaleChangedCallback, true, false);
 
-        public static readonly DependencyProperty<float> ScaleProperty = new DependencyProperty<float>(1, false);
+        public static readonly DependencyProperty<float> ScaleProperty = new DependencyProperty<float>(ScaleChangedCallback, 1, false);
 
         public static readonly DependencyProperty<Color> ColorProperty = new DependencyProperty<Color>(Color.Black);
 
@@ -33,7 +33,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<GUITextVerticalAlignment> TextVerticalAlignmentProperty = new DependencyProperty<GUITextVerticalAlignment>(GUITextVerticalAlignment.Top);
 
-        public static readonly DependencyProperty<SpriteFont> FontProperty = new DependencyProperty<SpriteFont>(FontChangedCallback, FontExpressionChangedCallback);
+        public static readonly DependencyProperty<SpriteFont> FontProperty = new DependencyProperty<SpriteFont>(FontChangedCallback, FontManager.DefaultFont, false);
 
         public Point Offset { get; set; }
 
@@ -191,27 +191,6 @@ namespace Fitamas.UserInterface.Components
 
         }
 
-        protected override void OnUpdate(GameTime gameTime)
-        {
-            if (AutoScale)
-            {
-                Point localScale = LocalSize;
-                Point scale = ScaledTextSize;
-
-                if (HorizontalAlignment != GUIHorizontalAlignment.Stretch)
-                {
-                    localScale.X = scale.X;
-                    LocalSize = localScale;
-                }
-
-                if (VerticalAlignment != GUIVerticalAlignment.Stretch)
-                {
-                    localScale.Y = scale.Y;
-                    LocalSize = localScale;
-                }
-            }
-        }
-
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
             SpriteFont font = Font;
@@ -231,6 +210,27 @@ namespace Fitamas.UserInterface.Components
             Render.End();
 
             base.OnDraw(gameTime, context);
+        }
+
+        private void UpdateSize()
+        {
+            if (AutoScale)
+            {
+                Point localScale = LocalSize;
+                Point scale = ScaledTextSize;
+
+                if (HorizontalAlignment != GUIHorizontalAlignment.Stretch)
+                {
+                    localScale.X = scale.X;
+                    LocalSize = localScale;
+                }
+
+                if (VerticalAlignment != GUIVerticalAlignment.Stretch)
+                {
+                    localScale.Y = scale.Y;
+                    LocalSize = localScale;
+                }
+            }
         }
 
         public int GetIndexFromScreenPos(Point position)
@@ -302,7 +302,7 @@ namespace Fitamas.UserInterface.Components
             return closestIndex;
         }
 
-        public bool NearlyEqual(double? value1, double? value2, double unimportantDifference = 0.0001)
+        public static bool NearlyEqual(double? value1, double? value2, double unimportantDifference = 0.0001)
         {
             if (value1 != value2)
             {
@@ -315,16 +315,35 @@ namespace Fitamas.UserInterface.Components
             return true;
         }
 
-        private static void FontChangedCallback(DependencyObject dependencyObject, DependencyProperty<SpriteFont> property, SpriteFont oldValue, SpriteFont newValue)
-        {
-            //TODO
-        }
-
-        private static void FontExpressionChangedCallback(DependencyObject dependencyObject, DependencyProperty property, Expression oldExpression, Expression newExpression)
+        private static void TextChangedCallback(DependencyObject dependencyObject, DependencyProperty<string> property, string oldValue, string newValue)
         {
             if (dependencyObject is GUITextBlock textBlock)
             {
+                textBlock.UpdateSize();
+            }
+        }
 
+        private static void AutoScaleChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (dependencyObject is GUITextBlock textBlock)
+            {
+                textBlock.UpdateSize();
+            }
+        }
+
+        private static void ScaleChangedCallback(DependencyObject dependencyObject, DependencyProperty<float> property, float oldValue, float newValue)
+        {
+            if (dependencyObject is GUITextBlock textBlock)
+            {
+                textBlock.UpdateSize();
+            }
+        }
+
+        private static void FontChangedCallback(DependencyObject dependencyObject, DependencyProperty<SpriteFont> property, SpriteFont oldValue, SpriteFont newValue)
+        {
+            if (dependencyObject is GUITextBlock textBlock)
+            {
+                textBlock.UpdateSize();
             }
         }
     }

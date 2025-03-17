@@ -3,7 +3,6 @@ using Fitamas.Input;
 using Fitamas.Core;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -22,14 +21,15 @@ namespace Fitamas.Samples.HelloWorld
         {
             GUIDebug.Active = true;
 
-            GUISystem system = Container.Resolve<GUISystem>("gui_system");
-
             FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
             ResourceDictionary.DefaultResources[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
 
+            GUISystem system = Container.Resolve<GUISystem>("gui_system");
+            system.LoadScreen("Layouts\\MainMenu.xml");
+
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
-            button.OnClicked.AddListener(r => { Debug.Log(r); });
+            button.OnClicked.AddListener((b, a) => { Debug.Log(b); });
             system.AddComponent(button);
 
             GUITextBlock textBlock = GUI.CreateTextBlock(new Point(50, 10), "Hello World!\nHello World!");
@@ -53,15 +53,16 @@ namespace Fitamas.Samples.HelloWorld
             checkBox.OnValueChanged.AddListener((r, v) => { button.Interacteble = v; });
             textBlock.AddChild(checkBox);
 
-            GUIComboBox comboBox = GUI.CreateComboBox(new Point(50, 200), ["item1", "item2", "item3"], new Point(250, 45));
+            GUIComboBox comboBox = GUI.CreateComboBox(new Point(50, 200), size: new Point(250, 45));
             comboBox.Pivot = new Vector2(0, 0);
-            comboBox.OnSelectItem.AddListener((r, v) => { Debug.Log(v); });
+            comboBox.OnSelectItem.AddListener((r, v) => { Debug.Log(v.Item); });
+            comboBox.SetItems<GUIAlignment>();
             system.AddComponent(comboBox);
 
             GUIStack group = new GUIStack();
             group.Orientation = GUIGroupOrientation.Horizontal;
             group.LocalPosition = new Point(50, 250);
-            group.LocalSize = new Point(400, 100);
+            group.LocalSize = new Point(400, 20);
             group.ControlChildSizeWidth = true;
             group.ControlChildSizeHeight = true;
             group.ControlSizeWidth = true;
@@ -108,25 +109,30 @@ namespace Fitamas.Samples.HelloWorld
             lineRenderer.ShadowEnable = true;
             system.AddComponent(lineRenderer);
 
-            GUITreeNode node = GUI.CreateTreeNode("TEST");
-            node.LocalPosition = new Point(750, 50);
-            node.LocalSize = new Point(200, 50);
-            node.Pivot = new Vector2(0, 0);
-            system.AddComponent(node);
+            GUITreeView treeView = GUI.CreateTreeView(new Point(750, 50), new Point(300, 300));
+            treeView.Pivot = new Vector2(0, 0);
+            treeView.OnSelectTreeNode.AddListener(a => Debug.Log(a.Id));
+            system.AddComponent(treeView);
+
+            treeView.CreateTreeNode("TEST1");
+            GUITreeNode node = treeView.CreateTreeNode("TEST2");
+            node.CreateTreeNode("TEST3").CreateTreeNode("TEST4");
+            node.CreateTreeNode("TEST5");
+            node.CreateTreeNode("TEST6");
+            treeView.CreateTreeNode("TEST7");
+            treeView.CreateTreeNode("TEST8");
 
             InputSystem.mouse.MouseUp += (s, e) =>
             {
                 if (e.Button == MouseButton.Right)
                 {
                     GUIContextMenu contextMenu = GUI.CreateContextMenu(e.Position);
-                    contextMenu.AddItem("Test111111");
-                    contextMenu.AddItem("Test222");
-                    contextMenu.AddItem("Test3");
+                    contextMenu.AddItem("Test_111111");
+                    contextMenu.AddItem("Test_222");
+                    contextMenu.AddItem("Test_3");
                     system.Root.OpenPopup(contextMenu);
                 }
             };
-
-
 
             base.LoadContent();
         }

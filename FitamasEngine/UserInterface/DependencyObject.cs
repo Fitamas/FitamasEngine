@@ -58,14 +58,13 @@ namespace Fitamas.UserInterface
 
         public bool TryReadLocalValue(DependencyProperty property, out object value)
         {
-            value = default;
-
             if (expressionMap.TryGetValue(property.Id, out Expression expression))
             {
                 value = expression.Value;
                 return true;
             }
 
+            value = default;
             return false;
         }
 

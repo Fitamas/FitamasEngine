@@ -34,12 +34,7 @@ namespace Fitamas.UserInterface
 
         internal override bool IsActive(GUIComponent component)
         {
-            if (Equals(component.GetValue(Property), Value))
-            {
-                return true;
-            }
-
-            return false;
+            return Equals(component.GetValue(Property), Value);
         }
 
         internal override void CheckState(GUIComponent component)

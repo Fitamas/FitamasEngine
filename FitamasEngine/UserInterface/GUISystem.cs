@@ -17,8 +17,6 @@ namespace Fitamas.UserInterface
 {
     public class GUISystem : ILoadContentSystem, IUpdateSystem, IDrawSystem
     {
-        public const string DefoultLayout = "Layouts\\MainMenu.xml";
-
         private GraphicsDevice graphics;
         private GUIRenderBatch render;
         private DIContainer container;
@@ -73,7 +71,7 @@ namespace Fitamas.UserInterface
 
         public void LoadContent(ContentManager content)
         {
-            LoadScreen(DefoultLayout);
+
         }
 
         public void Initialize(GameWorld world)
@@ -168,8 +166,6 @@ namespace Fitamas.UserInterface
             }
 
             scripting?.Update();
-
-            root.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime)
@@ -236,7 +232,7 @@ namespace Fitamas.UserInterface
 
         public void LoadScreen(string name)
         {
-            SerializebleLayout selectScreen = Resources.Load<SerializebleLayout>(name);
+            SerializebleLayout selectScreen = GUIUtility.Load(name);
 
             if (selectScreen != null)
             {

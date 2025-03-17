@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using Fitamas.Input.InputListeners;
 using System;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Fitamas.UserInterface.Components
 {

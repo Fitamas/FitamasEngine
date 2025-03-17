@@ -65,7 +65,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             IsPowered = false;
         }
 
-        protected override void OnUpdate(GameTime gameTime)
+        protected void OnUpdate(GameTime gameTime)
         {
             List<Point> points = [.. AnchorPoints];
 

@@ -17,6 +17,8 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.TextInputStyle] = GUITextInputStyle.Create(dictionary);
             dictionary[CommonResourceKeys.TrackBarStyle] = GUITrackBarStyle.CreateTrackBar(dictionary);
             dictionary[CommonResourceKeys.TrackBarThumbStyle] = GUITrackBarStyle.CreateThumb(dictionary);
+            dictionary[CommonResourceKeys.TreeViewStyle] = GUITreeStyle.CreateTreeViewStyle(dictionary);
+            dictionary[CommonResourceKeys.TreeNodeStyle] = GUITreeStyle.CreateTreeNodeStyle(dictionary);
         }
 
         public static void CreateVars(ResourceDictionary dictionary)
@@ -24,6 +26,7 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.WindowPadding] = new Point(3, 3);
             dictionary[CommonResourceKeys.FramePadding] = new Point(10, 10);
             dictionary[CommonResourceKeys.ScrollbarSize] = 10;
+            dictionary[CommonResourceKeys.TreeViewIndent] = 20;
         }
 
         public static Trigger CreateTriggerForButton<T>(ResourceDictionary dictionary, DependencyProperty<T> property, T value, string imageColor = null, string textColor = null, string targetName = null)
