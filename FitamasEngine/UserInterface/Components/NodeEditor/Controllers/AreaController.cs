@@ -17,20 +17,13 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             editor.OnKeybordEvent.AddListener(OnKeyTyped);
         }
 
-        public override void Init()
-        {
-
-        }
-
         private void OnMouseEvent(GUINodeEditorEventArgs args)
         {
             if (args.Button == MouseButton.Middle)
             {
                 if (args.EventType == GUIEventType.Drag)
                 {
-                    Point delta = new Point(args.DragDelta.X, -args.DragDelta.Y);
-
-                    editor.Frame.LocalPosition += delta;
+                    editor.Frame.LocalPosition += args.DragDelta;
 
                     moving = true;
                 }

@@ -1,40 +1,73 @@
-﻿using ClipperLib;
+﻿using R3;
 using Fitamas;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using ObservableCollections;
 
-namespace WDL.Gameplay.DigitalLogic
+namespace WDL.DigitalLogic
 {
     public class Simulator
     {
-        private List<LogicComponent> components = new List<LogicComponent>();
-        private List<Connector> connectors = new List<Connector>();
+        private LogicComponentManager manager;
+        private LogicComponentDescription component;
+        private ObservableList<LogicComponent> components;
+        private ObservableList<Connector> connectors;
+
         private int componentCount = 0;
         private int connectCount = 0;
 
-        public LogicComponent[] Components => components.ToArray();
-
-        public IOutputLogicComponent[] OutputComponents
+        public Simulator(LogicComponentManager manager, LogicComponentDescription description)
         {
-            get
-            {
-                List<IOutputLogicComponent> result = new List<IOutputLogicComponent>();
-                foreach (LogicComponent component in components)
-                {
-                    if (component is IOutputLogicComponent output)
-                    {
-                        result.Add(output);
-                    }
-                }
+            this.manager = manager;
+            this.component = description;
+            components = new ObservableList<LogicComponent>();
+            connectors = new ObservableList<Connector>();
 
-                return result.ToArray();
+            foreach (var item in description.Components)
+            {
+                AddComponent(item);
             }
+
+            foreach (var item in description.Connections)
+            {
+                AddConnection(item);
+            }
+
+            components.ObserveAdd().Subscribe(component =>
+            {
+                description.Components.Add(component.Value.Data);
+            });
+
+            components.ObserveRemove().Subscribe(component =>
+            {
+                description.Components.Add(component.Value.Data);
+            });
+
+            connectors.ObserveAdd().Subscribe(connector =>
+            {
+                //description.Connections.Add(connector.Value.Data);
+            });
+
+            connectors.ObserveRemove().Subscribe(connector =>
+            {
+                //description.Connections.Add(connector.Value.Data);
+            });
         }
 
-        public Simulator()
+        private void AddComponent(LogicComponentData data)
         {
+            LogicComponentDescription description = manager.GetComponent(data.TypeId);
+            LogicComponent component = description.CreateComponent(manager, data);
+            components.Add(component);
+        }
 
+        private void AddConnection(LogicConnectionData connection)
+        {
+            LogicComponent outputComponent = components[connection.OutputComponentId];
+            LogicComponent inputComponent = components[connection.InputComponentId];
+
+            ConnectorOutput outputConnector = outputComponent.GetOutput(connection.OutputIndex);
+            ConnectorInput inputConnector = inputComponent.GetInput(connection.InputIndex);
+
+            CreateConnect(outputConnector, inputConnector);
         }
 
         public void Update()
@@ -105,11 +138,8 @@ namespace WDL.Gameplay.DigitalLogic
 
         public void AddComponent(LogicComponent component)
         {
-            Debug.Log("Add to simulator: " + component.Description.FullName);
-
             if (!components.Contains(component))
             {
-                component.Id = componentCount;
                 componentCount++;
                 components.Add(component);
 

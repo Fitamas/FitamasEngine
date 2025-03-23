@@ -22,7 +22,7 @@ namespace Fitamas.UserInterface.Components
 
         protected Texture2D texture;
 
-        public List<Point> Anchors;
+        public List<Point> Anchors { get; }
 
         public Color Color
         {
@@ -87,25 +87,7 @@ namespace Fitamas.UserInterface.Components
         public GUILineRenderer()
         {
             texture = Texture2DHelper.DefaultTexture;
-        }
-
-        public void SetAnchorPoints(IEnumerable<Point> anchors)
-        {
-            Anchors = anchors.ToList();
-
-            //if (this.anchors.Count >= 2)
-            //{
-            //    Point min = this.anchors[0];
-            //    Point max = this.anchors[0];
-
-            //    foreach (Point anchor in anchors)
-            //    {
-            //        if (anchor.X < min.X) min.X = anchor.X;
-            //        if (anchor.Y < min.Y) min.Y = anchor.Y;
-            //        if (anchor.X > max.X) max.X = anchor.X;
-            //        if (anchor.Y > max.Y) max.Y = anchor.Y;
-            //    }
-            //}
+            Anchors = new List<Point>();
         }
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)

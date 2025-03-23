@@ -1,12 +1,8 @@
-﻿using Fitamas.Container;
-using Fitamas.Entities;
+﻿using Fitamas.Entities;
 using Fitamas.Extended.Entities;
 using Fitamas.Input;
 using Fitamas.Serialization;
 using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Scripting;
-using Fitamas.UserInterface.Serializeble;
-using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,10 +15,8 @@ namespace Fitamas.UserInterface
     {
         private GraphicsDevice graphics;
         private GUIRenderBatch render;
-        private DIContainer container;
         private GUIDebug debug;
         private GUIRoot root;
-        private GUIScripting scripting;
         private GUIComponent focused;
 
         private List<IKeyboardEvent> keyboard = new List<IKeyboardEvent>();
@@ -33,7 +27,6 @@ namespace Fitamas.UserInterface
         public bool MouseOnGUI => OnMouse != null;
         public GraphicsDevice GraphicsDevice => graphics;
         public GUIRenderBatch Render => render;
-        public DIContainer Container => container;
         public GUIRoot Root => root;
 
         public GUIComponent Focused 
@@ -55,11 +48,8 @@ namespace Fitamas.UserInterface
 
         public GUIComponent OnMouse { get; set; }
 
-        public GUISystem(GraphicsDevice graphicsDevice, DIContainer container)
+        public GUISystem(GraphicsDevice graphicsDevice)
         {
-            this.container = container;
-            this.container.RegisterInstance("gui_system", this);
-
             debug = new GUIDebug(graphicsDevice);
             root = new GUIRoot();
 
@@ -164,8 +154,6 @@ namespace Fitamas.UserInterface
                     OnMouse.IsMouseOver = true;
                 }
             }
-
-            scripting?.Update();
         }
 
         public void Draw(GameTime gameTime)
@@ -186,7 +174,7 @@ namespace Fitamas.UserInterface
 
         public void AddComponent(GUIComponent component)
         {
-            root.AddComponent(component);
+            root.MainFrame.AddChild(component);
         }
 
         public GUIComponent GetComponentFromId(string id)
@@ -227,22 +215,6 @@ namespace Fitamas.UserInterface
             if (component is IDragMouseEvent drag)
             {
                 dragMouse.Remove(drag);
-            }
-        }
-
-        public void LoadScreen(string name)
-        {
-            SerializebleLayout selectScreen = GUIUtility.Load(name);
-
-            if (selectScreen != null)
-            {
-                scripting = selectScreen.Scripting;
-
-                foreach (var component in selectScreen.Components)
-                {
-                    AddComponent(component);
-                }
-                selectScreen.Scripting.OnOpen(this);
             }
         }
 

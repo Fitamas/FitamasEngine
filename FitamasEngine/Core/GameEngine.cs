@@ -11,6 +11,8 @@ using Fitamas.Physics.Characters;
 using Fitamas.Scene;
 using Fitamas.Scripting;
 using Fitamas.UserInterface;
+using Fitamas.UserInterface.ViewModel;
+using System.ComponentModel;
 
 namespace Fitamas.Core
 {
@@ -59,9 +61,8 @@ namespace Fitamas.Core
             base.Initialize();
         }
 
-        public virtual WorldBuilder CreateWorldBuilder()
+        protected virtual WorldBuilder CreateWorldBuilder()
         {
-
             return new WorldBuilder(this)
                 //Load content
                 .AddSystem(new ScriptingSystem())
@@ -81,8 +82,23 @@ namespace Fitamas.Core
                 //Render
                 .AddSystem(new CameraSystem(this))
                 .AddSystem(new RenderSystem(GraphicsDevice))
-                .AddSystem(new GUISystem(GraphicsDevice, Container))
+                .AddSystem(CreateGUISystem())
                 .AddSystem(new DebugRenderSystem(GraphicsDevice));
+        }
+
+        protected virtual GUISystem CreateGUISystem()
+        {
+            GUISystem system = new GUISystem(GraphicsDevice);
+            Container.RegisterInstance(ApplicationKey.GUISystem, system);
+
+            GUIRootBinder rootBinder = new GUIRootBinder(system);
+            Container.RegisterInstance(ApplicationKey.GUIRootBinder, rootBinder);
+
+            GUIRootViewModel rootViewModel = new GUIRootViewModel();
+            rootBinder.Bind(rootViewModel);
+            Container.RegisterInstance(ApplicationKey.GUIRootViewModel, rootViewModel);
+
+            return system;
         }
 
         protected override void LoadContent()

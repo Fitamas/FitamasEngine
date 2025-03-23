@@ -1,6 +1,5 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.Serialization;
-using Fitamas.UserInterface.Scripting;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using System;
@@ -11,15 +10,15 @@ using System.Xml.Linq;
 using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.Events;
 using Fitamas.Serialization.Xml;
+using Fitamas.UserInterface.ViewModel;
 
-namespace Fitamas.UserInterface.Serializeble
+namespace Fitamas.UserInterface.Serialization
 {
     public class GUISerializer
     {
         private Dictionary<string, Func<XElement, GUIComponent>> converters;
         private Dictionary<string, GUIComponent> dictionary;
         private XDocument document;
-        private GUIScripting scripting;
 
         public GUISerializer()
         {
@@ -35,25 +34,28 @@ namespace Fitamas.UserInterface.Serializeble
             };
         }
 
-        public SerializebleLayout Load(string path)
+        public GUIWindowBinder Load(string path)
         {
             string fileName = Path.Combine(Resources.RootDirectory, path);
 
             document = XDocument.Load(fileName);
 
             string lua = fileName + ".lua";
-            scripting = new GUIScripting(lua);
-            List<GUIComponent> components = new List<GUIComponent>();
+            GUIWindow window = new GUIWindow();
+            //scripting = new GUIScripting(window, lua);
 
-            foreach (XElement el in document.Root.Elements())
-            {
-                GUIComponent component = FromXML(el);
-                //frame.AddChild(component);
-            }
+            //List<GUIComponent> components = new List<GUIComponent>();
 
-            SerializebleLayout layout = new SerializebleLayout(scripting, components);
+            //foreach (XElement el in document.Root.Elements())
+            //{
+            //    GUIComponent component = FromXML(el);
+            //    //frame.AddChild(component);
+            //}
 
-            return layout;
+            GUIWindowBinder binder = new GUIWindowBinder();
+            //binder.Scripting = scripting;
+            binder.Window = window;
+            return binder;
         }
 
         public GUIComponent FromXML(XElement element)
@@ -274,13 +276,13 @@ namespace Fitamas.UserInterface.Serializeble
         {
             GUINodeEditor editor = new GUINodeEditor();
 
-            editor.Settings.BackGroundColor = element.GetAttributeColor("backGroundColor", editor.Settings.BackGroundColor);
-            editor.Settings.NodeSize = element.GetAttributePoint("nodeSize", editor.Settings.NodeSize);
-            editor.Settings.HeaderSize = element.GetAttributeFloat("headerSize", editor.Settings.HeaderSize);
-            editor.Settings.PinSize = element.GetAttributePoint("pinSize", editor.Settings.PinSize);
-            editor.Settings.PinSpacing = element.GetAttributeInt("pinSpacing", editor.Settings.PinSpacing);
-            editor.Settings.PinOn = element.GetAttributeMonoObject<Sprite>("pinOn");
-            editor.Settings.PinOff = element.GetAttributeMonoObject<Sprite>("pinOff");
+            //editor.Settings.BackGroundColor = element.GetAttributeColor("backGroundColor", editor.Settings.BackGroundColor);
+            //editor.Settings.NodeSize = element.GetAttributePoint("nodeSize", editor.Settings.NodeSize);
+            //editor.Settings.HeaderSize = element.GetAttributeFloat("headerSize", editor.Settings.HeaderSize);
+            //editor.Settings.PinSize = element.GetAttributePoint("pinSize", editor.Settings.PinSize);
+            //editor.Settings.PinSpacing = element.GetAttributeInt("pinSpacing", editor.Settings.PinSpacing);
+            //editor.Settings.PinOn = element.GetAttributeMonoObject<Sprite>("pinOn");
+            //editor.Settings.PinOff = element.GetAttributeMonoObject<Sprite>("pinOff");
 
             return editor;
         }

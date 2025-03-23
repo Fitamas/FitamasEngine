@@ -12,8 +12,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             this.editor = editor;
         }
 
-        public abstract void Init();
-
         public abstract bool IsBusy();
 
         public virtual void Update()

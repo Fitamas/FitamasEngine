@@ -2,7 +2,7 @@
 
 namespace Fitamas.MVVM
 {
-    public abstract class Binder<T> : IDisposable where T : IViewModel
+    public abstract class Binder<T> : IBinder<T> where T : IViewModel
     {
         private IDisposable disposable;
 

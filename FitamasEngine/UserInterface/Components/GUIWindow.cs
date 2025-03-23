@@ -59,7 +59,6 @@ namespace Fitamas.UserInterface.Components
 
         public GUIWindow()
         {
-            IsMask = true;
             RaycastTarget = true;
         }
 

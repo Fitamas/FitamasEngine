@@ -1,4 +1,5 @@
 ﻿using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -7,70 +8,37 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 {
     public class GUINode : GUIComponent
     {
-        private GUINodeEditor nodeEditor;
-        private List<GUIPin> pins = new List<GUIPin>();
-        private bool isHovered = false;
-        private bool isSelect = false;
+        public static readonly DependencyProperty<bool> IsSelectProperty = new DependencyProperty<bool>(false, false);
 
-        public GUITextBlock HeaderTextBlock;
-        public GUIImage HeaderImage;
-        public GUIImage Image;
-        public GUIImage SelectedImage;
-
-        public List<GUIPin> Pins => pins;
-
-        //public bool IsHovered 
-        //{ 
-        //    get
-        //    {
-        //        return isHovered;
-        //    }
-        //    set
-        //    {
-        //        isHovered = value;
-
-
-        //        //TODO
-        //    }
-        //}
+        public List<GUIPin> Pins { get; }
+        public GUINodeEditor NodeEditor { get; set; }
 
         public bool IsSelect
         {
             get
             {
-                return isSelect;
+                return GetValue(IsSelectProperty);
             }
             set
             {
-                isSelect = value;
-                if (SelectedImage != null)
-                {
-                    SelectedImage.Enable = isSelect;
-                }
+                SetValue(IsSelectProperty, value);
             }
         }
 
         public GUINode()
         {
-
-        }
-
-        public void Init(GUINodeEditor nodeEditor)
-        {
-            this.nodeEditor = nodeEditor;
-            IsSelect = false;
-            RecalculateNode();
+            Pins = new List<GUIPin>();
         }
 
         public int IndexOf(GUIPin pin, GUIPinType type = GUIPinType.Input)
         {
             int k = 0;
 
-            for (int i = 0; i < pins.Count; i++)
+            for (int i = 0; i < Pins.Count; i++)
             {
-                if (pins[i].PinType == type)
+                if (Pins[i].PinType == type)
                 {
-                    if (pins[i] == pin)
+                    if (Pins[i] == pin)
                     {
                         return k;
                     }
@@ -85,13 +53,13 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public GUIPin GetPin(int index, GUIPinType type = GUIPinType.Input)
         {
             int k = 0;
-            for (int i = 0; i < pins.Count; i++)
+            for (int i = 0; i < Pins.Count; i++)
             {
-                if (pins[i].PinType == type)
+                if (Pins[i].PinType == type)
                 {
                     if (k == index)
                     {
-                        return pins[i];
+                        return Pins[i];
                     }
 
                     k++;
@@ -103,27 +71,21 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public void Add(GUIPin pin)
         {
-            if (IsInHierarchy)
-            {
-                AddChild(pin);
+            AddChild(pin);
 
-                if (!pins.Contains(pin))
-                {
-                    pins.Add(pin);
-                    RecalculateNode();
-                    nodeEditor?.OnCreatePin.Invoke(pin);
-                }
+            if (!Pins.Contains(pin))
+            {
+                Pins.Add(pin);
+                RecalculateNode();
+                NodeEditor?.OnCreatePin.Invoke(pin);
             }
         }
 
         public void Remove(GUIPin pin)
         {
-            if (IsInHierarchy)
-            {
-                pins.Remove(pin);
-                RecalculateNode();
-                nodeEditor?.OnDeletePin.Invoke(pin);
-            }
+            Pins.Remove(pin);
+            RecalculateNode();
+            NodeEditor?.OnDeletePin.Invoke(pin);
         }
 
         protected override void OnAddChild(GUIComponent component)
@@ -142,53 +104,40 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             }
         }
 
-        public GUIPin CreateDefoultPin(string name, GUIPinType type = GUIPinType.Input, GUIPinAlignment pinAlignment = GUIPinAlignment.Left)
+        public GUIPin CreatePin(string name, GUIPinType type = GUIPinType.Input, GUIPinAlignment pinAlignment = GUIPinAlignment.Left)
         {
-            GUIPin pin = GUI.CreatePin(name, type, pinAlignment);
-            ((GUITextBlock)pin.Content).Color = nodeEditor.Settings.PinTextColor;
-            return CreateDefoultPin(pin);
-        }
-
-        public GUIPin CreateDefoultPin(GUIPinType type = GUIPinType.Input, GUIPinAlignment pinAlignment = GUIPinAlignment.Left)
-        {
-            return CreateDefoultPin(GUI.CreatePin(type, pinAlignment));
-        }
-
-        private GUIPin CreateDefoultPin(GUIPin pin)
-        {
-            pin.ImageOn.Sprite = nodeEditor.Settings.PinOn;
-            pin.ImageOff.Sprite = nodeEditor.Settings.PinOff;
-            pin.IsConnected = false;
-
+            GUIPin pin = GUINodeUtils.CreatePin(name, type, pinAlignment);
             Add(pin);
             return pin;
         }
 
-        public void RecalculateNode()
+        public GUIPin CreatePin(GUIPinType type = GUIPinType.Input, GUIPinAlignment pinAlignment = GUIPinAlignment.Left)
         {
-            if (nodeEditor == null)
-            {
-                return;
-            }
+            GUIPin pin = GUINodeUtils.CreatePin(type, pinAlignment);
+            Add(pin);
+            return pin;
+        }
 
+        private void RecalculateNode()
+        {
             int sizeY = 0;
-            if (HeaderTextBlock != null)
-            {
-                sizeY = (int)(HeaderTextBlock.LocalSize.Y * nodeEditor.Settings.HeaderSize);
-            }
-            if (HeaderImage != null)
-            {
-                HeaderImage.LocalSize = new Point(0, sizeY);
-            }
+            //if (HeaderTextBlock != null)
+            //{
+            //    //sizeY = (int)(HeaderTextBlock.LocalSize.Y * nodeEditor.Settings.HeaderSize);
+            //}
+            //if (HeaderImage != null)
+            //{
+            //    HeaderImage.LocalSize = new Point(0, sizeY);
+            //}
 
-            int spacing = nodeEditor.Settings.PinSpacing;
+            int spacing = 0;// nodeEditor.Settings.PinSpacing;
             Point sizeLeft = new Point(0, sizeY + spacing);
             Point sizeRight = new Point(0, sizeY + spacing);
             Point posLeft = new Point(0, -sizeY - spacing);
             Point posRight = new Point(0, -sizeY - spacing);
-            foreach (GUIPin pin in pins)
+            foreach (GUIPin pin in Pins)
             {
-                Point contentSize = nodeEditor.Settings.PinSize;
+                Point contentSize = Point.Zero; //nodeEditor.Settings.PinSize;
                 pin.LocalSize = contentSize;
                 contentSize.X += pin.ContentScale.X;
                 contentSize.Y = Math.Max(contentSize.Y, pin.ContentScale.Y);
@@ -214,8 +163,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
                 }
             }
 
-            Point size = nodeEditor.Settings.NodeSize;
-            size.X = Math.Max(size.X, sizeLeft.X + sizeRight.X + nodeEditor.Settings.SiteSpacing);
+            Point size = Point.Zero;// nodeEditor.Settings.NodeSize;
+            size.X = Math.Max(size.X, sizeLeft.X + sizeRight.X /*+ nodeEditor.Settings.SiteSpacing*/);
             size.Y = Math.Max(size.Y, sizeLeft.Y);
             size.Y = Math.Max(size.Y, sizeRight.Y);
             LocalSize = size;

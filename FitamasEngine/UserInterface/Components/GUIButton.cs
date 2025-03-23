@@ -11,8 +11,6 @@ namespace Fitamas.UserInterface.Components
 {
     public class GUIButton : GUIComponent, IMouseEvent
     {
-        public static readonly DependencyProperty<GUIStyle> ColorProperty = new DependencyProperty<GUIStyle>();
-
         public static readonly DependencyProperty<bool> IsPressedProperty = new DependencyProperty<bool>();
 
         public static readonly RoutedEvent OnClickedEvent = new RoutedEvent();

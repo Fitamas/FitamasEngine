@@ -19,20 +19,23 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
     public class GUIPin : GUIComponent
     {
-        [SerializableField] private GUIPinAlignment pinAlignment;
-        [SerializableField] private GUIPinType type;
-        [SerializableField] private GUIComponent content;
+        public static readonly DependencyProperty<GUIPinType> PinTypeProperty = new DependencyProperty<GUIPinType>(GUIPinType.Input, false);
 
-        private bool isConnected;
+        public static readonly DependencyProperty<GUIPinAlignment> PinAlignmentProperty = new DependencyProperty<GUIPinAlignment>(GUIPinAlignment.Left, false);
 
-        public GUIImage ImageOn;
-        public GUIImage ImageOff;
+        public static readonly DependencyProperty<bool> IsConnectedProperty = new DependencyProperty<bool>(false, false);
+
+        private GUIComponent content;
 
         public GUIPinType PinType
         {
             get
             {
-                return type;
+                return GetValue(PinTypeProperty);
+            }
+            set
+            {
+                SetValue(PinTypeProperty, value);
             }
         }
 
@@ -40,12 +43,11 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         {
             get
             {
-                return pinAlignment;
+                return GetValue(PinAlignmentProperty);
             }
             set
             {
-                pinAlignment = value;
-                RecalculateContentAlignment();
+                SetValue(PinAlignmentProperty, value);
             }
         }
 
@@ -58,7 +60,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             set
             {
                 content = value;
-                RecalculateContentAlignment();
+                RecalculateContent();
             }
         }
 
@@ -66,20 +68,11 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         {
             get
             {
-                return isConnected;
+                return GetValue(IsConnectedProperty);
             }
             set
             {
-                isConnected = value;
-
-                if (ImageOn != null)
-                {
-                    ImageOn.Enable = value;
-                }
-                if (ImageOff != null)
-                {
-                    ImageOff.Enable = !value;
-                }
+                SetValue(IsConnectedProperty, value);
             }
         }
 
@@ -96,27 +89,29 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             }
         }
 
-        public GUIPin(GUIPinType type = GUIPinType.Input)
+        public GUIPin()
         {
-            this.type = type;
+
         }
 
-        private void RecalculateContentAlignment()
+        private void RecalculateContent()
         {
-            if (content != null)
+            if (content == null)
             {
-                if (pinAlignment == GUIPinAlignment.Left)
-                {
-                    content.HorizontalAlignment = GUIHorizontalAlignment.Right;
-                    content.VerticalAlignment = GUIVerticalAlignment.Center;
-                    content.Pivot = new Vector2(0, 0.5f);
-                }
-                else if (pinAlignment == GUIPinAlignment.Right)
-                {
-                    content.HorizontalAlignment = GUIHorizontalAlignment.Left;
-                    content.VerticalAlignment = GUIVerticalAlignment.Center;
-                    content.Pivot = new Vector2(1, 0.5f);
-                }
+                return;
+            }
+
+            if (PinAlignment == GUIPinAlignment.Left)
+            {
+                content.HorizontalAlignment = GUIHorizontalAlignment.Right;
+                content.VerticalAlignment = GUIVerticalAlignment.Center;
+                content.Pivot = new Vector2(0, 0.5f);
+            }
+            else
+            {
+                content.HorizontalAlignment = GUIHorizontalAlignment.Left;
+                content.VerticalAlignment = GUIVerticalAlignment.Center;
+                content.Pivot = new Vector2(1, 0.5f);
             }
         }
     }

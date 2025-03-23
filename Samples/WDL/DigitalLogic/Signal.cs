@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WDL.Gameplay.DigitalLogic
+namespace WDL.DigitalLogic
 {
     public interface ISignal
     {

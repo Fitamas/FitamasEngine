@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WDL.Gameplay.DigitalLogic
+namespace WDL.DigitalLogic
 {
     public abstract class Connector
     {

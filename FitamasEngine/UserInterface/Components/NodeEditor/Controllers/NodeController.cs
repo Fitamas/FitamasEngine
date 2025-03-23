@@ -18,20 +18,9 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 
         public NodeController(GUINodeEditor editor) : base(editor)
         {
-
-        }
-
-        public override void Init()
-        {
             editor.OnMouseEvent.AddListener(OnMouseEvent);
             editor.OnNodeInteractMouseEvent.AddListener(OnNodeEvent);
             editor.OnKeybordEvent.AddListener(OnKeyTyped);
-
-
-
-            //editor.OnDeleteNode.AddListener(n => Debug.Log(n));
-            //editor.OnDeletePin.AddListener(n =>  Debug.Log(n));
-            //editor.OnDeleteWire.AddListener(n => Debug.Log(n));
         }
 
         public override bool IsBusy()

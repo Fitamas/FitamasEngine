@@ -195,6 +195,11 @@ namespace Fitamas.UserInterface.Components
         {
             base.OnDraw(gameTime, context);
 
+            if (!IsVisible)
+            {
+                return;
+            }
+
             SpriteFont font = TextBlock.Font;
             if (font == null)
             {
@@ -202,11 +207,6 @@ namespace Fitamas.UserInterface.Components
             }
 
             string text = Text;
-            if (string.IsNullOrEmpty(text))
-            {
-                return;
-            }
-
             int lineHeight = FontManager.GetHeight(font);
 
             if (isSelect)
@@ -283,15 +283,20 @@ namespace Fitamas.UserInterface.Components
                     start = 0;
                 }
 
-                int lineIndex = text.CountOf('\n', 0, CaretIndex);
-                int stringY = lineHeight * lineIndex;
-                string textBefore = text.Substring(start, CaretIndex - start);
-                Point stringSize = font.MeasureString(textBefore).ToPoint();
+                int stringX = 0;
+                int stringY = 0;
 
-                CalculateTextOffset(new Point(stringSize.X, stringY), lineHeight);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    string textBefore = text.Substring(start, CaretIndex - start);
+                    stringX = (int)font.MeasureString(textBefore).X;
+                    stringY = lineHeight * text.CountOf('\n', 0, CaretIndex);
+                }
+
+                CalculateTextOffset(new Point(stringX, stringY), lineHeight);
 
                 Point caretSize = new Point(CaretWidth, lineHeight);
-                Point caretPosition = TextBlock.TextPostion + new Point(stringSize.X + (int)font.Spacing / 2 - caretSize.X / 2, stringY);
+                Point caretPosition = TextBlock.TextPostion + new Point(stringX + (int)font.Spacing / 2 - caretSize.X / 2, stringY);
 
                 Render.Begin(context.Mask);
                 Render.FillRectangle(caretPosition, caretSize, CaretColor);

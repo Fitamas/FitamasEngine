@@ -1,6 +1,5 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.Scene;
-using Fitamas.UserInterface.Serializeble;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -18,7 +17,6 @@ namespace Fitamas.Serialization
             { ".spr", typeof(Sprite) },
             { ".mat", typeof(Matireal) },
             { ".prefab", typeof(Prefab) },
-            { ".xml", typeof(SerializebleLayout) },
         };
 
         public static string[] GetAllExtensions()

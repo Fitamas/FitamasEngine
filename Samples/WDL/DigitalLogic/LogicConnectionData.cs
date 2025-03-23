@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace WDL.Gameplay.DigitalLogic
+namespace WDL.DigitalLogic
 {
-    public struct Connection
+    public class LogicConnectionData
     {
         public Point[] Points;
         public Color EnableColor;

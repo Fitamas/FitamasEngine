@@ -193,6 +193,12 @@ namespace Fitamas.UserInterface.Components
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
+            if (!IsVisible)
+            {
+                base.OnDraw(gameTime, context);
+                return;
+            }
+
             SpriteFont font = Font;
             if (font == null)
             {

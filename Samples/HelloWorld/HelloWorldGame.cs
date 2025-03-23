@@ -5,6 +5,8 @@ using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Fitamas.UserInterface.Serialization;
+using Fitamas.UserInterface.ViewModel;
 
 namespace Fitamas.Samples.HelloWorld
 {
@@ -19,17 +21,25 @@ namespace Fitamas.Samples.HelloWorld
 
         protected override void LoadContent()
         {
+            base.LoadContent();
+
             GUIDebug.Active = true;
 
             FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
             ResourceDictionary.DefaultResources[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
 
-            GUISystem system = Container.Resolve<GUISystem>("gui_system");
-            system.LoadScreen("Layouts\\MainMenu.xml");
+            GUISystem system = Container.Resolve<GUISystem>(ApplicationKey.GUISystem);
+
+            //GUIRootViewModel rootViewModel = Container.Resolve<GUIRootViewModel>(ApplicationKey.GUIRootViewModel);
+            //rootViewModel.OpenScreen(new DefaultScreenViewModel("Layouts\\MainMenu.xml"));
+
 
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
-            button.OnClicked.AddListener((b, a) => { Debug.Log(b); });
+            button.OnClicked.AddListener((b, a) => 
+            { 
+                Debug.Log(b);
+            });
             system.AddComponent(button);
 
             GUITextBlock textBlock = GUI.CreateTextBlock(new Point(50, 10), "Hello World!\nHello World!");
@@ -101,9 +111,9 @@ namespace Fitamas.Samples.HelloWorld
 
             GUILineRenderer lineRenderer = new GUILineRenderer();
             lineRenderer.LocalPosition = new Point(500, 300);
-            lineRenderer.LocalSize = new Point(200, 200);
+            //lineRenderer.LocalSize = new Point(200, 200);
             lineRenderer.Pivot = new Vector2(0, 0);
-            lineRenderer.SetAnchorPoints([new Point(0, 200), new Point(0, 0), new Point(100, 200), new Point(200, 0), new Point(200, 200)]);
+            lineRenderer.Anchors.AddRange([new Point(0, 200), new Point(0, 0), new Point(100, 200), new Point(200, 0), new Point(200, 200)]);
             lineRenderer.Thickness = 10;
             lineRenderer.ShadowSize = 20;
             lineRenderer.ShadowEnable = true;
@@ -133,8 +143,6 @@ namespace Fitamas.Samples.HelloWorld
                     system.Root.OpenPopup(contextMenu);
                 }
             };
-
-            base.LoadContent();
         }
     }
 }

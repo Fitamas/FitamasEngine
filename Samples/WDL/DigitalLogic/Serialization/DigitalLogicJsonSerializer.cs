@@ -3,7 +3,7 @@ using Fitamas.Serialization.Json.Converters;
 using Newtonsoft.Json;
 using System;
 
-namespace WDL.Gameplay.DigitalLogic
+namespace WDL.DigitalLogic.Serialization
 {
     public class DigitalLogicJsonSerializer : JsonSerializer
     {
@@ -17,8 +17,6 @@ namespace WDL.Gameplay.DigitalLogic
             Converters.Add(new RectangleFJsonConverter());
             Converters.Add(new RectangleJsonConverter());
             Converters.Add(new ColorJsonConverter());
-
-            Converters.Add(new CircuitConverter(manager));
 
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             ContractResolver = new MyContractResolver();

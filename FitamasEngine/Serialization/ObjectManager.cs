@@ -1,5 +1,4 @@
 ﻿using Fitamas.Serialization.Json;
-using Fitamas.UserInterface.Serializeble;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;

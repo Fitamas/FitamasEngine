@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Fitamas.UserInterface.Components.NodeEditor.Controllers;
 using Fitamas.Input.InputListeners;
+using nkast.Aether.Physics2D;
 
 namespace Fitamas.UserInterface.Components.NodeEditor
 {
@@ -47,7 +48,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         private List<GUIWire> wires = new List<GUIWire>();
         private List<GUIComponent> selectComponents = new List<GUIComponent>();
         private GUIImage selectRegion;
-        private GUIImage backGround;
         private EditorController[] controllers;
         private GUIFrame frame;
 
@@ -68,8 +68,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public GUIEvent<GUINodeEditorEventArgs, GUIContextMenu> OnCreateContextMenu = new GUIEvent<GUINodeEditorEventArgs, GUIContextMenu>();
 
-        public NodeEditorSettings Settings { get; set; }
-
         public List<GUINode> Nodes => nodes;
         public List<GUIWire> Wires => wires;
         public GUIFrame Frame => frame;
@@ -78,12 +76,16 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public GUINodeEditor() : base()
         {
             RaycastTarget = true;
-
-            Settings = new NodeEditorSettings();
+            IsMask = true;
 
             frame = new GUIFrame();
             //frame.Anchor = new Vector2(0.5f, 0.5f);
             AddChild(frame);
+
+            selectRegion = new GUIImage();
+            //selectRegion.Color = Settings.SelectRegionColor;
+            selectRegion.LocalSize = new Point(0, 0);
+            AddChild(selectRegion);
 
             controllers =
             [
@@ -93,25 +95,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             ];
         }
 
-        protected override void OnInit()
-        {
-            selectRegion = new GUIImage();
-            selectRegion.Color = Settings.SelectRegionColor;
-            selectRegion.LocalSize = new Point(0, 0);
-
-            AddChild(selectRegion);
-
-            backGround = new GUIImage();
-            backGround.Color = Settings.BackGroundColor;
-            backGround.SetAlignment(GUIAlignment.Stretch);
-
-            AddChild(backGround);
-
-            foreach (var controller in controllers)
-            {
-                controller.Init();
-            }
-        }
         public void Add(GUINode node)
         {
             frame.AddChild(node);
@@ -119,7 +102,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             if (!nodes.Contains(node))
             {
                 nodes.Add(node);
-                node.Init(this);
+                node.NodeEditor = this;
                 OnCreateNode.Invoke(node);
                 foreach (var pin in node.Pins)
                 {
@@ -194,30 +177,16 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         //    }
         //}
 
-        public GUINode CreateDefoultNode(string name = "Node")
+        public GUINode CreateNode(string name = "Node")
         {
-            GUINode node = null;// GUI.CreateNode(new Rectangle(new Point(), Settings.NodeSize), name);
-
-            node.HeaderTextBlock.Color = Settings.HeaderTextBlockColor;
-            node.HeaderImage.Color = Settings.HeaderImageColor;
-            node.Image.Color = Settings.ImageColor;
-            node.SelectedImage.Color = Settings.SelectedImageColor;
-            node.SelectedImage.LocalPosition -= Settings.SelectBorderScale;
-            node.SelectedImage.LocalSize -= Settings.SelectBorderScale;
-
+            GUINode node = GUINodeUtils.CreateNode(new Point(), name);
             Add(node);
             return node;
         }
 
-        public GUIWire CreateDefoultWire()
+        public GUIWire CreateWire()
         {
-            GUIWire wire = GUI.CreateWire();
-            wire.EnableColor = Settings.EnableColor;
-            wire.DisableColor = Settings.DisableColor;
-            wire.ShadowColor = Settings.SelectWireColor;
-            wire.Thickness = Settings.WireThickness;
-            wire.ShadowSize = Settings.SelectWireSize;
-
+            GUIWire wire = GUINodeUtils.CreateWire();
             Add(wire);
             return wire;
         }
@@ -430,7 +399,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
             selectRegion.LocalSize = new Point(Math.Abs(scale.X), Math.Abs(scale.Y));
 
-            selectRegion.Pivot = new Vector2(scale.X < 0 ? 0 : 1, scale.Y < 0 ? 1 : 0);
+            selectRegion.Pivot = new Vector2(scale.X < 0 ? 0 : 1, scale.Y < 0 ? 0 : 1);
         }
 
         public Rectangle EndSelectRegion()
@@ -440,40 +409,5 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
             return region;
         }
-    }
-
-    public class NodeEditorSettings
-    {
-        public Color BackGroundColor = new Color(0.5f, 0.5f, 0.5f);
-        public Color SelectRegionColor = new Color(0.5f, 0.8f, 1, 0.5f);
-
-        public Point NodeSize = new Point(100, 100);
-        public float HeaderSize = 1.1f;
-        public Color HeaderTextBlockColor = Color.White;
-        public Color HeaderImageColor = new Color(0, 0.36f, 0.48f);
-        public Color ImageColor = new Color(0, 0.6f, 0.8f);
-        public Color SelectedImageColor = new Color(0.8f, 0.8f, 0.8f, 0.7f);
-        public Point SelectBorderScale = new Point(10, 10);
-
-        public Point PinSize = new Point(25, 25);
-        public Color PinTextColor = Color.White;
-        public int PinSpacing = 5;
-        public int SiteSpacing = 20;
-        public Sprite PinOn;
-        public Sprite PinOff;
-
-        //public Color WireColor = Color.White;
-        public Color EnableColor = new Color(1f, 0, 0);
-        public Color DisableColor = new Color(0.4f, 0, 0);
-
-        public Color EnableColor1 = new Color(0, 1f, 0);
-        public Color DisableColor1 = new Color(0, 0.4f, 0);
-
-        public Color EnableColor2 = new Color(0, 0, 1f);
-        public Color DisableColor2 = new Color(0, 0, 0.4f);
-
-        public Color SelectWireColor = new Color(0.8f, 0.8f, 0.8f, 0.7f);
-        public int WireThickness = 8;
-        public int SelectWireSize = 10;
     }
 }

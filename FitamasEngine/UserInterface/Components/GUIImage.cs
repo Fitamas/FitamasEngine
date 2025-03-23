@@ -178,6 +178,12 @@ namespace Fitamas.UserInterface.Components
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)
         {
+            if (!IsVisible)
+            {
+                base.OnDraw(gameTime, context);
+                return;
+            }
+
             Render.Begin(context.Mask);
 
             if (Sprite != null)

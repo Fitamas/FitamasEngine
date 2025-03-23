@@ -1,36 +1,74 @@
 ﻿using Fitamas;
-using Fitamas.Events;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using ObservableCollections;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using WDL.DigitalLogic.Serialization;
 
-namespace WDL.Gameplay.DigitalLogic
+namespace WDL.DigitalLogic
 {
     public class LogicComponentManager
     {
         public const string RootDirectory = "Saves";
         public const string FileExtension = ".lc";
 
-        private List<LogicComponentDescription> components;
+        public static readonly LogicComponentDescription And = new LogicComponentDescription((manager, descriptoin, data) => new LogicAnd(descriptoin, data))
+        {
+            TypeId = "And", Namespace = "Default",
+            PinInputName = { "InA", "InB" }, PinOutputName = { "Out" }
+        };
 
-        public MonoAction<LogicComponentDescription> OnAddComponent;
-        public MonoAction<LogicComponentDescription> OnRemoveComponent;
+        public static readonly LogicComponentDescription Not = new LogicComponentDescription((manager, descriptoin, data) => new LogicNot(descriptoin, data))
+        {
+            TypeId = "Not", Namespace = "Default",
+            PinInputName = { "In" }, PinOutputName = { "Out" }
+        };
 
-        public LogicComponentDescription[] Components => components.ToArray();
+        public static readonly LogicComponentDescription Input = new LogicComponentDescription((manager, descriptoin, data) => new LogicInput(descriptoin, data))
+        {
+            TypeId = "Input", Namespace = "Default",
+            PinOutputName = { "Out" }
+        };
+
+        public static readonly LogicComponentDescription Output = new LogicComponentDescription((manager, descriptoin, data) => new LogicOutput(descriptoin, data))
+        {
+            TypeId = "Output", Namespace = "Default",
+            PinInputName = { "In" }
+        };
+
+        private ObservableList<LogicComponentDescription> components;
+
+        public IObservableCollection<LogicComponentDescription> Components => components;
 
         public LogicComponentManager()
         {
-            components = new List<LogicComponentDescription>();
-            CreateDefoultNode();
+            components = new ObservableList<LogicComponentDescription>();
+
+            AddComponent(And);
+            AddComponent(Not);
+            AddComponent(Input);
+            AddComponent(Output);
+
+            //var nand = new LogicComponentDescription(typeof(LogicCircuit))
+            //{
+            //    Name = "Nand",
+            //    PinInputName = { "InA", "InB" },
+            //    PinOutputName = { "Out" },
+            //    Components = [output, input, input, and, not],
+            //    Connections = [
+            //            new Connection() { OutputComponentId = 1, InputComponentId = 3, InputIndex = 0 },
+            //            new Connection() { OutputComponentId = 2, InputComponentId = 3, InputIndex = 1 },
+            //            new Connection() { OutputComponentId = 3, InputComponentId = 4 },
+            //            new Connection() { OutputComponentId = 4, InputComponentId = 0 }]
+            //};
+            //AddComponent(nand);
         }
 
         public void AddComponent(LogicComponentDescription component)
         {
             if (!components.Contains(component))
             {
-                OnAddComponent?.Invoke(component);
                 components.Add(component);
             }
         }
@@ -68,53 +106,6 @@ namespace WDL.Gameplay.DigitalLogic
             //return Load(path); TODO convert full name to path
         }
 
-        private void CreateDefoultNode()
-        {
-            var and = new LogicComponentDescription(typeof(LogicAND))
-            {
-                Name = "And",
-                Namespace = "Defoult",
-                PinInputName = { "InA", "InB" },
-                PinOutputName = { "Out" }
-            };
-            AddComponent(and);
-            var not = new LogicComponentDescription(typeof(LogicNOT))
-            {
-                Name = "Not",
-                Namespace = "Defoult",
-                PinInputName = { "In" },
-                PinOutputName = { "Out" }
-            };
-            AddComponent(not);
-            var input = new LogicComponentDescription(typeof(LogicINPUT))
-            {
-                Name = "Input",
-                Namespace = "Defoult",
-                PinOutputName = { "Out" }
-            };
-            AddComponent(input);
-            var output = new LogicComponentDescription(typeof(LogicOUTPUT))
-            {
-                Name = "Output",
-                Namespace = "Defoult",
-                PinInputName = { "In" }
-            };
-            AddComponent(output);
-            //var nand = new LogicComponentDescription(typeof(LogicCircuit))
-            //{
-            //    Name = "Nand",
-            //    PinInputName = { "InA", "InB" },
-            //    PinOutputName = { "Out" },
-            //    Components = [output, input, input, and, not],
-            //    Connections = [
-            //            new Connection() { OutputComponentId = 1, InputComponentId = 3, InputIndex = 0 },
-            //            new Connection() { OutputComponentId = 2, InputComponentId = 3, InputIndex = 1 },
-            //            new Connection() { OutputComponentId = 3, InputComponentId = 4 },
-            //            new Connection() { OutputComponentId = 4, InputComponentId = 0 }]
-            //};
-            //AddComponent(nand);
-        }
-
         public void Save(LogicComponentDescription description)
         {
             string contentPath = Path.Combine(RootDirectory, description.FullName) + FileExtension;
@@ -133,7 +124,7 @@ namespace WDL.Gameplay.DigitalLogic
         {
             foreach (var item in components)
             {
-                if (!item.IsBase)
+                //if (!item.IsBase)
                 {
                     Save(item);
                 }                
@@ -192,13 +183,13 @@ namespace WDL.Gameplay.DigitalLogic
             }
         }
 
-        public void Delete(string path)
+        public void Remove(string path)
         {
             LogicComponentDescription description = GetComponent(path);
-            Delete(description);
+            Remove(description);
         }
 
-        public void Delete(LogicComponentDescription description)
+        public void Remove(LogicComponentDescription description)
         {
             if (ContainComponent(description))
             {
@@ -211,7 +202,6 @@ namespace WDL.Gameplay.DigitalLogic
                 {
                     component.Remove(description);
                 }
-                OnRemoveComponent?.Invoke(description);
             }
         }
 

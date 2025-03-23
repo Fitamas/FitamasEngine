@@ -73,6 +73,11 @@ namespace Fitamas.UserInterface
 
         public static int CountOf(this string input, char countChar, int indexFrom, int lenght)
         {
+            if (string.IsNullOrEmpty(input))
+            {
+                return 0;
+            }
+
             if (indexFrom + lenght > input.Length)
             {
                 throw new Exception();

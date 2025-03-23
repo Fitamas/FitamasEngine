@@ -49,7 +49,7 @@ namespace Fitamas.UserInterface
             {
                 button.LocalSize = size.Value;
             }
-            else if (style != null)
+            else if (textBlock.Font != null)
             {
                 Point padding = style.Resources.FramePadding;
                 Point localSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
@@ -487,44 +487,6 @@ namespace Fitamas.UserInterface
             button.AddChild(textBlock);
 
             return node;
-        }
-
-        public static GUIPin CreatePin(string text, GUIPinType type, GUIPinAlignment pinAlignment)
-        {
-            GUIPin pin = CreatePin(type, pinAlignment);
-
-            GUITextBlock textBlock = new GUITextBlock();
-            textBlock.Text = text;
-            pin.Content = textBlock;
-            pin.AddChild(textBlock);
-
-            return pin;
-        }
-
-        public static GUIPin CreatePin(GUIPinType type, GUIPinAlignment pinAlignment)
-        {
-            GUIPin pin = new GUIPin(type);
-            pin.PinAlignment = pinAlignment;
-
-            GUIImage image = new GUIImage();
-            image.SetAlignment(GUIAlignment.Stretch);
-            pin.ImageOn = image;
-            pin.AddChild(image);
-
-            image = new GUIImage();
-            image.SetAlignment(GUIAlignment.Stretch);
-            pin.ImageOff = image;
-            pin.AddChild(image);
-
-            return pin;
-        }
-
-        public static GUIWire CreateWire()
-        {
-            GUIWire wire = new GUIWire();
-            wire.LocalSize = new Point(1, 1);
-
-            return wire;
         }
     }
 }

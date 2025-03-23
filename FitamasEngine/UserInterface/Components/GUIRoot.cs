@@ -11,7 +11,11 @@ namespace Fitamas.UserInterface.Components
         private GUIFrame popupFrame;
         private List<GUIWindow> windows = new List<GUIWindow>();
         private GUIWindow mainWindow;
-        private GUIPopup popup;
+        private GUIWindow popup;
+
+        public GUICanvas Canvas => canvas;
+        public GUIFrame MainFrame => mainFrame;
+        public GUIFrame PopupFrame => popupFrame;
 
         public GUIWindow MainWindow
         {
@@ -35,6 +39,12 @@ namespace Fitamas.UserInterface.Components
                 }
 
                 mainWindow = value;
+
+                if (mainWindow != null)
+                {
+                    mainFrame.AddChild(mainWindow);
+                    mainWindow.SetAsFirstSibling();
+                }
             }
         }
 
@@ -53,20 +63,10 @@ namespace Fitamas.UserInterface.Components
             canvas.AddChild(popupFrame);
         }
 
-        public void AddComponent(GUIComponent component)
-        {
-            mainFrame.AddChild(component);
-        }
-
         public void OpenWindow(GUIWindow window)
         {
             if (!windows.Contains(window))
             {
-                if (mainWindow == null)
-                {
-                    mainWindow = window;
-                }
-
                 windows.Add(window);
                 mainFrame.AddChild(window);
             }
@@ -74,24 +74,21 @@ namespace Fitamas.UserInterface.Components
 
         public void CloseWindow(GUIWindow window)
         {
-            if (mainWindow == window)
+            if (windows.Remove(window))
             {
-                mainWindow = null;
+                window.Close();
             }
-
-            windows.Remove(window);
-            window.Destroy();
         }
 
         public void CloseAllWindows()
         {
             foreach (var window in windows.ToArray())
             {
-                window.Close();
+                CloseWindow(window);
             }
         }
 
-        public void OpenPopup(GUIPopup newPopup)
+        public void OpenPopup(GUIWindow newPopup)
         {
             if (popup != newPopup)
             {

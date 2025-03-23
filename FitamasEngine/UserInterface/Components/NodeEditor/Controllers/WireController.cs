@@ -1,11 +1,8 @@
 ﻿using Fitamas.Events;
 using Fitamas.Input;
-using Fitamas.UserInterface.Scripting;
-using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using Fitamas.UserInterface.Components.NodeEditor;
 
 namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 {
@@ -17,11 +14,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 
         public WireController(GUINodeEditor editor) : base(editor)
         {
-            wire = editor.CreateDefoultWire();
-        }
+            wire = editor.CreateWire();
 
-        public override void Init()
-        {
             editor.OnMouseEvent.AddListener(OnMouseEvent);
             editor.OnPinInteractMouseEvent.AddListener(OnPinEvent);
             editor.OnWireInteractMouseEvent.AddListener(OnWireEvent);
@@ -59,7 +53,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             {
                 if (isCreateWire)
                 {
-                    wire.AnchorPoints.Add(args.MousePosition - wire.LocalPosition - editor.Frame.LocalPosition);
+                    wire.Anchors.Add(args.MousePosition - wire.LocalPosition - editor.Frame.LocalPosition);
                 }
             }
         }
@@ -88,8 +82,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                         isCreateWire = true;
                         startPin = pin;
                         startPin.IsConnected = true;
-                        wire.AnchorPoints.Clear();
-                        wire.AnchorPoints.Add(new Point());
+                        wire.Anchors.Clear();
+                        wire.Anchors.Add(new Point());
                         wire.LocalPosition = editor.Frame.ToLocal(startPin.Rectangle.Center);
                     }
                 }
@@ -155,9 +149,9 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
         {
             if (IsValidConnection(pinA, pinB))
             {
-                List<Point> points = this.wire.AnchorPoints;
+                List<Point> points = this.wire.Anchors;
                 points = points[1..(points.Count - 1)];
-                GUIWire wire = editor.CreateDefoultWire();
+                GUIWire wire = editor.CreateWire();
 
                 if (pinA.PinType == GUIPinType.Output && pinB.PinType == GUIPinType.Input)
                 {
@@ -172,7 +166,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                     wire.CreateConnection(pinB, pinA);
                 }
 
-                wire.AnchorPoints.AddRange(points);
+                wire.Anchors.AddRange(points);
 
                 editor.OnCreateConnection.Invoke(wire);
 
