@@ -1,5 +1,4 @@
 ﻿using Fitamas.Entities;
-using Fitamas.Physics.Characters;
 using System;
 using System.Collections.Generic;
 

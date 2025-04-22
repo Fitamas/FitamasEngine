@@ -1,12 +1,9 @@
-﻿using Fitamas.Entities;
-using Fitamas.Input;
+﻿using Fitamas.Input;
 using Fitamas.Core;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Fitamas.UserInterface.Serialization;
-using Fitamas.UserInterface.ViewModel;
 
 namespace Fitamas.Samples.HelloWorld
 {
@@ -30,13 +27,9 @@ namespace Fitamas.Samples.HelloWorld
 
             GUISystem system = Container.Resolve<GUISystem>(ApplicationKey.GUISystem);
 
-            //GUIRootViewModel rootViewModel = Container.Resolve<GUIRootViewModel>(ApplicationKey.GUIRootViewModel);
-            //rootViewModel.OpenScreen(new DefaultScreenViewModel("Layouts\\MainMenu.xml"));
-
-
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
-            button.OnClicked.AddListener((b, a) => 
+            button.OnClicked.AddListener(b => 
             { 
                 Debug.Log(b);
             });
@@ -51,22 +44,24 @@ namespace Fitamas.Samples.HelloWorld
             textBlock.TextVerticalAlignment = GUITextVerticalAlignment.Middle;
             system.AddComponent(textBlock);
 
-            textBlock = GUI.CreateTextBlock(new Point(50, 150), "Enable button:");
-            textBlock.SetValue(GUIComponent.PivotProperty, new Vector2(0, 0));
-            system.AddComponent(textBlock);
+            GUIStack stack = GUIHelpers.Sameline();
+            stack.LocalPosition = new Point(50, 150);
+            stack.Pivot = new Vector2(0, 0);
+            system.AddComponent(stack);
+
+            textBlock = GUI.CreateTextBlock(Point.Zero, "Enable button:");
+            stack.AddChild(textBlock);
 
             GUICheckBox checkBox = GUI.CreateCheckBox(Point.Zero);
-            checkBox.SetValue(GUIComponent.HorizontalAlignmentProperty, GUIHorizontalAlignment.Right)
-                    .SetValue(GUIComponent.VerticalAlignmentProperty, GUIVerticalAlignment.Center)
-                    .SetValue(GUIComponent.PivotProperty, new Vector2(0, 0.5F))
-                    .SetValue(GUICheckBox.ValueProperty, button.Interacteble);
+            checkBox.SetValue(GUICheckBox.ValueProperty, button.Interacteble);
             checkBox.OnValueChanged.AddListener((r, v) => { button.Interacteble = v; });
-            textBlock.AddChild(checkBox);
+            stack.AddChild(checkBox);
 
-            GUIComboBox comboBox = GUI.CreateComboBox(new Point(50, 200), size: new Point(250, 45));
+            GUIComboBox comboBox = GUI.CreateComboBox(new Point(50, 200));
+            comboBox.LocalSize += new Point(300, 0);
             comboBox.Pivot = new Vector2(0, 0);
             comboBox.OnSelectItem.AddListener((r, v) => { Debug.Log(v.Item); });
-            comboBox.SetItems<GUIAlignment>();
+            comboBox.AddItemsFromEnum<GUIAlignment>();
             system.AddComponent(comboBox);
 
             GUIStack group = new GUIStack();
@@ -111,7 +106,6 @@ namespace Fitamas.Samples.HelloWorld
 
             GUILineRenderer lineRenderer = new GUILineRenderer();
             lineRenderer.LocalPosition = new Point(500, 300);
-            //lineRenderer.LocalSize = new Point(200, 200);
             lineRenderer.Pivot = new Vector2(0, 0);
             lineRenderer.Anchors.AddRange([new Point(0, 200), new Point(0, 0), new Point(100, 200), new Point(200, 0), new Point(200, 200)]);
             lineRenderer.Thickness = 10;
@@ -132,17 +126,37 @@ namespace Fitamas.Samples.HelloWorld
             treeView.CreateTreeNode("TEST7");
             treeView.CreateTreeNode("TEST8");
 
-            InputSystem.mouse.MouseUp += (s, e) =>
+            CreateWindow();
+
+            GUIPopup popup = new GUIPopup();
+            system.AddComponent(popup);
+
+            GUIContextMenu contextMenu = GUI.CreateContextMenu();
+            contextMenu.AddItem("Create window");
+            contextMenu.AddItem("Test_111111");
+            contextMenu.AddItem("Test_222");
+            contextMenu.AddItem("Test_3");
+            contextMenu.OnSelectItem.AddListener((m, a) =>
             {
-                if (e.Button == MouseButton.Right)
+                if (a.Index == 0)
                 {
-                    GUIContextMenu contextMenu = GUI.CreateContextMenu(e.Position);
-                    contextMenu.AddItem("Test_111111");
-                    contextMenu.AddItem("Test_222");
-                    contextMenu.AddItem("Test_3");
-                    system.Root.OpenPopup(contextMenu);
+                    CreateWindow().LocalPosition = InputSystem.mouse.MousePosition;
                 }
-            };
+            });
+            popup.Window = contextMenu;
+            popup.AddChild(contextMenu);
+            GUIContextMenuManager.SetContextMenu(system.Root.Screen, contextMenu);
+
+            GUIWindow CreateWindow()
+            {
+                GUIWindow window = GUI.CreateWindow<GUIWindow>();
+                window.LocalPosition = new Point(1200, 50);
+                window.LocalSize = new Point(300, 300);
+                window.Pivot = new Vector2(0, 0);
+                system.AddComponent(window);
+
+                return window;
+            }
         }
     }
 }

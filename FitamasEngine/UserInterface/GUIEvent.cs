@@ -33,7 +33,7 @@ namespace Fitamas.UserInterface
             }
         }
 
-        protected void InvokeEvent(params object[] args)
+        internal void InvokeEvent(params object[] args)
         {
             foreach (var call in delegates.ToArray())
             {
@@ -49,6 +49,14 @@ namespace Fitamas.UserInterface
 
     public class GUIEvent : GUIEventBase
     {
+        public GUIEvent(params MonoAction[] actions)
+        {
+            foreach (var action in actions)
+            {
+                AddListener(action);
+            }
+        }
+
         public void Invoke()
         {
             InvokeEvent();      
@@ -67,6 +75,14 @@ namespace Fitamas.UserInterface
 
     public class GUIEvent<T0> : GUIEventBase
     {
+        public GUIEvent(params MonoAction<T0>[] actions)
+        {
+            foreach (var action in actions)
+            {
+                AddListener(action);
+            }
+        }
+
         public void Invoke(T0 arg0)
         {
             InvokeEvent(arg0);
@@ -85,6 +101,14 @@ namespace Fitamas.UserInterface
 
     public class GUIEvent<T0, T1> : GUIEventBase
     {
+        public GUIEvent(params MonoAction<T0, T1>[] actions)
+        {
+            foreach (var action in actions)
+            {
+                AddListener(action);
+            }
+        }
+
         public void Invoke(T0 arg0, T1 arg1)
         {
             InvokeEvent(arg0, arg1);

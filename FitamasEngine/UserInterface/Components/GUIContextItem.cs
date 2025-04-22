@@ -7,7 +7,7 @@ namespace Fitamas.UserInterface.Components
     {
         public GUIContextMenu Menu { get; set; }
 
-        protected override void OnClickedButton(MouseEventArgs mouse)
+        protected override void OnClickedButton()
         {
             if (Menu != null)
             {

@@ -1,56 +1,40 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.Input;
+using Fitamas.Input.InputListeners;
+using Fitamas.Math2D;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
+using SharpFont;
 using System;
 
 namespace Fitamas.UserInterface.Components.NodeEditor
 {
-    public class GUIWire : GUILineRenderer
+    public class GUIWire : GUILineRenderer, IMouseEvent, IDragMouseEvent
     {
+        public GUINodeEditor NodeEditor { get; set; }
         public GUIPin PinA { get; private set; }
         public GUIPin PinB { get; private set; }
 
         public GUIWire()
         {
-
+            RaycastTarget = true;
         }
 
-        public void CreateConnection(GUIPin pinA, GUIPin pinB)
+        protected override void OnMouseEntered()
         {
-            if (pinA == null || pinB == null)
-            {
-                throw new Exception("Cannot connect pins: pin is null.");
-            }
-
-            LocalPosition = Parent.ToLocal(pinA.Rectangle.Center);
-
-            PinA = pinA;
-            PinB = pinB;
+            Point mousePosition = InputSystem.mouse.MousePosition;
+            Point delta = InputSystem.mouseDelta;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
+                           MouseButton.None, GUINodeEditorEventType.Entered, this);
+            NodeEditor.OnWireInteractMouseEvent.Invoke(args);
         }
 
-        public bool HasPin(GUIPin pinA, GUIPin pinB)
+        protected override void OnMouseExitted()
         {
-            return HasPin(pinA) && HasPin(pinB);
-        }
-
-        public bool HasPin(GUIPin pin)
-        {
-            return PinA == pin || PinB == pin;
-        }
-
-        public void DrawToPoint(Point targetPoint)
-        {
-            //List<Point> points = [.. AnchorPoints];
-
-            //if (PinA != null && PinB != null)
-            //{
-            //    //LocalPosition = Parent.ToLocalPosition(PinA.Rectangle.Center);
-            //    points.Insert(0, Parent.ToLocal(PinA.Rectangle.Center) - LocalPosition);
-            //    points.Add(Parent.ToLocal(PinB.Rectangle.Center) - LocalPosition);
-            //}
-            //else
-            //{
-            //    points.Add(drawToPoint - LocalPosition);
-            //}
+            Point mousePosition = InputSystem.mouse.MousePosition;
+            Point delta = InputSystem.mouseDelta;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
+                                      MouseButton.None, GUINodeEditorEventType.Exitted, this);
+            NodeEditor.OnWireInteractMouseEvent.Invoke(args);
         }
 
         public override bool Contains(Point point)
@@ -68,6 +52,108 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             }
 
             return false;
+        }
+
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
+        {
+            if (Anchors.Count >= 2 && PinA != null && PinB != null)
+            {
+                Anchors[0] = PinA.Rectangle.Center - Rectangle.Location;
+                Anchors[Anchors.Count - 1] = PinB.Rectangle.Center - Rectangle.Location;
+            }
+
+            base.OnDraw(gameTime, context);
+        }
+
+        protected override void OnDestroy()
+        {
+            if (PinA != null)
+            {
+                PinA.IsConnected = false;
+            }
+            if (PinB != null)
+            {
+                PinB.IsConnected = false;
+            }
+        }
+
+        public void CreateConnection(GUIPin pinA, GUIPin pinB)
+        {
+            if (pinA == null || pinB == null)
+            {
+                throw new Exception("Cannot connect pins: pin is null.");
+            }
+
+            pinA.IsConnected = true;
+            pinB.IsConnected = true;
+
+            PinA = pinA;
+            PinB = pinB;
+        }
+
+        public bool HasPin(GUIPin pinA, GUIPin pinB)
+        {
+            return HasPin(pinA) && HasPin(pinB);
+        }
+
+        public bool HasPin(GUIPin pin)
+        {
+            return PinA == pin || PinB == pin;
+        }
+
+        public void DrawToPoint(Point targetPoint)
+        {
+            if (Anchors.Count > 0)
+            {
+                Anchors[Anchors.Count - 1] = targetPoint;
+            }
+        }
+
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.Click);
+        }
+
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnStartDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.StartDrag);
+        }
+
+        public void OnDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.Drag);
+        }
+
+        public void OnEndDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.EndDrag);
+        }
+
+        private void InvokeMouseEvent(GUIMouseEventArgs mouse, GUINodeEditorEventType eventType)
+        {
+            if (!NodeEditor.IsFocused || !IsMouseOver)
+            {
+                return;
+            }
+
+            Point delta = mouse.DistanceMoved;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mouse.Position, delta, mouse.Button, eventType, this);
+            NodeEditor.OnWireInteractMouseEvent.Invoke(args);
         }
     }
 }

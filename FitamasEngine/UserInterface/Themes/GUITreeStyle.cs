@@ -18,8 +18,6 @@ namespace Fitamas.UserInterface.Themes
         {
             GUIStyle style = new GUIStyle(dictionary);
 
-            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITreeView.IndentProperty, dictionary, CommonResourceKeys.TreeViewIndent)));
-
             return style;
         }
 
@@ -35,15 +33,15 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
                 CommonResourceKeys.ItemDisableColor, CommonResourceKeys.ItemTextDisableColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
                 CommonResourceKeys.ItemPressedColor, CommonResourceKeys.ItemTextPressedColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
                 new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
                 new TriggerCondition(GUIComponent.InteractebleProperty, true)},
                 CommonResourceKeys.ItemHoverColor, CommonResourceKeys.ItemTextHoverColor);

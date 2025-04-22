@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using R3;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Fitamas.UserInterface
@@ -89,7 +87,15 @@ namespace Fitamas.UserInterface
                     if (!valueExpression.IsFrozen)
                     {
                         T oldValue = valueExpression.CurrentValue;
-                        if (!oldValue.Equals(value))
+                        bool flag1 = value == null;
+                        bool flag2 = oldValue == null;
+
+                        if (flag1 && flag2)
+                        {
+                            return;
+                        }
+
+                        if ((flag1 && !flag2) || (!flag1 && flag2) || !oldValue.Equals(value))
                         {
                             valueExpression.CurrentValue = value;
                             property.PropertyChangedCallback?.Invoke(this, property, oldValue, value);
@@ -144,7 +150,7 @@ namespace Fitamas.UserInterface
             SetExpression(property, new ResourceReferenceExpression(property, dictionary, resourceKey));
         }
 
-        public void SetBinding(DependencyProperty property, Binding binding)
+        public void SetBinding(DependencyProperty property, DependencyObject binding)
         {
             SetExpression(property, new BindingExpression(property, binding));
         }

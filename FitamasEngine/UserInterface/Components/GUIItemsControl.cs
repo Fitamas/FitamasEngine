@@ -6,7 +6,6 @@ namespace Fitamas.UserInterface.Components
     public class GUIItemsControl : GUIComponent
     {
         public List<GUIComponent> Items { get; }
-        public GUIComponent Container { get; set; }
 
         public GUIItemsControl()
         {
@@ -18,7 +17,6 @@ namespace Fitamas.UserInterface.Components
             if (IsItemItsOwnContainerOverride(component))
             {
                 Items.Add(component);
-                Container.AddChild(component);
                 OnAddItem(component);
             }
         }
@@ -27,7 +25,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (Items.Remove(component))
             {
-                component.Parent = null;
+                component.Destroy();
                 OnRemoveItem(component);
             }
         }

@@ -4,29 +4,42 @@ using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Themes
 {
-    public static class CommonHelpers
+    public static class GUICommonHelpers
     {
         public static void CreateStyles(ResourceDictionary dictionary)
         {
             dictionary[CommonResourceKeys.ButtonStyle] = GUIButtonStyle.Create(dictionary);
+
             dictionary[CommonResourceKeys.CheckBoxStyle] = GUICheckBoxStyle.Create(dictionary);
+
             dictionary[CommonResourceKeys.ComboBoxStyle] = GUIComboBoxStyle.Create(dictionary);
+
             dictionary[CommonResourceKeys.ContextItemStyle] = GUIContextStyle.CreateItem(dictionary);
             dictionary[CommonResourceKeys.ContextMenuStyle] = GUIContextStyle.CreateMenu(dictionary);
+
+            dictionary[CommonResourceKeys.NodeEditorStyle] = GUINodeEditorStyle.CreateNodeEditor(dictionary);
+            dictionary[CommonResourceKeys.NodeEditorNodeStyle] = GUINodeEditorStyle.CreateNode(dictionary);
+            dictionary[CommonResourceKeys.NodeEditorPinStyle] = GUINodeEditorStyle.CreatePin(dictionary);
+            dictionary[CommonResourceKeys.NodeEditorWireStyle] = GUINodeEditorStyle.CreateWire(dictionary);
+
             dictionary[CommonResourceKeys.TextBlockStyle] = GUITextBlockStyle.Create(dictionary);
+
             dictionary[CommonResourceKeys.TextInputStyle] = GUITextInputStyle.Create(dictionary);
+
             dictionary[CommonResourceKeys.TrackBarStyle] = GUITrackBarStyle.CreateTrackBar(dictionary);
             dictionary[CommonResourceKeys.TrackBarThumbStyle] = GUITrackBarStyle.CreateThumb(dictionary);
+
             dictionary[CommonResourceKeys.TreeViewStyle] = GUITreeStyle.CreateTreeViewStyle(dictionary);
             dictionary[CommonResourceKeys.TreeNodeStyle] = GUITreeStyle.CreateTreeNodeStyle(dictionary);
+
+            dictionary[CommonResourceKeys.WindowStyle] = GUIWindowStyle.Create(dictionary);
         }
 
         public static void CreateVars(ResourceDictionary dictionary)
         {
-            dictionary[CommonResourceKeys.WindowPadding] = new Point(3, 3);
-            dictionary[CommonResourceKeys.FramePadding] = new Point(10, 10);
+            dictionary[CommonResourceKeys.WindowPadding] = new Point(10, 10);
+            dictionary[CommonResourceKeys.FramePadding] = new Point(6, 6);
             dictionary[CommonResourceKeys.ScrollbarSize] = 10;
-            dictionary[CommonResourceKeys.TreeViewIndent] = 20;
         }
 
         public static Trigger CreateTriggerForButton<T>(ResourceDictionary dictionary, DependencyProperty<T> property, T value, string imageColor = null, string textColor = null, string targetName = null)

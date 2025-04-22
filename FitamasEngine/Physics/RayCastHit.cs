@@ -9,7 +9,7 @@ namespace Fitamas.Physics
     {
         public Vector2 point { get; set; }
         public Vector2 normal {  get; set; }
-        public Entity entity { get; set; }
+        public Collider collider { get; set; }
         public Body body { get; set; }
         public float distance { get; set; }
     }

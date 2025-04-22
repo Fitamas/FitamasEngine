@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
-using Fitamas.Input.InputListeners;
 using System;
+using Fitamas.UserInterface.Input;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -167,14 +167,14 @@ namespace Fitamas.UserInterface.Components
         protected override void OnFocus()
         {
             caretEnable = true;
-
+            System.Keyboard.Focused = this;
             Unselect();
         }
 
         protected override void OnUnfocus()
         {
             caretEnable = false;
-
+            System.Keyboard.Focused = null;
             Unselect();
 
             switch (ContentType)
@@ -209,7 +209,7 @@ namespace Fitamas.UserInterface.Components
             string text = Text;
             int lineHeight = FontManager.GetHeight(font);
 
-            if (isSelect)
+            if (isSelect && !string.IsNullOrEmpty(text))
             {
                 int min = Math.Min(startSelectIndex, CaretIndex);
                 int max = Math.Max(startSelectIndex, CaretIndex);
@@ -304,30 +304,36 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnClickedMouse(MouseEventArgs mouse)
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
         {
-            if (IsMouseOver)
+
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+            if (IsMouseOver && !IsFocused)
             {
                 Focus();
-                CaretIndex = TextBlock.GetIndexFromScreenPos(mouse.Position);
             }
-            else if (IsFocused)
+            else
             {
-                Unfocus();
+                Unselect();
             }
+
+            CaretIndex = TextBlock.GetIndexFromScreenPos(mouse.Position);
         }
 
-        public void OnReleaseMouse(MouseEventArgs mouse)
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
         {
 
         }
 
-        public void OnScrollMouse(MouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
         {
 
         }
 
-        public void OnStartDragMouse(MouseEventArgs mouse)
+        public void OnStartDragMouse(GUIMouseEventArgs mouse)
         {
             if (IsMouseOver)
             {
@@ -336,7 +342,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnDragMouse(MouseEventArgs mouse)
+        public void OnDragMouse(GUIMouseEventArgs mouse)
         {
             if (isSelect)
             {
@@ -345,22 +351,22 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnEndDragMouse(MouseEventArgs mouse)
+        public void OnEndDragMouse(GUIMouseEventArgs mouse)
         {
 
         }
 
-        public void OnKeyDown(KeyboardEventArgs keyboard)
+        public void OnKeyDown(GUIKeyboardEventArgs keyboard)
         {
 
         }
 
-        public void OnKeyUP(KeyboardEventArgs keyboard)
+        public void OnKeyUP(GUIKeyboardEventArgs keyboard)
         {
 
         }
 
-        public void OnKey(KeyboardEventArgs keyboard)
+        public void OnKey(GUIKeyboardEventArgs keyboard)
         {
             if (!IsFocused)
             {

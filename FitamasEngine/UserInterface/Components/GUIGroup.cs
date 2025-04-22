@@ -78,6 +78,11 @@ namespace Fitamas.UserInterface.Components
             CalculateComponents();
         }
 
+        protected override void OnSizeChanged()
+        {
+            CalculateComponents();
+        }
+
         protected override void OnChildSizeChanged(GUIComponent component)
         {
             CalculateComponents();
@@ -111,23 +116,5 @@ namespace Fitamas.UserInterface.Components
         protected abstract Point CalculateSize(GUIComponent[] components, Point size);
 
         protected abstract void CalculateComponents(GUIComponent[] components, Rectangle rectangle);
-
-        public Point GetGroupSize()
-        {
-            Rectangle rectangle = new Rectangle();
-            foreach (var component in ChildrensComponent)
-            {
-                if (rectangle.Size == Point.Zero)
-                {
-                    rectangle = component.Rectangle;
-                }
-                else
-                {
-                    rectangle = Rectangle.Union(rectangle, component.Rectangle);
-                }                
-            }
-
-            return rectangle.Size;
-        }
     }
 }

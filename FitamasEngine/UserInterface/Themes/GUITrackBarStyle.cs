@@ -25,15 +25,15 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
                 CommonResourceKeys.TrackBarThumbDisableColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIThumb.IsDragProperty, true,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIThumb.IsDragProperty, true,
                 CommonResourceKeys.TrackBarThumbPressedColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
                 new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
                 new TriggerCondition(GUIComponent.InteractebleProperty, true)},
                 CommonResourceKeys.TrackBarThumbHoverColor);

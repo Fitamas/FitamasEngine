@@ -13,8 +13,8 @@ namespace Fitamas.UserInterface
         {
             DefaultResources = new ResourceDictionary();
             GUILightTheme.CreateColors(DefaultResources);
-            CommonHelpers.CreateStyles(DefaultResources);
-            CommonHelpers.CreateVars(DefaultResources);
+            GUICommonHelpers.CreateStyles(DefaultResources);
+            GUICommonHelpers.CreateVars(DefaultResources);
         }
 
         public Point WindowPadding => (Point)this[CommonResourceKeys.WindowPadding];

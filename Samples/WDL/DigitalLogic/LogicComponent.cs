@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using R3;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,55 +8,86 @@ namespace WDL.DigitalLogic
 {
     public abstract class LogicComponent
     {
-        protected ConnectorInput[] input;
-        protected ConnectorOutput[] output;
+        protected LogicConnectorInput[] input;
+        protected LogicConnectorOutput[] output;
 
+        public LogicComponentDescription Description { get; }
+        public LogicComponentData Data { get; }
+        public ReactiveProperty<Point> Position { get; }
+
+        public int Id => Data.Id;
         public int InputCount => input.Length;
         public int OutputCount => output.Length;
-
-        public LogicComponentDescription Description { get;}
-        public LogicComponentData Data { get; }
-        public int Id => Data.Id;
 
         public LogicComponent(LogicComponentDescription description, LogicComponentData data, int inputCount = 0, int outputCount = 0)
         {
             Description = description;
             Data = data;
-            input = new ConnectorInput[inputCount];
-            output = new ConnectorOutput[outputCount];
+            Position = new ReactiveProperty<Point>();
+            Position.Subscribe(position => Data.Position = position);
+
+            int index = 0;
+            input = new LogicConnectorInput[inputCount];
+            for (int i = 0; i < inputCount; i++)
+            {
+                input[i] = new LogicConnectorInput(index, this);
+                index++;
+            }
+            output = new LogicConnectorOutput[outputCount];
+            for (int i = 0;i < outputCount; i++)
+            {
+                output[i] = new LogicConnectorOutput(index, this);
+                index++;
+            }
         }
 
-        public void SetInput(ConnectorInput connector, int index)
-        {
-            input[index] = connector;
-        }
-
-        public ConnectorInput GetInput(int index)
+        public LogicConnectorInput GetInputFromIndex(int index)
         {
             return input[index];
         }
 
-        public int GetInputIndex(ConnectorInput connector)
+        public LogicConnectorInput GetInputFromId(int id)
+        {
+            foreach (var input in input)
+            {
+                if (input.Id == id)
+                {
+                    return input;
+                }
+            }
+
+            return null;
+        }
+
+        public int GetInputIndex(LogicConnectorInput connector)
         {
             return Array.FindIndex(input, input => input == connector);
         }
 
-        public void SetOutput(ConnectorOutput connector, int index)
-        {
-            output[index] = connector;
-        }
-
-        public ConnectorOutput GetOutput(int index)
+        public LogicConnectorOutput GetOutputFromIndex(int index)
         {
             return output[index];
         }
 
-        public int GetOutputIndex(ConnectorOutput connector)
+        public LogicConnectorOutput GetOutputFromId(int id)
+        {
+            foreach (var output in output)
+            {
+                if (output.Id == id)
+                {
+                    return output;
+                }
+            }
+
+            return null;
+        }
+
+        public int GetOutputIndex(LogicConnectorOutput connector)
         {
             return Array.FindIndex(output, output => output == connector);
         }
 
-        public bool Contain(Connector connector)
+        public bool Contain(LogicConnector connector)
         {
             return input.Contains(connector) || output.Contains(connector);
         }
@@ -73,7 +106,7 @@ namespace WDL.DigitalLogic
         public override void Update()
         {
             bool result = input[0].Signal.IsHigh && input[1].Signal.IsHigh;
-            output[0].ReceiveInput(new Signal(result));
+            output[0].ReceiveInput(new LogicSignal(result));
         }
     }
 
@@ -88,61 +121,41 @@ namespace WDL.DigitalLogic
         public override void Update()
         {
             bool result = !input[0].Signal.IsHigh;
-            output[0].ReceiveInput(new Signal(result));
+            output[0].ReceiveInput(new LogicSignal(result));
         }
     }
 
     public class LogicInput : LogicComponent
     {
-        private bool value;
-
-        public bool Value => value;
+        public ReactiveProperty<bool> Signal { get; }
 
         public LogicInput(LogicComponentDescription description, LogicComponentData data) 
             : base(description, data, 0, 1)
         {
-
+            Signal = new ReactiveProperty<bool>();
         }
 
         public override void Update()
         {
-            output[0].ReceiveInput(new Signal(value));
-        }
-
-        public void Press()
-        {
-            Press(!value);
-        }
-
-        public void Press(bool value)
-        {
-            this.value = value;
+            output[0].ReceiveInput(new LogicSignal(Signal.Value));
         }
     }
 
-    public interface IOutputLogicComponent
+    public class LogicOutput : LogicComponent
     {
-        bool Value { get; }
-        ConnectorOutput[] Output { get; }
-    }
+        private ReactiveProperty<bool> signal;
 
-    public class LogicOutput : LogicComponent, IOutputLogicComponent
-    {
-        private bool value;
-
-        public bool Value => value;
-
-        public ConnectorOutput[] Output => output;
+        public ReadOnlyReactiveProperty<bool> Signal => signal;
 
         public LogicOutput(LogicComponentDescription description, LogicComponentData data) 
             : base(description, data, 1, 0)
         {
-
+            signal = new ReactiveProperty<bool>();
         }
 
         public override void Update()
         {
-            value = input[0].Signal.IsHigh;
+            signal.Value = input[0].Signal.IsHigh;
         }
     }
 
@@ -154,48 +167,39 @@ namespace WDL.DigitalLogic
 
         public LogicCircuit(LogicComponentManager manager, LogicComponentDescription description, LogicComponentData data) 
             : base(description, data,
-                   description.Components.Count(s => s.TypeId == "Input"),
-                   description.Components.Count(s => s.TypeId == "Output"))
+                   description.Components.Count(s => s.TypeId == LogicComponents.Input.FullName),
+                   description.Components.Count(s => s.TypeId == LogicComponents.Output.FullName))
         {
             components = new LogicComponent[description.Components.Count];
             pinInput = new LogicInput[InputCount];
             pinOutput = new LogicOutput[OutputCount];
 
             Dictionary<int, LogicComponent> componentsMap = new Dictionary<int, LogicComponent>();
-
-            foreach (var component in description.Components)
+            for (int i = 0; i < description.Components.Count; i++) 
             {
+                LogicComponentData component = description.Components[i];
                 LogicComponentDescription description1 = manager.GetComponent(component.TypeId);
                 LogicComponent logicComponent = description1.CreateComponent(manager, component);
                 componentsMap[component.Id] = logicComponent;
-
-                for (int j = 0; j < logicComponent.InputCount; j++)
-                {
-                    var connector = new ConnectorInput(j);
-                    logicComponent.SetInput(connector, j);
-                }
-
-                for (int j = 0; j < logicComponent.OutputCount; j++)
-                {
-                    var connector = new ConnectorOutput(j);
-                    logicComponent.SetOutput(connector, j);
-                }
+                components[i] = logicComponent;
             }
 
-            foreach (var connection in description.Connections)
+            foreach (var connectionData in description.Connections)
             {
-                if (!(componentsMap.ContainsKey(connection.OutputComponentId) && componentsMap.ContainsKey(connection.InputComponentId)))
+                if (!(componentsMap.ContainsKey(connectionData.OutputComponentId) && componentsMap.ContainsKey(connectionData.InputComponentId)))
                 {
                     continue;
                 }
 
-                LogicComponent inputComponent = componentsMap[connection.InputComponentId];
-                LogicComponent outputComponent = componentsMap[connection.OutputComponentId];
+                LogicComponent inputComponent = componentsMap[connectionData.InputComponentId];
+                LogicComponent outputComponent = componentsMap[connectionData.OutputComponentId];
 
-                ConnectorInput input = inputComponent.GetInput(connection.InputIndex);
-                ConnectorOutput output = outputComponent.GetOutput(connection.OutputIndex);
+                LogicConnectorInput input = inputComponent.GetInputFromId(connectionData.InputId);
+                LogicConnectorOutput output = outputComponent.GetOutputFromId(connectionData.OutputId);
 
-                output.Connectors.Add(input);
+                LogicConnection connection = new LogicConnection(connectionData, input, output);
+                output.Connect(connection);
+                input.Connect(connection);
             }
 
             int inputCount = 0;
@@ -219,8 +223,8 @@ namespace WDL.DigitalLogic
         {
             for (var i = 0; i < InputCount; i++)
             {
-                Signal signal = input[i].Signal;
-                pinInput[i].Press(signal.IsHigh);
+                LogicSignal signal = input[i].Signal;
+                pinInput[i].Signal.Value = signal.IsHigh;
             }
 
             foreach (var component in components)
@@ -228,9 +232,9 @@ namespace WDL.DigitalLogic
                 component.Update();
             }
 
-            for (var i = 0;i < OutputCount; i++)
+            for (var i = 0; i < OutputCount; i++)
             {
-                Signal signal = new Signal(pinOutput[i].Value);
+                LogicSignal signal = new LogicSignal(pinOutput[i].Signal.CurrentValue);
                 output[i].ReceiveInput(signal);
             }
         }

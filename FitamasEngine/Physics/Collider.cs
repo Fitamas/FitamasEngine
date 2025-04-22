@@ -28,7 +28,6 @@ namespace Fitamas.Physics
         [SerializableField] private Vector2 offset = Vector2.Zero;
         //BOX
         [SerializableField] private Vector2 scale = Vector2.One;
-        //[SerializableField] private RectangleF rectangle = new RectangleF(Vector2.Zero, Vector2.One);
         //CIRCLE
         [SerializableField] private float radius = 1;
         //POLYGON
@@ -48,7 +47,7 @@ namespace Fitamas.Physics
         public RectangleF Rectangle => new RectangleF(position + offset, Scale);
         public float Radius => radius;
         public List<Vertices> CompositeShape => compositeShape; 
-        public Body Body => body;
+        internal Body Body => body;
 
         public bool IsReady
         {

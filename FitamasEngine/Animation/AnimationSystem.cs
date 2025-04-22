@@ -41,7 +41,7 @@ namespace Fitamas.Animation
 
                 if (entity.TryGet(out Character character))
                 {
-                    animator.SetAvatar(character.Avatar);
+                    //animator.SetAvatar(character.Avatar);
                 }
             }
         }

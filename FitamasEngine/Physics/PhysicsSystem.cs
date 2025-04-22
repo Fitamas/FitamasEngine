@@ -8,9 +8,8 @@ namespace Fitamas.Physics
 {
     public class PhysicsSystem : EntityFixedUpdateSystem
     {
-        private Vector2 gravity = new Vector2(0, -9.8f);
-
-        public World physicsWorld { get; private set; }
+        public static PhysicsSystem Instance { get; set; }
+        public World World { get; }
 
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<Collider> colliderMapper;
@@ -18,9 +17,10 @@ namespace Fitamas.Physics
 
         public PhysicsSystem() : base(Aspect.All(typeof(Transform)).One(typeof(Collider), typeof(Joint2DComponent)))
         {
-            physicsWorld = new World(gravity);
+            Vector2 gravity = new Vector2(0, -9.8f);
 
-            Physics2D.Init(this);
+            Instance = this;
+            World = new World(gravity);
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -48,7 +48,7 @@ namespace Fitamas.Physics
                 {
                     Transform transform = transformMapper.Get(entityId);
 
-                    collider.CreateBody(physicsWorld, transform);
+                    collider.CreateBody(World, transform);
 
                     if (GetEntity(entityId).TryGet(out Mesh mesh))
                     {
@@ -57,7 +57,7 @@ namespace Fitamas.Physics
 
                     if (jointMapper.TryGet(entityId, out Joint2DComponent joint))
                     {
-                        joint.CreateJoints(physicsWorld, collider);
+                        joint.CreateJoints(World, collider);
                     }
                 }
             }
@@ -83,7 +83,7 @@ namespace Fitamas.Physics
 
         public override void FixedUpdate(float deltaTime)
         {
-            physicsWorld.Step(deltaTime);
+            World.Step(deltaTime);
 
             foreach (var box in ActiveEntities)
             {

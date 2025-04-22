@@ -19,7 +19,7 @@ namespace Fitamas.Physics
         {
             if (mouseJoint != null)
             {
-                Physics2D.world.Remove(mouseJoint);
+                Physics2D.World.Remove(mouseJoint);
                 mouseJoint = null;
                 isConnect = false;
             }
@@ -52,9 +52,9 @@ namespace Fitamas.Physics
         {
             if (mouseJoint != null)
             {
-                Physics2D.world.Remove(mouseJoint);
+                Physics2D.World.Remove(mouseJoint);
             }
-            mouseJoint = JointFactory.CreateFixedMouseJoint(Physics2D.world, body, position);
+            mouseJoint = JointFactory.CreateFixedMouseJoint(Physics2D.World, body, position);
             isConnect = true;
 
             mouseJoint.WorldAnchorB = position;

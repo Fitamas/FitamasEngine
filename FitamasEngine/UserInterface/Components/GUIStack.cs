@@ -142,9 +142,8 @@ namespace Fitamas.UserInterface.Components
                 }
 
                 Vector2 pivot = component.Pivot;
-                Point localPosition = new Point((int)(size.X * pivot.X), (int)(size.Y * pivot.Y));
-                component.LocalSize = size;
-                component.LocalPosition = position + localPosition;
+                Point localPosition = new Point((int)(size.X * pivot.X), (int)(size.Y * pivot.Y)) + position;
+                component.Margin = new Thickness(localPosition.X, localPosition.Y, size.X, size.Y);
 
                 if (orientation == GUIGroupOrientation.Horizontal)
                 {

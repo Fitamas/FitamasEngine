@@ -27,6 +27,11 @@ namespace Fitamas.UserInterface.Themes
                 return;
             }
 
+            while (component.ActiveTriggers.Count > 0)
+            {
+                component.ActiveTriggers.Pop().RestorePropertyValues(component);
+            }
+
             ApplySetters(component);
 
             if (BaseOn != null && this != BaseOn)
@@ -53,11 +58,18 @@ namespace Fitamas.UserInterface.Themes
 
             foreach (var setter in Setters)
             {
-                GUIComponent component1 = component;
+                GUIComponent component1 = null;
 
-                if (!string.IsNullOrEmpty(setter.TargetName) && component.ControlTemplate != null)
+                if (!string.IsNullOrEmpty(setter.TargetName))
                 {
-                    component1 = component.ControlTemplate[setter.TargetName];
+                    if (component.ControlTemplate != null)
+                    {
+                        component1 = component.ControlTemplate[setter.TargetName];
+                    }
+                }
+                else
+                {
+                    component1 = component;
                 }
 
                 if (component1 != null)

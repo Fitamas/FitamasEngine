@@ -2,13 +2,13 @@
 
 namespace WDL.DigitalLogic
 {
-    public interface ISignal
+    public interface ILogicSignal
     {
         public bool IsHigh { get; }
         public bool IsLow { get; }
     }
 
-    public struct Signal : ISignal
+    public struct LogicSignal : ILogicSignal
     {
         public const int MaxSignal = 16;
 
@@ -30,12 +30,12 @@ namespace WDL.DigitalLogic
 
         public bool IsLow => !IsHigh;
 
-        public Signal(int value)
+        public LogicSignal(int value)
         {
             Value = value;
         }
 
-        public Signal(bool isMax)
+        public LogicSignal(bool isMax)
         {
             Value = isMax ? MaxSignal : 0;
         }

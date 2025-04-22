@@ -35,6 +35,8 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<SpriteFont> FontProperty = new DependencyProperty<SpriteFont>(FontChangedCallback, FontManager.DefaultFont, false);
 
+        public static readonly DependencyProperty<Thickness> PaddingProperty = new DependencyProperty<Thickness>(PaddingChangedCallback, Thickness.Zero, false);
+
         public Point Offset { get; set; }
 
         public string Text
@@ -121,6 +123,18 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public Thickness Padding
+        {
+            get
+            {
+                return GetValue(PaddingProperty);
+            }
+            set
+            {
+                SetValue(PaddingProperty, value);
+            }
+        }
+
         public Point TextSize
         {
             get
@@ -145,9 +159,9 @@ namespace Fitamas.UserInterface.Components
         {
             get
             {
+                Thickness padding = Padding;
                 Vector2 textSize = TextSize.ToVector2();
-                float scale = Scale;
-                return (textSize * scale).ToPoint();
+                return (textSize * Scale).ToPoint() + new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
             }
         }
 
@@ -155,7 +169,8 @@ namespace Fitamas.UserInterface.Components
         {
             get
             {
-                Point position = Rectangle.Location + Offset;
+                Thickness padding = Padding;
+                Point position = Rectangle.Location + Offset + new Point(padding.Left, padding.Top);
                 Point textScale = ScaledTextSize;
 
                 switch (TextHorisontalAlignment)
@@ -346,6 +361,14 @@ namespace Fitamas.UserInterface.Components
         }
 
         private static void FontChangedCallback(DependencyObject dependencyObject, DependencyProperty<SpriteFont> property, SpriteFont oldValue, SpriteFont newValue)
+        {
+            if (dependencyObject is GUITextBlock textBlock)
+            {
+                textBlock.UpdateSize();
+            }
+        }
+
+        private static void PaddingChangedCallback(DependencyObject dependencyObject, DependencyProperty<Thickness> property, Thickness oldValue, Thickness newValue)
         {
             if (dependencyObject is GUITextBlock textBlock)
             {

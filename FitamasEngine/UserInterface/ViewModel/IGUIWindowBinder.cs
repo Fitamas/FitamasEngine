@@ -1,12 +1,12 @@
-﻿using Fitamas.UserInterface.Components;
+﻿using Fitamas.MVVM;
+using Fitamas.UserInterface.Components;
 using System;
 
 namespace Fitamas.UserInterface.ViewModel
 {
     public interface IGUIWindowBinder
     {
-        GUIWindow Window { get; }
-        void Bind(GUISystem system, GUIWindowViewModel viewModel);
+        void Bind(GUIWindowViewModel viewModel);
         void Close();
     }
 }

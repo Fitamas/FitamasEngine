@@ -16,19 +16,10 @@ namespace Fitamas.Physics
 {
     public static class Physics2D
     {
-        private static PhysicsSystem system;
-
-        private static RealExplosion realExplosion;
-
-        public static World world => system.physicsWorld;
+        public static World World => PhysicsSystem.Instance.World;
         public const int MaxCastDepth = 10;
 
-        public static void Init(PhysicsSystem m_system)
-        {
-            system = m_system;
-
-            realExplosion = new RealExplosion(world);
-        }
+        //private static RealExplosion realExplosion;
 
         public static void Explosion(Vector2 position, float radius, float force)
         {
@@ -39,7 +30,7 @@ namespace Fitamas.Physics
         {
             List<RayCastHit> hits = new List<RayCastHit>();
             Category category = layers.GetCategory();
-            world.RayCast(delegate (Fixture fixture, Vector2 point, Vector2 normal, float fraction)
+            World.RayCast(delegate (Fixture fixture, Vector2 point, Vector2 normal, float fraction)
             {
                 if (category.HasFlag(fixture.CollisionCategories))
                 {
@@ -67,7 +58,7 @@ namespace Fitamas.Physics
             List<RayCastHit> hits = new List<RayCastHit>();
             Category category = layers.GetCategory();
 
-            world.QueryAABB(delegate (Fixture fixture)
+            World.QueryAABB(delegate (Fixture fixture)
             {
                 if (category.HasFlag(fixture.CollisionCategories))
                 {
@@ -174,7 +165,7 @@ namespace Fitamas.Physics
             List<RayCastHit> hits = new List<RayCastHit>();
             Category category = layers.GetCategory();
 
-            world.QueryAABB(delegate (Fixture fixture)
+            World.QueryAABB(delegate (Fixture fixture)
             {
                 if (category.HasFlag(fixture.CollisionCategories))
                 {
@@ -274,11 +265,6 @@ namespace Fitamas.Physics
             }
 
             return hits.OrderBy(x => x.distance).ToArray();
-        }
-
-        public static bool TryGetEntity(Body body, out Entity entity)
-        {
-            return system.TryGetEntity(body, out entity);
         }
 
         public static bool ClosestPoint(Vector2 position, out Vector2 point, out Vector2 normal) //TODO

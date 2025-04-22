@@ -1,0 +1,311 @@
+﻿using Fitamas.UserInterface.Components.NodeEditor;
+using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.ViewModel;
+using System;
+using System.Collections.Generic;
+using WDL.DigitalLogic;
+using Fitamas.UserInterface;
+using Microsoft.Xna.Framework.Input;
+using ObservableCollections;
+using R3;
+using Microsoft.Xna.Framework;
+using Fitamas;
+
+namespace WDL.Gameplay.ViewModel
+{
+    public class LogicSimulationWindowBinder : GUIWindowBinder<LogicSimulationWindowViewModel>
+    {
+        public class NodeStore
+        {
+            public GUINode Node { get; }
+            public Dictionary<LogicConnectorViewModel, GUIPin> PinMap { get; }
+
+            public NodeStore(GUINode node, Dictionary<LogicConnectorViewModel, GUIPin> pinMap)
+            {
+                Node = node;
+                PinMap = pinMap;
+            }
+        }
+
+        public class ViewModelStore
+        {
+            public LogicComponentViewModel Component { get; }
+            public Dictionary<GUIPin, LogicConnectorViewModel> ConnectorMap { get; }
+
+            public ViewModelStore(LogicComponentViewModel component)
+            {
+                Component = component;
+                ConnectorMap = new Dictionary<GUIPin, LogicConnectorViewModel>();
+            }
+        }
+
+        private GUINodeEditor editor;
+
+        private Dictionary<LogicComponentDescription, Func<LogicComponentViewModel, GUINode, ViewModelStore>> creatorMap;
+
+        private Dictionary<LogicComponentViewModel, NodeStore> componentToNode;
+        private Dictionary<GUINode, ViewModelStore> nodeToComponent;
+
+        private Dictionary<LogicConnectionViewModel, GUIWire> connectionToWire;
+        private Dictionary<GUIWire, LogicConnectionViewModel> wireToConnection;
+
+        private GUIContextMenu editorContextMenu;
+        private GUIContextMenu nodeContextMenu;
+        private GUIContextMenu wireContextMenu;
+
+        protected override IDisposable OnBind(LogicSimulationWindowViewModel viewModel)
+        {
+            creatorMap = new Dictionary<LogicComponentDescription, Func<LogicComponentViewModel, GUINode, ViewModelStore>>();
+            componentToNode = new Dictionary<LogicComponentViewModel, NodeStore>();
+            nodeToComponent = new Dictionary<GUINode, ViewModelStore>();
+            connectionToWire = new Dictionary<LogicConnectionViewModel, GUIWire>();
+            wireToConnection = new Dictionary<GUIWire, LogicConnectionViewModel>();
+
+            SetAlignment(GUIAlignment.Stretch);
+            Margin = new Thickness(400, 120, 0, 0);
+
+            GUIImage image2 = new GUIImage();
+            image2.Color = new Color(0.2f, 0.2f, 0.2f);
+            image2.SetAlignment(GUIAlignment.Stretch);
+            AddChild(image2);
+
+            editor = GUINodeUtils.CreateNodeEditor();
+            editor.SetAlignment(GUIAlignment.Stretch);
+            AddChild(editor);
+            editor.OnNodeEvent.AddListener(args =>
+            {
+                if (nodeToComponent.TryGetValue(args.Node, out var viewModel))
+                {
+                    viewModel.Component.Position.Value = args.Node.LocalPosition;
+                }
+            });
+            editor.OnCreateConnection.AddListener(args =>
+            {
+                if (nodeToComponent.ContainsKey(args.PinA.Node) && nodeToComponent.ContainsKey(args.PinB.Node))
+                {
+                    if (nodeToComponent[args.PinA.Node].ConnectorMap.TryGetValue(args.PinA, out LogicConnectorViewModel viewModel0) &&
+                        nodeToComponent[args.PinB.Node].ConnectorMap.TryGetValue(args.PinB, out LogicConnectorViewModel viewModel1))
+                    {
+                        viewModel.CreateConnect(viewModel0, viewModel1, args.Points);
+                    }
+                }
+            });
+
+            GUIPopup popup;
+
+            popup = new GUIPopup();
+            editorContextMenu = GUI.CreateContextMenu();
+            editorContextMenu.AddItem("...");
+            popup.Window = editorContextMenu;
+            popup.AddChild(editorContextMenu);
+            AddChild(popup);
+            GUIContextMenuManager.SetContextMenu(editor, editorContextMenu);
+
+            popup = new GUIPopup();
+            nodeContextMenu = GUI.CreateContextMenu();
+            nodeContextMenu.AddItem("Destroy");
+            nodeContextMenu.AddItem("TODO rename IN/OUT ");
+            nodeContextMenu.OnSelectItem.AddListener((m, a) =>
+            {
+                if (m.Target is GUINode node && nodeToComponent.TryGetValue(node, out ViewModelStore store))
+                {
+                    switch (a.Index)
+                    {
+                        case 0:
+                            viewModel.DestroyComponent(store.Component);
+                            break;
+                        case 1:
+
+                            //TODO RENAME
+                            break;
+                        case 2:
+                            break;
+                    }
+                }
+            });
+            popup.Window = nodeContextMenu;
+            popup.AddChild(nodeContextMenu);
+            AddChild(popup);
+
+
+            popup = new GUIPopup();
+            wireContextMenu = GUI.CreateContextMenu();
+            wireContextMenu.AddItem("Destroy");
+            wireContextMenu.AddItem("Red");
+            wireContextMenu.AddItem("Green");
+            wireContextMenu.AddItem("Blue");
+            wireContextMenu.OnSelectItem.AddListener((m, a) =>
+            {
+                if (m.Target is GUIWire wire && wireToConnection.TryGetValue(wire, out LogicConnectionViewModel connectionViewModel))
+                {
+                    switch (a.Index)
+                    {
+                        case 0:
+                            viewModel.DestroyConnect(connectionViewModel);
+                            break;
+                        case 1:
+                            connectionViewModel.ThemeId.Value = 0;
+                            break;
+                        case 2:
+                            connectionViewModel.ThemeId.Value = 1;
+                            break;
+                        case 3:
+                            connectionViewModel.ThemeId.Value = 2;
+                            break;
+                    }
+                }
+            });
+            popup.Window = wireContextMenu;
+            popup.AddChild(wireContextMenu);
+            AddChild(popup);
+
+            creatorMap.Add(LogicComponents.Input, (viewModel, node) =>
+            {
+                ViewModelStore model = new ViewModelStore(viewModel);
+                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(100), GUINodeItemAlignment.Right, GUIPinType.Output);
+                model.ConnectorMap[item.Pin] = viewModel.Connectors[0];
+                GUICheckBox checkBox = (GUICheckBox)item.Content;
+                checkBox.OnValueChanged.AddListener((b, a) =>
+                {
+                    viewModel.TrySetSignalValue(a);
+                });
+                node.AddItem(item);
+                return model;
+            });
+            creatorMap.Add(LogicComponents.Output, (viewModel, node) =>
+            {
+                ViewModelStore model = new ViewModelStore(viewModel);
+                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(100), GUINodeItemAlignment.Left, GUIPinType.Input);
+                model.ConnectorMap[item.Pin] = viewModel.Connectors[0];
+                GUICheckBox checkBox = (GUICheckBox)item.Content;
+                checkBox.Interacteble = false;
+                if (viewModel.TryGetSignalValue(out ReadOnlyReactiveProperty<bool> signal))
+                {
+                    signal.Subscribe(v =>
+                    {
+                        checkBox.Value = v;
+                    });
+                }
+                node.AddItem(item);
+                return model;
+            });
+
+            foreach (var component in viewModel.Components)
+            {
+                AddComponent(component);
+            }
+            viewModel.Components.ObserveAdd().Subscribe(e =>
+            {
+                AddComponent(e.Value);
+            });
+            viewModel.Components.ObserveRemove().Subscribe(e =>
+            {
+                RemoveComponent(e.Value);
+            });
+
+            foreach (var connection in viewModel.Connections)
+            {
+                AddConnection(connection);
+            }
+            viewModel.Connections.ObserveAdd().Subscribe(e =>
+            {
+                AddConnection(e.Value);
+            });
+            viewModel.Connections.ObserveRemove().Subscribe(e =>
+            {
+                RemoveConnection(e.Value);
+            });
+
+            return null;
+        }
+
+        void AddComponent(LogicComponentViewModel viewModel)
+        {
+            GUINode node = editor.CreateNode(viewModel.Name);
+            node.LocalPosition = viewModel.Position.Value;
+            node.Style = GUIUtils.GetNodeStyle(ResourceDictionary.DefaultResources, viewModel.ThemeId);
+            GUIContextMenuManager.SetContextMenu(node, nodeContextMenu);
+            ViewModelStore store;
+
+            if (creatorMap.ContainsKey(viewModel.Description))
+            {
+                store = creatorMap[viewModel.Description].Invoke(viewModel, node);
+            }
+            else
+            {
+                store = new ViewModelStore(viewModel);
+                foreach (var connector in viewModel.Connectors)
+                {
+                    GUIPin pin = null;
+                    if (connector.IsInput)
+                    {
+                        pin = node.CreateItem(connector.Name, GUINodeItemAlignment.Left, GUIPinType.Input).Pin;
+                    }
+                    else if (connector.IsOutput)
+                    {
+                        pin = node.CreateItem(connector.Name, GUINodeItemAlignment.Right, GUIPinType.Output).Pin;
+                    }
+
+                    if (pin != null)
+                    {
+                        store.ConnectorMap[pin] = connector;
+                    }
+                }
+            }
+
+            Dictionary<LogicConnectorViewModel, GUIPin> pinMap = new Dictionary<LogicConnectorViewModel, GUIPin>();
+            foreach (var connector in store.ConnectorMap)
+            {
+                pinMap[connector.Value] = connector.Key;
+            }
+
+            componentToNode.Add(viewModel, new NodeStore(node, pinMap));
+            nodeToComponent.Add(node, store);
+        }
+
+        void RemoveComponent(LogicComponentViewModel viewModel)
+        {
+            if (componentToNode.Remove(viewModel, out NodeStore store))
+            {
+                nodeToComponent.Remove(store.Node);
+                editor.RemoveItem(store.Node);
+            }
+        }
+
+        void AddConnection(LogicConnectionViewModel viewModel)
+        {
+            GUIPin pinA = componentToNode[viewModel.Output.Component].PinMap[viewModel.Output];
+            GUIPin pinB = componentToNode[viewModel.Input.Component].PinMap[viewModel.Input];
+
+            GUIWire wire = GUINodeUtils.CreateWire(GUIUtils.GetWireStyle(ResourceDictionary.DefaultResources, viewModel.ThemeId.Value));
+            wire.CreateConnection(pinA, pinB);
+            GUIContextMenuManager.SetContextMenu(wire, wireContextMenu);
+            editor.AddItem(wire);
+            connectionToWire.Add(viewModel, wire);
+            wireToConnection.Add(wire, viewModel);
+
+            viewModel.ThemeId.Subscribe(value =>
+            {
+                wire.Style = GUIUtils.GetWireStyle(ResourceDictionary.DefaultResources, value);
+            });
+            viewModel.Signal.Subscribe(value =>
+            {
+                wire.SetValue(GUIStyleHelpers.IsPoweredProperty, value.IsHigh);
+            });
+            viewModel.Points.ObserveChanged().Subscribe(e =>
+            {
+                wire.Anchors.Clear();
+                wire.Anchors.AddRange(viewModel.Points);
+            });
+        }
+
+        void RemoveConnection(LogicConnectionViewModel viewModel)
+        {
+            if (connectionToWire.Remove(viewModel, out GUIWire wire))
+            {
+                wireToConnection.Remove(wire);
+                editor.RemoveItem(wire);
+            }
+        }
+    }
+}

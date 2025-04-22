@@ -1,10 +1,8 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.Animation;
+using Fitamas.Entities;
 using Fitamas.Extended.Entities;
 using Fitamas.Math2D;
-using Fitamas.Physics;
-using Fitamas.Physics.Characters;
 using Microsoft.Xna.Framework;
-using nkast.Aether.Physics2D.Dynamics;
 
 namespace Fitamas.Physics.Characters
 {
@@ -14,54 +12,16 @@ namespace Fitamas.Physics.Characters
 
         private ComponentMapper<Character> characterMapper;
         private ComponentMapper<Collider> colliderMapper;
-        private ComponentMapper<CharacterElement> elementMapper;
-        private World world;
 
-        public CharacterController() : base(Aspect.All(typeof(Collider)).One(typeof(Character), typeof(CharacterElement)))
+        public CharacterController() : base(Aspect.All(typeof(Collider), typeof(Character)))
         {
 
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
-            world = Physics2D.world;
             characterMapper = mapperService.GetMapper<Character>();
             colliderMapper = mapperService.GetMapper<Collider>();
-            elementMapper = mapperService.GetMapper<CharacterElement>();
-        }
-
-        protected override void OnEntityAdded(int entityId)
-        {
-            InitCharacter(entityId);
-        }
-
-        protected override void OnEntityChanged(int entityId)
-        {
-            InitCharacter(entityId);
-        }
-
-        private void InitCharacter(int entityId)
-        {
-            if (ActiveEntities.Contains(entityId))
-            {
-                Character character = characterMapper.Get(entityId);
-                Entity entity = GetEntity(entityId);
-
-                if (character != null)
-                {
-                    character.Init(GameWorld.EntityManager, entity);
-                }
-            }
-        }
-
-        protected override void OnEntityRemoved(int entityId)
-        {
-            if (ActiveEntities.Contains(entityId))
-            {
-                Character character = characterMapper.Get(entityId);
-
-                character?.Destroy();
-            }
         }
 
         public override void FixedUpdate(float deltaTime)
@@ -72,15 +32,6 @@ namespace Fitamas.Physics.Characters
                 {
                     Collider collider = colliderMapper.Get(id);
                     Character character = characterMapper.Get(id);
-
-                    if (character.isRagDoll)
-                    {
-                        character.CreateRagDoll();
-                    }
-                    else
-                    {
-                        character.RemoveRagDoll();
-                    }
 
                     if (!character.canMove)
                     {

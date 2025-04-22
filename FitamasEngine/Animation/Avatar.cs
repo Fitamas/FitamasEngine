@@ -1,11 +1,10 @@
 ﻿using Fitamas.Entities;
-using Fitamas.Physics;
 using Fitamas.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fitamas.Physics.Characters
+namespace Fitamas.Animation
 {
     public abstract class Avatar
     {

@@ -6,61 +6,95 @@ namespace Fitamas.UserInterface.Components
 {
     public class GUIRoot : GUIComponent
     {
-        private GUICanvas canvas;
-        private GUIFrame mainFrame;
-        private GUIFrame popupFrame;
-        private List<GUIWindow> windows = new List<GUIWindow>();
-        private GUIWindow mainWindow;
-        private GUIWindow popup;
+        private GUIWindow screen;
+        private List<GUIWindow> windows;
 
-        public GUICanvas Canvas => canvas;
-        public GUIFrame MainFrame => mainFrame;
-        public GUIFrame PopupFrame => popupFrame;
+        public GUIWindow PopupWindow { get; set; }
 
-        public GUIWindow MainWindow
+        public GUIWindow Screen
         {
             get
             {
-                if (mainWindow == null)
+                if (screen == null)
                 {
-                    mainWindow = new GUIWindow();
-                    mainWindow.SetAlignment(GUIAlignment.Stretch);
-
-                    mainFrame.AddChild(mainWindow);
+                    screen = new GUIWindow();
+                    screen.SetAlignment(GUIAlignment.Stretch);
+                    AddChild(screen);
                 }
 
-                return mainWindow;
+                return screen;
             }
             set
             {
-                if (mainWindow != null)
+                if (screen != null)
                 {
-                    mainWindow.Close();
+                    screen.Close();
                 }
 
-                mainWindow = value;
+                screen = value;
 
-                if (mainWindow != null)
+                if (screen != null)
                 {
-                    mainFrame.AddChild(mainWindow);
-                    mainWindow.SetAsFirstSibling();
+                    AddChild(screen);
                 }
             }
         }
 
         public GUIRoot()
         {
-            canvas = new GUICanvas();
-            canvas.Pivot = new Vector2(0, 0);
-            AddChild(canvas);
+            IsFocusScope = true;
 
-            mainFrame = new GUIFrame();
-            mainFrame.SetAlignment(GUIAlignment.Stretch);
-            canvas.AddChild(mainFrame);
+            windows = new List<GUIWindow>();
+        }
 
-            popupFrame = new GUIFrame();
-            popupFrame.SetAlignment(GUIAlignment.Stretch);
-            canvas.AddChild(popupFrame);
+        public override void RaycastAll(Point point, List<GUIComponent> result)
+        {
+            bool flag = false;
+            foreach (GUIWindow window in windows)
+            {
+                if (window.IsOnTop)
+                {
+                    window.RaycastAll(point, result);
+                    flag = true;
+                    break;
+                }
+            }
+
+            if (!flag)
+            {
+                if (screen != null)
+                {
+                    screen.RaycastAll(point, result);
+                }
+
+                foreach (GUIWindow window in windows)
+                {
+                    window.RaycastAll(point, result);
+                }
+            }
+
+            if (PopupWindow != null)
+            {
+                PopupWindow.RaycastAll(point, result);
+            }
+        }
+
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
+        {
+            if (screen != null)
+            {
+                screen.Draw(gameTime, context);
+            }
+
+            foreach (GUIWindow window in windows)
+            {
+                window.Draw(gameTime, context);
+            }
+
+            if (PopupWindow != null)
+            {
+                PopupWindow.Draw(gameTime, context);
+            }
         }
 
         public void OpenWindow(GUIWindow window)
@@ -68,47 +102,22 @@ namespace Fitamas.UserInterface.Components
             if (!windows.Contains(window))
             {
                 windows.Add(window);
-                mainFrame.AddChild(window);
+                AddChild(window);
             }
         }
 
-        public void CloseWindow(GUIWindow window)
+        internal void CloseWindow(GUIWindow window)
         {
-            if (windows.Remove(window))
+            if (screen == window)
             {
-                window.Close();
+                screen = null;
             }
-        }
 
-        public void CloseAllWindows()
-        {
-            foreach (var window in windows.ToArray())
+            windows.Remove(window);
+
+            if (PopupWindow == window && window.Parent is GUIPopup popup)
             {
-                CloseWindow(window);
-            }
-        }
-
-        public void OpenPopup(GUIWindow newPopup)
-        {
-            if (popup != newPopup)
-            {
-                ClosePopup();
-
-                popup = newPopup;
-
-                if (newPopup != null)
-                {
-                    newPopup.Open();
-                    popupFrame.AddChild(newPopup);
-                }
-            }
-        }
-
-        public void ClosePopup()
-        {
-            if (popup != null)
-            {
-                popup.Close();
+                popup.Destroy();
             }
         }
     }

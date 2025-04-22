@@ -24,17 +24,17 @@ namespace Fitamas.UserInterface.ViewModel
                 windowsContainer.OpenScreen(newScreenViewModel);
             }));
 
-            foreach (var openedPopup in viewModel.OpenedPopups)
+            foreach (var openedPopup in viewModel.OpenedWindows)
             {
                 windowsContainer.OpenWindow(openedPopup);
             }
 
-            subscriptions.Add(viewModel.OpenedPopups.ObserveAdd().Subscribe(e =>
+            subscriptions.Add(viewModel.OpenedWindows.ObserveAdd().Subscribe(e =>
             {
                 windowsContainer.OpenWindow(e.Value);
             }));
 
-            subscriptions.Add(viewModel.OpenedPopups.ObserveRemove().Subscribe(e =>
+            subscriptions.Add(viewModel.OpenedWindows.ObserveRemove().Subscribe(e =>
             {
                 windowsContainer.CloseWindow(e.Value);
             }));

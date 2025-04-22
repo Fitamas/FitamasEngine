@@ -1,7 +1,6 @@
 ﻿using ClipperLib;
 using Fitamas.Entities;
 using Fitamas.Math2D;
-using Fitamas.Physics.Characters;
 using Microsoft.Xna.Framework;
 using System;
 

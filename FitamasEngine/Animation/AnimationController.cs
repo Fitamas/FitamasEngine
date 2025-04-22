@@ -3,9 +3,9 @@ using Fitamas.Graphics;
 using Fitamas.Input;
 using Fitamas.Math2D;
 using Fitamas.Serialization;
-using Fitamas.Physics.Characters;
 using Microsoft.Xna.Framework;
 using System;
+using Fitamas.Physics.Characters;
 
 namespace Fitamas.Animation
 {

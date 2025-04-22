@@ -6,27 +6,23 @@ using System;
 
 namespace Fitamas.UserInterface.Components
 {
+    public class SelectNodeArgs
+    {
+        public GUITreeNode Node { get; set; }
+        public int Id { get; set; }
+        public Point MousePosition { get; set; }
+    }
+
     public class GUITreeView : GUIItemsControl
     {
-        public static readonly DependencyProperty<int> IndentProperty = new DependencyProperty<int>();
+        public static readonly RoutedEvent OnSelectTreeNodeEvent = new RoutedEvent();
 
-        public int Indent
-        {
-            get
-            {
-                return GetValue(IndentProperty);
-            }
-            set 
-            { 
-                SetValue(IndentProperty, value); 
-            }
-        }
-
-        public GUIEvent<SelectNodeArgs> OnSelectTreeNode = new GUIEvent<SelectNodeArgs>();
+        public GUIComponent Container { get; set; }
+        public GUIEvent<SelectNodeArgs> OnSelectTreeNode { get; }
 
         public GUITreeView()
         {
-
+            OnSelectTreeNode = eventHandlersStore.Create<SelectNodeArgs>(OnSelectTreeNodeEvent);
         }
 
         protected override bool IsItemItsOwnContainerOverride(GUIComponent component)
@@ -41,6 +37,11 @@ namespace Fitamas.UserInterface.Components
             return false;
         }
 
+        protected override void OnAddItem(GUIComponent component)
+        {
+            Container.AddChild(component);
+        }
+
         public GUITreeNode CreateTreeNode(string text)
         {
             GUITreeNode node = GUI.CreateTreeNode(Style.Resources, text);
@@ -48,7 +49,7 @@ namespace Fitamas.UserInterface.Components
             return node;
         }
 
-        public void Select(GUITreeNode node, ClickButtonEventArgs click)
+        internal void Select(GUITreeNode node)
         {
             SelectNodeArgs args = new SelectNodeArgs();
             args.Node = node;
@@ -60,17 +61,7 @@ namespace Fitamas.UserInterface.Components
             {
                 args.Id = node.TreeView.Items.IndexOf(node);
             }
-            args.Button = click.Button;
-            args.MousePosition = click.MousePosition;
             OnSelectTreeNode.Invoke(args);
         }
-    }
-
-    public class SelectNodeArgs
-    {
-        public GUITreeNode Node { get; set; }
-        public int Id { get; set; }
-        public MouseButton Button { get; set; }
-        public Point MousePosition { get; set; }
     }
 }

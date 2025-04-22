@@ -49,13 +49,13 @@ namespace Fitamas.UserInterface
 
     public class BindingExpression : Expression
     {
-        public Binding Parent { get; }
+        public DependencyObject DependencyObject { get; }
 
-        public override object Value => Parent.Value;
+        public override object Value => DependencyObject.GetValue(Property);
 
-        public BindingExpression(DependencyProperty property, Binding binding) : base(property)
+        public BindingExpression(DependencyProperty property, DependencyObject dependencyObject) : base(property)
         {
-            Parent = binding;
+            DependencyObject = dependencyObject;
         }
     }
 
@@ -90,8 +90,8 @@ namespace Fitamas.UserInterface
         }
     }
 
-    public class Binding
-    {
-        public object Value { get; set; }
-    }
+    //public class Binding
+    //{
+    //    public object Value { get; set; }
+    //}
 }

@@ -5,16 +5,16 @@ namespace Fitamas.UserInterface.ViewModel
 {
     public class GUIWindowType
     {
-        private Func<GUIWindowBinder> constructor;
+        private Func<IGUIWindowBinder> constructor;
 
-        public GUIWindowType(Func<GUIWindowBinder> constructor)
+        public GUIWindowType(Func<IGUIWindowBinder> constructor)
         {
             this.constructor = constructor;
         }
 
-        public GUIWindowBinder Create()
+        public IGUIWindowBinder Create()
         {
-            GUIWindowBinder binder = constructor.Invoke();
+            IGUIWindowBinder binder = constructor.Invoke();
             return binder;
         }
     }

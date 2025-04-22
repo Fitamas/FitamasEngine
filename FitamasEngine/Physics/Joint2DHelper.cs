@@ -1,5 +1,5 @@
-﻿using Fitamas.Entities;
-using Fitamas.Physics.Characters;
+﻿using Fitamas.Animation;
+using Fitamas.Entities;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Physics

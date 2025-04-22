@@ -28,7 +28,7 @@ namespace Fitamas.UserInterface.Components
             OnValueChanged = eventHandlersStore.Create<GUICheckBox, bool>(OnValueChangedEvent);
         }
 
-        protected override void OnClickedButton(MouseEventArgs mouse)
+        protected override void OnClickedButton()
         {
             Value = !Value;
         }

@@ -1,4 +1,5 @@
 ﻿using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.UserInterface.Components
@@ -46,28 +47,30 @@ namespace Fitamas.UserInterface.Components
             DragEnd = eventHandlersStore.Create<GUIThumb, DragEventArgs>(DragEndEvent);
         }
 
-        public void OnStartDragMouse(MouseEventArgs mouse)
+        public void OnStartDragMouse(GUIMouseEventArgs mouse)
         {
             if (IsMouseOver)
             {
+                System.Mouse.MouseCapture = this;
                 IsDrag = true;
                 StartDragOffset = mouse.Position - Rectangle.Location;
                 DragStart.Invoke(this, new DragEventArgs() { Position = mouse.Position });
             }
         }
 
-        public void OnDragMouse(MouseEventArgs mouse)
+        public void OnDragMouse(GUIMouseEventArgs mouse)
         {
             if (IsDrag)
             {
-                DragDelta.Invoke(this, new DragEventArgs() { Position = mouse.Position, Delta = mouse.DistanceMoved.ToPoint() });
+                DragDelta.Invoke(this, new DragEventArgs() { Position = mouse.Position, Delta = mouse.DistanceMoved });
             }
         }
 
-        public void OnEndDragMouse(MouseEventArgs mouse)
+        public void OnEndDragMouse(GUIMouseEventArgs mouse)
         {
             if (IsDrag)
             {
+                System.Mouse.MouseCapture = null;
                 IsDrag = false;
                 DragEnd.Invoke(this, new DragEventArgs() { Position = mouse.Position });
             }

@@ -6,11 +6,12 @@ namespace Fitamas.UserInterface.Components
     {
         public static readonly DependencyProperty<bool> IsOpenProperty = new DependencyProperty<bool>(IsOpenChangedCallback, false, false);
 
+        public static readonly DependencyProperty<bool> IsLeafProperty = new DependencyProperty<bool>(false, false);
+
+        public static readonly DependencyProperty<bool> IsSelectedProperty = new DependencyProperty<bool>(false, false);
+
         public GUITreeView TreeView { get; internal set; }
         public GUITreeNode ParentNode { get; internal set; }
-
-        public bool IsLeaf => Items.Count == 0;
-        public int Count => Items.Count;
 
         public bool IsOpen
         {
@@ -21,6 +22,30 @@ namespace Fitamas.UserInterface.Components
             set
             {
                 SetValue(IsOpenProperty, value);
+            }
+        }
+
+        public bool IsLeaf
+        {
+            get
+            {
+                return GetValue(IsLeafProperty);
+            }
+            private set
+            {
+                SetValue(IsLeafProperty, value);
+            }
+        }
+
+        public bool IsSelect
+        {
+            get
+            {
+                return GetValue(IsSelectedProperty);
+            }
+            set
+            {
+                SetValue(IsSelectedProperty, value);
             }
         }
 
@@ -56,18 +81,18 @@ namespace Fitamas.UserInterface.Components
             return false;
         }
 
-        protected override void UpdateSize()
+        protected override void OnAddItem(GUIComponent component)
         {
-            base.UpdateSize();
+            base.OnAddItem(component);
 
-            if (Container != null && TreeView != null)
-            {
-                Thickness thickness = Container.Margin;
+            IsLeaf = Items.Count == 0;
+        }
 
-                thickness.Left = TreeView.Indent * (Level + 1);
+        protected override void OnRemoveItem(GUIComponent component)
+        {
+            base.OnRemoveItem(component);
 
-                Container.Margin = thickness;
-            }
+            IsLeaf = Items.Count == 0;
         }
 
         public GUITreeNode CreateTreeNode(string text)

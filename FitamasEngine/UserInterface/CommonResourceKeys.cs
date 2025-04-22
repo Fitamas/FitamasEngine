@@ -132,6 +132,32 @@ namespace Fitamas.UserInterface
         public static readonly string ContextMenuDefaultColor = nameof(ContextMenuDefaultColor);
 
 
+
+        public static readonly string NodeEditorStyle = nameof(NodeEditorStyle);
+
+        public static readonly string NodeEditorSelectColor = nameof(NodeEditorSelectColor);
+
+        public static readonly string NodeEditorNodeStyle = nameof(NodeEditorNodeStyle);
+
+        public static readonly string NodeEditorNodeHeadDefaultColor = nameof(NodeEditorNodeHeadDefaultColor);
+
+        public static readonly string NodeEditorNodeBodyDefaultColor = nameof(NodeEditorNodeBodyDefaultColor);
+
+        public static readonly string NodeEditorNodeSelectColor = nameof(NodeEditorNodeSelectColor);
+
+        public static readonly string NodeEditorPinStyle = nameof(NodeEditorPinStyle);
+
+        public static readonly string NodeEditorPinDefaultColor = nameof(NodeEditorPinDefaultColor);
+
+        public static readonly string NodeEditorPinConnectedDefaultColor = nameof(NodeEditorPinConnectedDefaultColor);
+
+        public static readonly string NodeEditorWireStyle = nameof(NodeEditorWireStyle);
+
+        public static readonly string NodeEditorWireDefaultColor = nameof(NodeEditorWireDefaultColor);
+
+        public static readonly string NodeEditorWireHoverColor = nameof(NodeEditorWireHoverColor);
+
+
         public static readonly string TextBlockStyle = nameof(TextBlockStyle);
 
         public static readonly string TextBlockDefaultColor = nameof(TextBlockDefaultColor);
@@ -165,8 +191,6 @@ namespace Fitamas.UserInterface
 
         public static readonly string TreeViewStyle = nameof(TreeViewStyle);
 
-        public static readonly string TreeViewIndent = nameof(TreeViewIndent);
-
         public static readonly string TreeNodeStyle = nameof(TreeNodeStyle);
 
         //public static readonly string SliderTrackBackgroundBrushKey = "SliderTrackBackgroundBrush";
@@ -178,5 +202,14 @@ namespace Fitamas.UserInterface
         //public static readonly string ScrollBarThumbBorderBrushKey = "ScrollBarThumbBorderBrush";
 
         //public static readonly string ScrollBarThumbHoverBackgroundKey = "ScrollBarThumbHoverBackground";
+
+
+        public static readonly string WindowStyle = nameof(WindowStyle);
+
+        public static readonly string WindowBackgroundColor = nameof(WindowBackgroundColor);
+
+        public static readonly string WindowTextColor = nameof(WindowTextColor);
+
+        public static readonly string WindowHeaderColor = nameof(WindowHeaderColor);
     }
 }

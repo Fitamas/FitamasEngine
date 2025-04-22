@@ -40,6 +40,13 @@ namespace Fitamas.UserInterface.Themes
 
             dictionary[CommonResourceKeys.ContextMenuDefaultColor] = Color.LightGray;
 
+            dictionary[CommonResourceKeys.NodeEditorSelectColor] = new Color(0.1f, 0.5f, 0.8f, 0.4f);
+            dictionary[CommonResourceKeys.NodeEditorNodeHeadDefaultColor] = new Color(0.07f, 0.43f, 0.7f);
+            dictionary[CommonResourceKeys.NodeEditorNodeBodyDefaultColor] = new Color(0.1f, 0.6f, 0.8f);
+            dictionary[CommonResourceKeys.NodeEditorNodeSelectColor] = new Color(0.8f, 0.8f, 0.8f, 0.6f);
+            dictionary[CommonResourceKeys.NodeEditorPinConnectedDefaultColor] = Color.Gray;
+            dictionary[CommonResourceKeys.NodeEditorWireDefaultColor] = Color.White;
+
             dictionary[CommonResourceKeys.TextBlockDefaultColor] = Color.Black;
 
             dictionary[CommonResourceKeys.TextInputDefaultColor] = Color.White;
@@ -52,6 +59,10 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.TrackBarThumbDisableColor] = new Color(0.75f, 0.75f, 0.75f);
             dictionary[CommonResourceKeys.TrackBarThumbHoverColor] = Color.DeepSkyBlue;
             dictionary[CommonResourceKeys.TrackBarThumbPressedColor] = Color.LightSkyBlue;
+
+            dictionary[CommonResourceKeys.WindowBackgroundColor] = new Color(0.75f, 0.75f, 0.75f);
+            dictionary[CommonResourceKeys.WindowHeaderColor] = Color.White;
+            dictionary[CommonResourceKeys.WindowTextColor] = Color.Black;
         }
     }
 }

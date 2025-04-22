@@ -1,22 +1,17 @@
-﻿using Fitamas.Graphics;
-using Fitamas.Input;
-using Fitamas.Math2D;
-using Fitamas.Serialization;
-using Fitamas.UserInterface.Components;
+﻿using Fitamas.Input;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using Fitamas.UserInterface.Components.NodeEditor.Controllers;
-using Fitamas.Input.InputListeners;
-using nkast.Aether.Physics2D;
+using Fitamas.UserInterface.Input;
 
 namespace Fitamas.UserInterface.Components.NodeEditor
 {
-    public enum GUIEventType
+    public enum GUINodeEditorEventType
     {
         None,
         Click,
+        Moved,
         StartDrag,
         Drag,
         EndDrag,
@@ -29,63 +24,86 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public Point MousePosition { get; }
         public Point DragDelta { get; }
         public MouseButton Button { get; }
-        public GUIEventType EventType { get; }
-        public GUIComponent Component { get; set; }
+        public GUINodeEditorEventType EventType { get; }
+        public GUIComponent Target { get; }
 
-        public GUINodeEditorEventArgs(Point mousePosition, Point dragDelta, MouseButton button, GUIEventType eventType, GUIComponent component = null)
+        public GUINodeEditorEventArgs(Point mousePosition, Point dragDelta, MouseButton button, GUINodeEditorEventType eventType, GUIComponent component)
         {
             MousePosition = mousePosition;
             DragDelta = dragDelta;
             Button = button;
             EventType = eventType;
-            Component = component;
+            Target = component;
         }
     }
 
-    public class GUINodeEditor : GUIComponent, IMouseEvent, IDragMouseEvent, IKeyboardEvent
+    public class GUICreateConnectionEventArgs
+    {
+        public GUIPin PinA { get; }
+        public GUIPin PinB { get; }
+        public List<Point> Points { get; }
+
+        public GUICreateConnectionEventArgs(GUIPin pinA, GUIPin pinB, List<Point> points)
+        {
+            PinA = pinA;
+            PinB = pinB;
+            Points = points;
+        }
+    }
+
+    public enum GUINodeEventType
+    {
+        Create,
+        Moved,
+        Destroy
+    }
+
+    public class GUINodeEventArgs
+    {
+        public GUINode Node { get; }
+        public GUINodeEventType EventType { get; }
+
+        public GUINodeEventArgs(GUINode node, GUINodeEventType eventType)
+        {
+            Node = node;
+            EventType = eventType;
+        }
+    }
+
+    public class GUINodeEditor : GUIItemsControl, IMouseEvent, IDragMouseEvent, IKeyboardEvent
     {
         private List<GUINode> nodes = new List<GUINode>();
         private List<GUIWire> wires = new List<GUIWire>();
-        private List<GUIComponent> selectComponents = new List<GUIComponent>();
-        private GUIImage selectRegion;
         private EditorController[] controllers;
-        private GUIFrame frame;
 
-        public GUIEvent<GUINode> OnCreateNode = new GUIEvent<GUINode>();
-        public GUIEvent<GUINode> OnDeleteNode = new GUIEvent<GUINode>();
-        public GUIEvent<GUIPin> OnCreatePin = new GUIEvent<GUIPin>();
-        public GUIEvent<GUIPin> OnDeletePin = new GUIEvent<GUIPin>();
+        public GUIComponent Content { get; }
+        public GUIComponent SelectRegion { get; set; }
+
+        public GUIEvent<GUINodeEventArgs> OnNodeEvent = new GUIEvent<GUINodeEventArgs>();
+
         public GUIEvent<GUIWire> OnCreateWire = new GUIEvent<GUIWire>();
-        public GUIEvent<GUIWire> OnDeleteWire = new GUIEvent<GUIWire>();
+        public GUIEvent<GUIWire> OnDestroyWire = new GUIEvent<GUIWire>();
 
-        public GUIEvent<GUIWire> OnCreateConnection = new GUIEvent<GUIWire>();
+        public GUIEvent<GUICreateConnectionEventArgs> OnCreateConnection = new GUIEvent<GUICreateConnectionEventArgs>();
 
-        public GUIEvent<KeyboardEventArgs> OnKeybordEvent = new GUIEvent<KeyboardEventArgs>();
+        public GUIEvent<GUIKeyboardEventArgs> OnKeybordEvent = new GUIEvent<GUIKeyboardEventArgs>();
         public GUIEvent<GUINodeEditorEventArgs> OnMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
         public GUIEvent<GUINodeEditorEventArgs> OnPinInteractMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
         public GUIEvent<GUINodeEditorEventArgs> OnNodeInteractMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
         public GUIEvent<GUINodeEditorEventArgs> OnWireInteractMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
 
-        public GUIEvent<GUINodeEditorEventArgs, GUIContextMenu> OnCreateContextMenu = new GUIEvent<GUINodeEditorEventArgs, GUIContextMenu>();
-
         public List<GUINode> Nodes => nodes;
         public List<GUIWire> Wires => wires;
-        public GUIFrame Frame => frame;
-        public bool OnEptyField => selectComponents.Count == 0;
 
-        public GUINodeEditor() : base()
+        public GUINodeEditor()
         {
+            IsFocusScope = true;
             RaycastTarget = true;
             IsMask = true;
 
-            frame = new GUIFrame();
-            //frame.Anchor = new Vector2(0.5f, 0.5f);
+            GUIFrame frame = new GUIFrame();
             AddChild(frame);
-
-            selectRegion = new GUIImage();
-            //selectRegion.Color = Settings.SelectRegionColor;
-            selectRegion.LocalSize = new Point(0, 0);
-            AddChild(selectRegion);
+            Content = frame;
 
             controllers =
             [
@@ -95,99 +113,67 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             ];
         }
 
-        public void Add(GUINode node)
+        protected override void OnAddItem(GUIComponent component)
         {
-            frame.AddChild(node);
-
-            if (!nodes.Contains(node))
+            if (component is GUINode node)
             {
+                Content.AddChild(node);
                 nodes.Add(node);
                 node.NodeEditor = this;
-                OnCreateNode.Invoke(node);
-                foreach (var pin in node.Pins)
-                {
-                    OnCreatePin.Invoke(pin);
-                }
+                OnNodeEvent.Invoke(new GUINodeEventArgs(node, GUINodeEventType.Create));
             }
-        }
-
-        public void Remove(GUINode node)
-        {
-            node.Destroy();
-
-            nodes.Remove(node);
-            OnDeleteNode.Invoke(node);
-
-            foreach (var pin in node.Pins)
+            if (component is GUIWire wire)
             {
-                OnDeletePin.Invoke(pin);
-
-                foreach (var wire in wires)
-                {
-                    if (wire.PinA == pin || wire.PinB == pin)
-                    {
-                        //frame.RemoveChild(wire);
-                        Remove(wire);
-                        break;
-                    }
-                }
-            }
-        }
-
-        public void Add(GUIWire wire)
-        {
-            frame.AddChild(wire);
-
-            if (!wires.Contains(wire))
-            {
+                Content.AddChild(wire);
                 wires.Add(wire);
+                wire.NodeEditor = this;
                 OnCreateWire.Invoke(wire);
             }
         }
 
-        public void Remove(GUIWire wire)
+        protected override void OnRemoveItem(GUIComponent component)
         {
-            wire.Destroy();
+            if (component is GUINode node)
+            {
+                node.Destroy();
+                nodes.Remove(node);
 
-            wires.Remove(wire);
-            OnDeleteWire.Invoke(wire);
+                foreach (var wire0 in wires.ToArray())
+                {
+                    foreach (var item in node.Items)
+                    {
+                        if (item is GUINodeItem nodeItem)
+                        {
+                            if (wire0.PinA == nodeItem.Pin || wire0.PinB == nodeItem.Pin)
+                            {
+                                RemoveItem(wire0);
+                            }
+                        }
+                    }
+                }
+
+                OnNodeEvent.Invoke(new GUINodeEventArgs(node, GUINodeEventType.Destroy));
+            }
+            if (component is GUIWire wire)
+            {
+                wire.Destroy();
+                wires.Remove(wire);
+                OnDestroyWire.Invoke(wire);
+            }
         }
 
-        //protected override void OnAddChild(GUIComponent component)
-        //{
-        //    if (component is GUINode node)
-        //    {
-        //        Add(node);
-        //    }
-        //    if (component is GUIWire wire)
-        //    {
-        //        Add(wire);
-        //    }
-        //}
-
-        //protected override void OnRemoveChild(GUIComponent component)
-        //{
-        //    if (component is GUINode node)
-        //    {
-        //        Remove(node);
-        //    }
-        //    if (component is GUIWire wire)
-        //    {
-        //        Remove(wire);
-        //    }
-        //}
-
-        public GUINode CreateNode(string name = "Node")
+        public GUINode CreateNode(string name)
         {
             GUINode node = GUINodeUtils.CreateNode(new Point(), name);
-            Add(node);
+            AddItem(node);
             return node;
         }
 
-        public GUIWire CreateWire()
+        public GUIWire CreateWire(GUIPin pinA, GUIPin pinB)
         {
             GUIWire wire = GUINodeUtils.CreateWire();
-            Add(wire);
+            wire.CreateConnection(pinA, pinB);
+            AddItem(wire);
             return wire;
         }
 
@@ -216,196 +202,100 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             return false;
         }
 
-        protected void OnUpdate(GameTime gameTime)
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
         {
-            foreach (var controller in controllers)
-            {
-                controller.Update();
-            }
-
-            Point mousePosition = InputSystem.mouse.MousePosition;
-            Point delta = InputSystem.mouseDelta;
-            Point localPosition = ToLocal(mousePosition);
-            List<GUIComponent> selects = [.. selectComponents];
-            selectComponents.Clear();
-
-            foreach (var node in nodes)
-            {
-                bool containNode = selects.Contains(node);
-
-                if (node.Contains(mousePosition))
-                {
-                    selectComponents.Add(node);
-                    if (!containNode)
-                    {
-                        GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta,
-                                                  MouseButton.None, GUIEventType.Entered, node);
-                        OnNodeInteractMouseEvent.Invoke(args);
-                    }
-
-                    foreach (var pin in node.Pins)
-                    {
-                        bool containPin = selects.Contains(pin);
-
-                        if (pin.Contains(mousePosition))
-                        {
-                            selectComponents.Add(pin);
-                            if (!containPin)
-                            {
-                                GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta,
-                                                           MouseButton.None, GUIEventType.Entered, pin);
-                                OnNodeInteractMouseEvent.Invoke(args);
-                            }
-                        }
-                        else
-                        {
-                            if (containPin)
-                            {
-                                GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta,
-                                                           MouseButton.None, GUIEventType.Exitted, pin);
-                                OnNodeInteractMouseEvent.Invoke(args);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (containNode)
-                    {
-                        GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta,
-                                                  MouseButton.None, GUIEventType.Exitted, node);
-                        OnNodeInteractMouseEvent.Invoke(args);
-                    }
-                }
-            }
-
-            foreach (var wire in wires)
-            {
-                bool containWire = selects.Contains(wire);
-
-                if (wire.Contains(mousePosition))
-                {
-                    selectComponents.Add(wire);
-                    if (!containWire)
-                    {
-                        GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta,
-                                                   MouseButton.None, GUIEventType.Entered, wire);
-                        OnWireInteractMouseEvent.Invoke(args);
-                    }
-                }
-                else
-                {
-                    if (containWire)
-                    {
-                        GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta,
-                                                  MouseButton.None, GUIEventType.Exitted, wire);
-                        OnWireInteractMouseEvent.Invoke(args);
-                    }
-                }
-            }
-        }
-
-        public void OnClickedMouse(MouseEventArgs mouse)
-        {
-            InvokeMouseEvent(mouse, GUIEventType.Click);
-        }
-
-        public void OnReleaseMouse(MouseEventArgs mouse)
-        {
-
-        }
-
-        public void OnScrollMouse(MouseEventArgs mouse)
-        {
-
-        }
-
-        public void OnStartDragMouse(MouseEventArgs mouse)
-        {
-            InvokeMouseEvent(mouse, GUIEventType.StartDrag);
-        }
-
-        public void OnDragMouse(MouseEventArgs mouse)
-        {
-            InvokeMouseEvent(mouse, GUIEventType.Drag);
-        }
-
-        public void OnEndDragMouse(MouseEventArgs mouse)
-        {
-            InvokeMouseEvent(mouse, GUIEventType.EndDrag);
-        }
-
-        public void OnKeyDown(KeyboardEventArgs args)
-        {
-            OnKeybordEvent.Invoke(args);
-        }
-
-        public void OnKeyUP(KeyboardEventArgs args)
-        {
-
-        }
-
-        public void OnKey(KeyboardEventArgs args)
-        {
-
-        }
-
-        private void InvokeMouseEvent(MouseEventArgs mouse, GUIEventType eventType)
-        {
-            if (!IsMouseOver && (eventType == GUIEventType.Click || eventType == GUIEventType.StartDrag))
+            if (!IsFocused)
             {
                 return;
             }
 
-            System.Focused = this;
+            Point mousePosition = InputSystem.mouse.MousePosition;
+            Point delta = InputSystem.mouseDelta;
 
-            Point localPosition = ToLocal(mouse.Position);
-            Point delta = mouse.DistanceMoved.ToPoint();
-            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(localPosition, delta, mouse.Button, eventType);
-            OnMouseEvent.Invoke(args);
+            GUINodeEditorEventArgs args0 = new GUINodeEditorEventArgs(mousePosition, delta, mouse.Button, GUINodeEditorEventType.Moved, this);
+            OnMouseEvent.Invoke(args0);
+        }
 
-            foreach (var component in selectComponents)
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+            if (!IsFocused)
             {
-
-                if (component.Contains(mouse.Position))
-                {
-                    args = new GUINodeEditorEventArgs(localPosition, delta, mouse.Button, eventType);
-                    args.Component = component;
-
-                    if (component is GUINode)
-                    {
-                        OnNodeInteractMouseEvent.Invoke(args);
-                    }
-                    else if (component is GUIPin)
-                    {
-                        OnPinInteractMouseEvent.Invoke(args);
-                    }
-                    else if (component is GUIWire)
-                    {
-                        OnWireInteractMouseEvent.Invoke(args);
-                    }
-                }
+                Focus();
             }
+
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.Click);
+        }
+
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnStartDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.StartDrag);
+        }
+
+        public void OnDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.Drag);
+        }
+
+        public void OnEndDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.EndDrag);
+        }
+
+        public void OnKeyDown(GUIKeyboardEventArgs args)
+        {
+            OnKeybordEvent.Invoke(args);
+        }
+
+        public void OnKeyUP(GUIKeyboardEventArgs args)
+        {
+
+        }
+
+        public void OnKey(GUIKeyboardEventArgs args)
+        {
+
+        }
+
+        private void InvokeMouseEvent(GUIMouseEventArgs mouse, GUINodeEditorEventType eventType)
+        {
+            if (!IsFocused)
+            {
+                return;
+            }
+
+            Point delta = mouse.DistanceMoved;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mouse.Position, delta, mouse.Button, eventType, this);
+            OnMouseEvent.Invoke(args);
         }
 
         public void StartSelectRegion(Point mousePosition)
         {
-            selectRegion.LocalPosition = mousePosition;
+            SelectRegion.LocalPosition = mousePosition;
         }
 
-        public void SelectRegion(Point mousePosition)
+        public void DoSelectRegion(Point mousePosition)
         {
-            Point scale = selectRegion.LocalPosition - mousePosition;
+            Point scale = SelectRegion.LocalPosition - mousePosition;
 
-            selectRegion.LocalSize = new Point(Math.Abs(scale.X), Math.Abs(scale.Y));
+            SelectRegion.LocalSize = new Point(Math.Abs(scale.X), Math.Abs(scale.Y));
 
-            selectRegion.Pivot = new Vector2(scale.X < 0 ? 0 : 1, scale.Y < 0 ? 0 : 1);
+            SelectRegion.Pivot = new Vector2(scale.X < 0 ? 0 : 1, scale.Y < 0 ? 0 : 1);
         }
 
         public Rectangle EndSelectRegion()
         {
-            Rectangle region = selectRegion.Rectangle;
-            selectRegion.LocalSize = new Point();
+            Rectangle region = SelectRegion.Rectangle;
+            SelectRegion.LocalSize = new Point();
 
             return region;
         }

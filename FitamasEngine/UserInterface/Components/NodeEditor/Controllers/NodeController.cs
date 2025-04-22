@@ -1,7 +1,5 @@
 ﻿using Fitamas.Input;
-using Fitamas.Input.InputListeners;
-using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Components.NodeEditor;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -9,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 {
-    public class NodeController : EditorController
+    internal class NodeController : EditorController
     {
         private List<GUINode> selectNodes = new List<GUINode>();
         private Point oldMousePosition;
@@ -35,52 +33,46 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                 return;
             }
 
-            if (args.EventType == GUIEventType.Click && args.Button == MouseButton.Right && editor.OnEptyField)
-            {
-                GUIContextMenu contextMenu = GUI.CreateContextMenu(args.MousePosition);
-                contextMenu.AddItem("Item");
+            Point localPosition = editor.ToLocal(args.MousePosition);
 
-                editor.OnCreateContextMenu.Invoke(args, contextMenu);
-                editor.AddChild(contextMenu);
-            }
-
-            if (args.EventType == GUIEventType.Click && editor.OnEptyField)
+            if (args.EventType == GUINodeEditorEventType.Click && editor.IsMouseOver)
             {
                 CancelSelects();
             }
 
             if (args.Button == MouseButton.Left)
             {
-                if (args.EventType == GUIEventType.StartDrag)
+                if (args.EventType == GUINodeEditorEventType.StartDrag)
                 {
-                    if (editor.OnEptyField)
+                    if (editor.IsMouseOver)
                     {
                         isSelect = true;
-                        editor.StartSelectRegion(args.MousePosition);
+                        editor.StartSelectRegion(localPosition);
                     }
                     else
                     {
-                        oldMousePosition = args.MousePosition;
+                        oldMousePosition = localPosition;
                         isDragNode = true;
                     }
                 }
-                else if (args.EventType == GUIEventType.Drag)
+                else if (args.EventType == GUINodeEditorEventType.Drag)
                 {
                     if (isSelect)
                     {
-                        editor.SelectRegion(args.MousePosition);
+                        editor.DoSelectRegion(localPosition);
                     }
                     else if (isDragNode)
                     {
-                        Point delta = args.MousePosition - oldMousePosition;
+                        Point delta = localPosition - oldMousePosition;
                         foreach (var node in selectNodes)
                         {
                             node.LocalPosition += delta;
+                            editor.OnNodeEvent.Invoke(new GUINodeEventArgs(node, GUINodeEventType.Moved));
                         }
-                        oldMousePosition = args.MousePosition;
+                        oldMousePosition = localPosition;
                     }
                 }
-                else if (args.EventType == GUIEventType.EndDrag)
+                else if (args.EventType == GUINodeEditorEventType.EndDrag)
                 {
                     if (isSelect)
                     {
@@ -105,18 +97,9 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 
         private void OnNodeEvent(GUINodeEditorEventArgs args)
         {
-            if (args.EventType == GUIEventType.Click && args.Button == MouseButton.Right)
+            if (args.Button == MouseButton.Left && args.EventType == GUINodeEditorEventType.Click)
             {
-                GUIContextMenu contextMenu = GUI.CreateContextMenu(args.MousePosition);
-                //contextMenu.AddItem("Delete node", () => editor.Remove((GUINode)args.Component));
-
-                editor.OnCreateContextMenu.Invoke(args, contextMenu);
-                editor.AddChild(contextMenu);
-            }
-
-            if (args.Button == MouseButton.Left && args.EventType == GUIEventType.Click)
-            {
-                if (args.Component is GUINode node)
+                if (args.Target is GUINode node)
                 {
                     if (!selectNodes.Contains(node))
                     {
@@ -146,13 +129,13 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             selectNodes.Clear();
         }
 
-        private void OnKeyTyped(KeyboardEventArgs args)
+        private void OnKeyTyped(GUIKeyboardEventArgs args)
         {
             if (args.Key == Keys.Back)
             {
                 foreach (var node in selectNodes)
                 {
-                    editor.Remove(node);
+                    editor.RemoveItem(node);
                 }
             }
         }

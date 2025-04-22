@@ -1,16 +1,18 @@
-﻿using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Themes;
+﻿using Fitamas.Input;
+using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Components.NodeEditor
 {
-    public class GUINode : GUIComponent
+    public class GUINode : GUIHeaderedItemsControl, IMouseEvent, IDragMouseEvent
     {
         public static readonly DependencyProperty<bool> IsSelectProperty = new DependencyProperty<bool>(false, false);
 
-        public List<GUIPin> Pins { get; }
+        public GUIStack LeftStack { get; set; }
+        public GUIStack RightStack { get; set; }
+
         public GUINodeEditor NodeEditor { get; set; }
 
         public bool IsSelect
@@ -27,147 +29,109 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public GUINode()
         {
-            Pins = new List<GUIPin>();
+            RaycastTarget = true;
         }
 
-        public int IndexOf(GUIPin pin, GUIPinType type = GUIPinType.Input)
+        protected override bool IsItemItsOwnContainerOverride(GUIComponent component)
         {
-            int k = 0;
+            return component is GUINodeItem;
+        }
 
-            for (int i = 0; i < Pins.Count; i++)
+        protected override void OnAddItem(GUIComponent component)
+        {
+            if (component is GUINodeItem item)
             {
-                if (Pins[i].PinType == type)
-                {
-                    if (Pins[i] == pin)
-                    {
-                        return k;
-                    }
+                item.Node = this;
 
-                    k++;
+                if (item.Alignment == GUINodeItemAlignment.Left)
+                {
+                    LeftStack?.AddChild(item);
+                }
+                else
+                {
+                    RightStack?.AddChild(item);
                 }
             }
-
-            return -1;
         }
 
-        public GUIPin GetPin(int index, GUIPinType type = GUIPinType.Input)
+        protected override void OnRemoveItem(GUIComponent component)
         {
-            int k = 0;
-            for (int i = 0; i < Pins.Count; i++)
+            if (component is GUINodeItem item)
             {
-                if (Pins[i].PinType == type)
-                {
-                    if (k == index)
-                    {
-                        return Pins[i];
-                    }
-
-                    k++;
-                }
-            }
-
-            return null;
-        }
-
-        public void Add(GUIPin pin)
-        {
-            AddChild(pin);
-
-            if (!Pins.Contains(pin))
-            {
-                Pins.Add(pin);
-                RecalculateNode();
-                NodeEditor?.OnCreatePin.Invoke(pin);
+                item.Node = null;
             }
         }
 
-        public void Remove(GUIPin pin)
+        protected override void OnMouseEntered()
         {
-            Pins.Remove(pin);
-            RecalculateNode();
-            NodeEditor?.OnDeletePin.Invoke(pin);
+            Point mousePosition = InputSystem.mouse.MousePosition;
+            Point delta = InputSystem.mouseDelta;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
+                           MouseButton.None, GUINodeEditorEventType.Entered, this);
+            NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
         }
 
-        protected override void OnAddChild(GUIComponent component)
+        protected override void OnMouseExitted()
         {
-            if (component is GUIPin pin)
+            Point mousePosition = InputSystem.mouse.MousePosition;
+            Point delta = InputSystem.mouseDelta;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
+                                      MouseButton.None, GUINodeEditorEventType.Exitted, this);
+            NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
+        }
+
+        public GUINodeItem CreateItem(string name, GUINodeItemAlignment pinAlignment = GUINodeItemAlignment.Left, GUIPinType type = GUIPinType.Input)
+        {
+            GUINodeItem nodeItem = GUINodeUtils.CreateNodeItem(name, pinAlignment, type);
+            AddItem(nodeItem);
+            return nodeItem;
+        }
+
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.Click);
+        }
+
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnStartDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.StartDrag);
+        }
+
+        public void OnDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.Drag);
+        }
+
+        public void OnEndDragMouse(GUIMouseEventArgs mouse)
+        {
+            InvokeMouseEvent(mouse, GUINodeEditorEventType.EndDrag);
+        }
+
+        private void InvokeMouseEvent(GUIMouseEventArgs mouse, GUINodeEditorEventType eventType)
+        {
+            if (!NodeEditor.IsFocused || !IsMouseOver)
             {
-                Add(pin);
-            }
-        }
-
-        protected override void OnRemoveChild(GUIComponent component)
-        {
-            if (component is GUIPin pin)
-            {
-                Remove(pin);
-            }
-        }
-
-        public GUIPin CreatePin(string name, GUIPinType type = GUIPinType.Input, GUIPinAlignment pinAlignment = GUIPinAlignment.Left)
-        {
-            GUIPin pin = GUINodeUtils.CreatePin(name, type, pinAlignment);
-            Add(pin);
-            return pin;
-        }
-
-        public GUIPin CreatePin(GUIPinType type = GUIPinType.Input, GUIPinAlignment pinAlignment = GUIPinAlignment.Left)
-        {
-            GUIPin pin = GUINodeUtils.CreatePin(type, pinAlignment);
-            Add(pin);
-            return pin;
-        }
-
-        private void RecalculateNode()
-        {
-            int sizeY = 0;
-            //if (HeaderTextBlock != null)
-            //{
-            //    //sizeY = (int)(HeaderTextBlock.LocalSize.Y * nodeEditor.Settings.HeaderSize);
-            //}
-            //if (HeaderImage != null)
-            //{
-            //    HeaderImage.LocalSize = new Point(0, sizeY);
-            //}
-
-            int spacing = 0;// nodeEditor.Settings.PinSpacing;
-            Point sizeLeft = new Point(0, sizeY + spacing);
-            Point sizeRight = new Point(0, sizeY + spacing);
-            Point posLeft = new Point(0, -sizeY - spacing);
-            Point posRight = new Point(0, -sizeY - spacing);
-            foreach (GUIPin pin in Pins)
-            {
-                Point contentSize = Point.Zero; //nodeEditor.Settings.PinSize;
-                pin.LocalSize = contentSize;
-                contentSize.X += pin.ContentScale.X;
-                contentSize.Y = Math.Max(contentSize.Y, pin.ContentScale.Y);
-                contentSize.Y += spacing;
-
-                if (pin.PinAlignment == GUIPinAlignment.Left)
-                {
-                    pin.SetAlignment(GUIAlignment.LeftTop);
-                    pin.Pivot = new Vector2(0, 0.5f);
-                    pin.LocalPosition = posLeft - new Point(0, contentSize.Y / 2);
-                    posLeft.Y -= contentSize.Y;
-                    sizeLeft.X = Math.Max(sizeLeft.X, contentSize.X);
-                    sizeLeft.Y += contentSize.Y;
-                }
-                else if (pin.PinAlignment == GUIPinAlignment.Right)
-                {
-                    pin.SetAlignment(GUIAlignment.RightTop);
-                    pin.Pivot = new Vector2(1, 0.5f);
-                    pin.LocalPosition = posRight - new Point(0, contentSize.Y / 2);
-                    posRight.Y -= contentSize.Y;
-                    sizeRight.X = Math.Max(sizeRight.X, contentSize.X);
-                    sizeRight.Y += contentSize.Y;
-                }
+                return;
             }
 
-            Point size = Point.Zero;// nodeEditor.Settings.NodeSize;
-            size.X = Math.Max(size.X, sizeLeft.X + sizeRight.X /*+ nodeEditor.Settings.SiteSpacing*/);
-            size.Y = Math.Max(size.Y, sizeLeft.Y);
-            size.Y = Math.Max(size.Y, sizeRight.Y);
-            LocalSize = size;
+            Point delta = mouse.DistanceMoved;
+            GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mouse.Position, delta, mouse.Button, eventType, this);
+            NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
         }
     }
 }

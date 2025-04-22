@@ -1,5 +1,4 @@
 ﻿using System;
-using Fitamas.UserInterface.Components.NodeEditor;
 
 namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 {
@@ -13,10 +12,5 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
         }
 
         public abstract bool IsBusy();
-
-        public virtual void Update()
-        {
-
-        }
     }
 }

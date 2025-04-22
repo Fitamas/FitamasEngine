@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Physics.Characters
+namespace Fitamas.Animation
 {
     public class CharacterElement
     {

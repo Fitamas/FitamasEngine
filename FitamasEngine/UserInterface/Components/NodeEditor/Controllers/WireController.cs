@@ -1,36 +1,25 @@
-﻿using Fitamas.Events;
-using Fitamas.Input;
+﻿using Fitamas.Input;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 {
-    public class WireController : EditorController
+    internal class WireController : EditorController
     {
         private GUIWire wire;
         private GUIPin startPin;
+        private bool startPinIsConnected;
         private bool isCreateWire;
 
         public WireController(GUINodeEditor editor) : base(editor)
         {
-            wire = editor.CreateWire();
+            wire = GUINodeUtils.CreateWire();
+            wire.RaycastTarget = false;
+            editor.AddItem(wire);
 
             editor.OnMouseEvent.AddListener(OnMouseEvent);
             editor.OnPinInteractMouseEvent.AddListener(OnPinEvent);
             editor.OnWireInteractMouseEvent.AddListener(OnWireEvent);
-            editor.OnDeleteWire.AddListener(OnDeleteWire);
-        }
-
-        public override void Update()
-        {
-            wire.Enable = isCreateWire;
-            if (isCreateWire)
-            {
-                Point mousePosition = InputSystem.mouse.MousePosition;
-                Point localPosition = editor.Frame.ToLocal(mousePosition);
-                wire.DrawToPoint(localPosition);
-            }
         }
 
         public override bool IsBusy()
@@ -40,21 +29,32 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 
         private void OnMouseEvent(GUINodeEditorEventArgs args)
         {
-            if (args.Button == MouseButton.Right && args.EventType == GUIEventType.Click)
+            Point localPosition = editor.ToLocal(args.MousePosition);
+
+            if (args.Button == MouseButton.Right && args.EventType == GUINodeEditorEventType.Click)
             {
                 isCreateWire = false;
                 if (startPin != null)
                 {
-                    startPin.IsConnected = false;
+                    startPin.IsConnected = startPinIsConnected;
                 }
             }
 
-            if (args.Button == MouseButton.Left && args.EventType == GUIEventType.Click)
+            if (editor.IsMouseOver && args.Button == MouseButton.Left && args.EventType == GUINodeEditorEventType.Click)
             {
                 if (isCreateWire)
                 {
-                    wire.Anchors.Add(args.MousePosition - wire.LocalPosition - editor.Frame.LocalPosition);
+                    Point point = localPosition - wire.LocalPosition - editor.Content.LocalPosition;
+                    wire.Anchors[wire.Anchors.Count - 1] = point;
+                    wire.Anchors.Add(point);
                 }
+            }
+
+            wire.Enable = isCreateWire;
+            if (isCreateWire)
+            {
+                Point point = localPosition - wire.LocalPosition - editor.Content.LocalPosition;
+                wire.DrawToPoint(point);
             }
         }
 
@@ -65,9 +65,11 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                 return;
             }
 
-            if (args.Button == MouseButton.Left && args.EventType == GUIEventType.Click)
+            Point localPosition = editor.ToLocal(args.MousePosition);
+
+            if (args.Button == MouseButton.Left && args.EventType == GUINodeEditorEventType.Click)
             {
-                if (args.Component is GUIPin pin)
+                if (args.Target is GUIPin pin)
                 {
                     if (isCreateWire)
                     {
@@ -80,98 +82,47 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                     else
                     {
                         isCreateWire = true;
+                        startPinIsConnected = pin.IsConnected;
                         startPin = pin;
                         startPin.IsConnected = true;
                         wire.Anchors.Clear();
-                        wire.Anchors.Add(new Point());
-                        wire.LocalPosition = editor.Frame.ToLocal(startPin.Rectangle.Center);
+
+                        Point point = localPosition - wire.LocalPosition - editor.Content.LocalPosition;
+                        wire.Anchors.Add(point);
+                        wire.Anchors.Add(point);
                     }
                 }
             }
+
+            wire.Enable = isCreateWire;
         }
 
         private void OnWireEvent(GUINodeEditorEventArgs args)
         {
-            if (args.EventType == GUIEventType.Entered)
+            if (args.EventType == GUINodeEditorEventType.Entered)
             {
-                if (args.Component is GUIWire wire)
+                if (args.Target is GUIWire wire)
                 {
                     wire.ShadowEnable = true;
                 }
             }
-            if (args.EventType == GUIEventType.Exitted)
+
+            if (args.EventType == GUINodeEditorEventType.Exitted)
             {
-                if (args.Component is GUIWire wire)
+                if (args.Target is GUIWire wire)
                 {
                     wire.ShadowEnable = false;
                 }
             }
-            if (args.EventType == GUIEventType.Click && args.Button == MouseButton.Right)
-            {
-                if (args.Component != this.wire && args.Component is GUIWire wire)
-                {
-                    GUIContextMenu contextMenu = GUI.CreateContextMenu(args.MousePosition);
-                    //contextMenu.AddItem("Delete wire", () => editor.Remove(wire));
-                    //contextMenu.AddItem("Color Red", () =>
-                    //{
-                    //    wire.EnableColor = editor.Settings.EnableColor;
-                    //    wire.DisableColor = editor.Settings.DisableColor;
-                    //});
-                    //contextMenu.AddItem("Color Green", () =>
-                    //{
-                    //    wire.EnableColor = editor.Settings.EnableColor1;
-                    //    wire.DisableColor = editor.Settings.DisableColor1;
-                    //});
-                    //contextMenu.AddItem("Color Blue", () =>
-                    //{
-                    //    wire.EnableColor = editor.Settings.EnableColor2;
-                    //    wire.DisableColor = editor.Settings.DisableColor2;
-                    //});
-
-                    editor.OnCreateContextMenu.Invoke(args, contextMenu);
-                    editor.AddChild(contextMenu);
-                }
-            }
-        }
-
-        private void OnDeleteWire(GUIWire wire)
-        {
-            if (wire.PinA == null || wire.PinB == null)
-            {
-                return;
-            }
-
-            wire.PinA.IsConnected = false;
-            wire.PinB.IsConnected = false;
         }
 
         private bool TryCreateConnection(GUIPin pinA, GUIPin pinB)
         {
             if (IsValidConnection(pinA, pinB))
             {
-                List<Point> points = this.wire.Anchors;
-                points = points[1..(points.Count - 1)];
-                GUIWire wire = editor.CreateWire();
-
-                if (pinA.PinType == GUIPinType.Output && pinB.PinType == GUIPinType.Input)
-                {
-                    wire.CreateConnection(pinA, pinB);
-                }
-                else
-                {
-                    for (int i = 0; i < points.Count; i++)
-                    {
-                        points[i] = Point.Zero - points[i];
-                    }
-                    wire.CreateConnection(pinB, pinA);
-                }
-
-                wire.Anchors.AddRange(points);
-
-                editor.OnCreateConnection.Invoke(wire);
-
-                pinA.IsConnected = true;
-                pinB.IsConnected = true;
+                pinA.IsConnected = false;
+                pinB.IsConnected = false;
+                editor.OnCreateConnection.Invoke(new GUICreateConnectionEventArgs(pinA, pinB, wire.Anchors));
 
                 return true;
             }

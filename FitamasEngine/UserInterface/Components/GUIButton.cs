@@ -1,11 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Linq;
-using Fitamas.UserInterface.Themes;
-using R3;
-using Fitamas.Events;
 using Fitamas.Input;
 using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Input;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -15,7 +11,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly RoutedEvent OnClickedEvent = new RoutedEvent();
 
-        public GUIEvent<GUIButton, ClickButtonEventArgs> OnClicked { get; }
+        public GUIEvent<GUIButton> OnClicked { get; }
 
         public bool IsPressed
         {
@@ -32,47 +28,52 @@ namespace Fitamas.UserInterface.Components
         public GUIButton()
         {
             RaycastTarget = true;
-            OnClicked = eventHandlersStore.Create<GUIButton, ClickButtonEventArgs>(OnClickedEvent);
+            OnClicked = eventHandlersStore.Create<GUIButton>(OnClickedEvent);
         }
 
-        public void OnClickedMouse(MouseEventArgs mouse)
+        protected override void OnMouseExitted()
+        {
+            IsPressed = false;
+        }
+
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
         {
             if (IsMouseOver)
             {
                 if (Interacteble && mouse.Button == MouseButton.Left)
                 {
                     IsPressed = true;
+                    Focus();
                 }
             }
         }
 
-        public void OnReleaseMouse(MouseEventArgs mouse)
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
         {
             if (IsPressed)
             {
                 IsPressed = false;
                 if (IsMouseOver)
                 {
-                    OnClicked.Invoke(this, new ClickButtonEventArgs() { MousePosition = mouse.Position, Button = mouse.Button});
-                    OnClickedButton(mouse);
+                    OnClicked.Invoke(this);
+                    OnClickedButton();
                 }
             }
         }
 
-        public void OnScrollMouse(MouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
         {
 
         }
 
-        protected virtual void OnClickedButton(MouseEventArgs mouse)
+        protected virtual void OnClickedButton()
         {
 
         }
-    }
-
-    public class ClickButtonEventArgs
-    {
-        public Point MousePosition { get; set; }
-        public MouseButton Button { get; set; }
     }
 }

@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -21,9 +20,15 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<GUIVerticalAlignment> VerticalAlignmentProperty = new DependencyProperty<GUIVerticalAlignment>(AlignmentChangedCallback, GUIVerticalAlignment.Top, false);
 
-        public static readonly DependencyProperty<bool> IsFocusedProperty = new DependencyProperty<bool>(false, false);
+        public static readonly DependencyProperty<GUIComponent> FocusedComponentProperty = new DependencyProperty<GUIComponent>(FocusedComponentChangedCallback, null, false);
 
-        public static readonly DependencyProperty<bool> IsMouseOverProperty = new DependencyProperty<bool>(false, false);
+        public static readonly DependencyProperty<bool> IsFocusScopeProperty = new DependencyProperty<bool>(false, false);
+
+        public static readonly DependencyProperty<bool> FocusableProperty = new DependencyProperty<bool>(true, false);
+
+        public static readonly DependencyProperty<bool> IsFocusedProperty = new DependencyProperty<bool>(IsFocusedChangedCallback, false, false);
+
+        public static readonly DependencyProperty<bool> IsMouseOverProperty = new DependencyProperty<bool>(IsMouseOverChangedCallback, false, false);
 
         public static readonly DependencyProperty<bool> InteractebleProperty = new DependencyProperty<bool>(true, false);
 
@@ -40,7 +45,6 @@ namespace Fitamas.UserInterface.Components
 
         public GUISystem System => system;
         public GUIRenderBatch Render => System.Render;
-        public GUIRoot Root => System.Root;
         public bool IsInHierarchy => system != null;
         public Rectangle VisibleRectangle => visibleRectangle;
         public bool IsVisible => visibleRectangle.Size != Point.Zero;
@@ -49,8 +53,8 @@ namespace Fitamas.UserInterface.Components
         public string Name { get; set; }
         public bool RaycastTarget { get; set; }
         public bool IsMask { get; set; }
-        public ControlTemplate ControlTemplate { get; set; }
-        public Stack<TriggerBase> ActiveTriggers { get; set; }
+        public GUIControlTemplate ControlTemplate { get; set; }
+        public Stack<TriggerBase> ActiveTriggers { get; }
 
         public Thickness Margin
         {
@@ -112,15 +116,35 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public bool IsFocusScope
+        {
+            get
+            {
+                return GetValue(IsFocusScopeProperty);
+            }
+            set
+            {
+                SetValue(IsFocusScopeProperty, value);
+            }
+        }
+
+        public bool Focusable
+        {
+            get
+            {
+                return (bool)GetValue(FocusableProperty);
+            }
+            set
+            {
+                SetValue(FocusableProperty, value);
+            }
+        }
+
         public bool IsFocused
         {
             get
             {
                 return GetValue(IsFocusedProperty);
-            }
-            set
-            {
-                SetValue(IsFocusedProperty, value);
             }
         }
 
@@ -312,25 +336,47 @@ namespace Fitamas.UserInterface.Components
 
         public void Focus()
         {
-            system.Focused = this;
-            IsFocused = true;
-            OnFocus();
+            if (Focusable && Enable)
+            {
+                DependencyObject focusScope = GetFocusScope(parent);
+
+                if (focusScope == null)
+                {
+                    throw new ArgumentNullException("element");
+                }
+
+                focusScope.SetValue(FocusedComponentProperty, this);
+            }
         }
 
-        protected virtual void OnFocus()
+        private GUIComponent GetFocusScope(GUIComponent component)
         {
+            if (component == null)
+            {
+                return null;
+            }
 
+            if (component.IsFocusScope)
+            {
+                return component;
+            }
+
+            return GetFocusScope(component.parent);
         }
 
         public void Unfocus()
         {
-            IsFocused = false;
-            OnUnfocus();
-        }
+            DependencyObject focusScope = GetFocusScope(this);
 
-        protected virtual void OnUnfocus()
-        {
+            if (focusScope == null)
+            {
+                throw new ArgumentNullException("element");
+            }
 
+            if (focusScope.GetValue(FocusedComponentProperty) == this)
+            {
+                focusScope.SetValue(FocusedComponentProperty, null);
+            }
         }
 
         protected virtual Rectangle AvailableRectangle()
@@ -413,9 +459,9 @@ namespace Fitamas.UserInterface.Components
             return visibleRectangle.Contains(mousePosition);
         }
 
-        public void RaycastAll(Point point, List<GUIComponent> result)
+        public virtual void RaycastAll(Point point, List<GUIComponent> result)
         {
-            if (IsVisibleAndEnable && RaycastTarget && Contains(point))
+            if (Enable && RaycastTarget && Contains(point))
             {
                 result.Add(this);
             }
@@ -456,6 +502,26 @@ namespace Fitamas.UserInterface.Components
             }
 
             return null;
+        }
+
+        public void RaiseEvent(GUIEventArgs args)
+        {
+            GUIEventBase eventBase = GUIEventManager.GetEvent(args.RoutedEvent);
+
+            if (eventBase != null)
+            {
+                RaiseEvent(eventBase, args);
+            }
+        }
+
+        private void RaiseEvent(GUIEventBase eventBase, GUIEventArgs args)
+        {
+            eventBase.InvokeEvent(this, args);
+
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventBase, args);
+            }
         }
 
         public void AddRoutedEventHandler(RoutedEvent routedEvent, Delegate handler)
@@ -504,8 +570,6 @@ namespace Fitamas.UserInterface.Components
             if (this.system != system && system != null)
             {
                 this.system = system;
-
-                System?.SubscribeInput(this);
                 OnInit();
             }
 
@@ -544,18 +608,17 @@ namespace Fitamas.UserInterface.Components
             if (IsInHierarchy)
             {
                 OnDestroy();
-                system.UnsubscribeInput(this);
                 system = null;
+            }
 
-                foreach (var component in childrensComponent.ToArray())
-                {
-                    component.Destroy();
-                }
+            foreach (var component in childrensComponent.ToArray())
+            {
+                component.Destroy();
+            }
 
-                if (parent != null)
-                {
-                    parent.RemoveChild(this);
-                }
+            if (parent != null)
+            {
+                parent.RemoveChild(this);
             }
         }
 
@@ -565,9 +628,21 @@ namespace Fitamas.UserInterface.Components
 
         protected virtual void OnRemoveChild(GUIComponent component) { }
 
+        protected virtual void OnPositionChanged() { }
+
+        protected virtual void OnSizeChanged() { }
+
         protected virtual void OnChildPositionChanged(GUIComponent component) { }
 
         protected virtual void OnChildSizeChanged(GUIComponent component) { }
+
+        protected virtual void OnFocus() { }
+
+        protected virtual void OnUnfocus() { }
+
+        protected virtual void OnMouseEntered() { }
+        
+        protected virtual void OnMouseExitted() { }
 
         protected virtual void OnDestroy() { }
 
@@ -588,11 +663,13 @@ namespace Fitamas.UserInterface.Components
 
                 if (oldValue.Left != newValue.Left || oldValue.Top != newValue.Top)
                 {
+                    component.OnPositionChanged();
                     component.parent?.OnChildPositionChanged(component);
                 }
 
                 if (oldValue.Right != newValue.Right || oldValue.Bottom != newValue.Bottom)
                 {
+                    component.OnSizeChanged();
                     component.parent?.OnChildSizeChanged(component);
                 }
             }
@@ -635,7 +712,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        private static void EnableChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        private static void IsMouseOverChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
         {
             if (oldValue != newValue)
             {
@@ -643,17 +720,47 @@ namespace Fitamas.UserInterface.Components
                 {
                     if (newValue)
                     {
-                        component.system?.SubscribeInput(component);
+                        component.OnMouseEntered();
                     }
                     else
                     {
-                        component.system?.UnsubscribeInput(component);
+                        component.OnMouseExitted();
                     }
+                }
+            }
+        }
 
-                    foreach (var child in component.childrensComponent)
+        private static void FocusedComponentChangedCallback(DependencyObject dependencyObject, DependencyProperty<GUIComponent> property, GUIComponent oldValue, GUIComponent newValue)
+        {
+            oldValue?.SetValue(IsFocusedProperty, false);
+            newValue?.SetValue(IsFocusedProperty, true);
+        }
+
+        private static void IsFocusedChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (oldValue != newValue)
+            {
+                if (dependencyObject is GUIComponent component)
+                {
+                    if (newValue)
                     {
-                        child.Enable = newValue;
+                        component.OnFocus();
                     }
+                    else
+                    {
+                        component.OnUnfocus();
+                    }
+                }
+            }
+        }
+
+        private static void EnableChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (dependencyObject is GUIComponent component)
+            {
+                foreach (var child in component.childrensComponent)
+                {
+                    child.Enable = newValue;
                 }
             }
         }

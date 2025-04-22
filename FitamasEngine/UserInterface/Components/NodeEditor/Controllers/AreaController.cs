@@ -1,13 +1,12 @@
 ﻿using Fitamas.Input;
-using Fitamas.Input.InputListeners;
-using Fitamas.UserInterface.Components.NodeEditor;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
 {
-    public class AreaController : EditorController
+    internal class AreaController : EditorController
     {
         private bool moving;
 
@@ -21,24 +20,24 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
         {
             if (args.Button == MouseButton.Middle)
             {
-                if (args.EventType == GUIEventType.Drag)
+                if (args.EventType == GUINodeEditorEventType.Drag)
                 {
-                    editor.Frame.LocalPosition += args.DragDelta;
+                    editor.Content.LocalPosition += args.DragDelta;
 
                     moving = true;
                 }
-                else if (args.EventType == GUIEventType.EndDrag)
+                else if (args.EventType == GUINodeEditorEventType.EndDrag)
                 {
                     moving = false;
                 }
             }
         }
 
-        private void OnKeyTyped(KeyboardEventArgs args)
+        private void OnKeyTyped(GUIKeyboardEventArgs args)
         {
             if (args.Key == Keys.Space)
             {
-                editor.Frame.LocalPosition = new Point(0, 0);
+                editor.Content.LocalPosition = new Point(0, 0);
             }
         }
 

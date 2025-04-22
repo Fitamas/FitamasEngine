@@ -1,10 +1,9 @@
 ﻿using Fitamas.Graphics;
 using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
+using ObservableCollections;
+using R3;
 
 namespace Fitamas.UserInterface
 {
@@ -32,7 +31,6 @@ namespace Fitamas.UserInterface
         public static GUIButton CreateButton(GUIStyle style, Point position, string text, Point? size = null)
         {
             GUIButton button = new GUIButton();
-            button.Style = style;
             button.LocalPosition = position;
 
             GUIImage image = new GUIImage();
@@ -55,8 +53,9 @@ namespace Fitamas.UserInterface
                 Point localSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
 
                 button.LocalSize = localSize;
-            }            
+            }
 
+            button.Style = style;
             return button;
         }
 
@@ -72,34 +71,37 @@ namespace Fitamas.UserInterface
 
         public static GUITextBlock CreateTextBlock(GUIStyle style, Point position, string text)
         {
+            Point padding = style.Resources.FramePadding;
+
             GUITextBlock textBlock = new GUITextBlock();
-            textBlock.Style = style;
             textBlock.LocalPosition = position;
+            textBlock.Padding = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
+            textBlock.AutoScale = true;
             textBlock.Text = text;
 
+            textBlock.Style = style;
             return textBlock;
         }
 
-        public static GUICheckBox CreateCheckBox(Point position)
+        public static GUICheckBox CreateCheckBox(Point position = new Point())
         {
             return CreateCheckBox(ResourceDictionary.DefaultResources, position);
         }
 
-        public static GUICheckBox CreateCheckBox(ResourceDictionary dictionary, Point position)
+        public static GUICheckBox CreateCheckBox(ResourceDictionary dictionary, Point position = new Point())
         {
             return CreateCheckBox((GUIStyle)dictionary[CommonResourceKeys.CheckBoxStyle], position);
         }
 
-        public static GUICheckBox CreateCheckBox(GUIStyle style, Point position)
+        public static GUICheckBox CreateCheckBox(GUIStyle style, Point position = new Point())
         {
             Point padding = style.Resources.FramePadding;
             Point size = new Point(FontManager.GetHeight()) + padding + padding;
 
             GUICheckBox checkBox = new GUICheckBox();
-            checkBox.Style = style;
             checkBox.LocalPosition = position;
             checkBox.LocalSize = size;
-            checkBox.ControlTemplate = new ControlTemplate();
+            checkBox.ControlTemplate = new GUIControlTemplate();
 
             GUIImage backGround = new GUIImage();
             backGround.SetAlignment(GUIAlignment.Stretch);
@@ -111,27 +113,28 @@ namespace Fitamas.UserInterface
             checkBox.ControlTemplate.Add(checkmark);
             checkBox.AddChild(checkmark);
 
+            checkBox.Style = style;
             return checkBox;
         }
 
-        public static GUIComboBox CreateComboBox(Point position, IEnumerable<string> items = null, Point? size = null)
+        public static GUIComboBox CreateComboBox(Point position)
         {
-            return CreateComboBox(ResourceDictionary.DefaultResources, position, items, size);
+            return CreateComboBox(ResourceDictionary.DefaultResources, position);
         }
 
-        public static GUIComboBox CreateComboBox(ResourceDictionary dictionary, Point position, IEnumerable<string> items = null, Point? size = null)
+        public static GUIComboBox CreateComboBox(ResourceDictionary dictionary, Point position)
         {
-            return CreateComboBox(dictionary[CommonResourceKeys.ComboBoxStyle] as GUIStyle, position, items, size);
+            return CreateComboBox(dictionary[CommonResourceKeys.ComboBoxStyle] as GUIStyle, position);
         }
 
-        public static GUIComboBox CreateComboBox(GUIStyle style, Point position, IEnumerable<string> items = null, Point? size = null)
+        public static GUIComboBox CreateComboBox(GUIStyle style, Point position)
         {
+            Point localSize = FontManager.GetDefaultCharacterSize();
             Point padding = style.Resources.FramePadding;
 
             GUIComboBox comboBox = new GUIComboBox();
-            comboBox.Style = style;
             comboBox.LocalPosition = position;
-            comboBox.SetItems(items);
+            comboBox.LocalSize = padding + padding + localSize;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -144,41 +147,46 @@ namespace Fitamas.UserInterface
             textBlock.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
             comboBox.AddChild(textBlock);
 
-            if (size.HasValue)
+            GUIPopup popup = new GUIPopup();
+            popup.VerticalAlignment = GUIVerticalAlignment.Bottom;
+            popup.OnClose.AddListener(p =>
             {
-                comboBox.LocalSize = size.Value;
-            }
-            else if (style != null)
+                comboBox.IsDropDownOpen = false;
+            });
+            comboBox.Popup = popup;
+            comboBox.AddChild(popup);
+
+            GUIContextMenu menu = CreateContextMenu(style.Resources);
+            menu.OnSelectItem.AddListener(comboBox.SelectItem);
+            menu.Focusable = false;
+            popup.OnOpen.AddListener(p =>
             {
-                Point localSize = FontManager.GetDefaultCharacterSize(textBlock.Font);
-                foreach (var item in items)
-                {
-                    localSize = textBlock.Font.MeasureString(item).ToPoint();
-                }
+                menu.SetFixedWidth(comboBox.Rectangle.Width);
+            });
+            popup.Window = menu;
+            popup.AddChild(menu);
 
-                comboBox.LocalSize = padding + padding + localSize;
-            }
+            comboBox.Items.ObserveChanged().Subscribe(e => menu.SetItems(comboBox.Items));
 
+            comboBox.Style = style;
             return comboBox;
         }
 
-        public static GUIContextMenu CreateContextMenu(Point position)
+        public static GUIContextMenu CreateContextMenu()
         {
-            return CreateContextMenu(ResourceDictionary.DefaultResources, position);
+            return CreateContextMenu(ResourceDictionary.DefaultResources);
         }
 
-        public static GUIContextMenu CreateContextMenu(ResourceDictionary dictionary, Point position)
+        public static GUIContextMenu CreateContextMenu(ResourceDictionary dictionary)
         {
-            return CreateContextMenu(dictionary[CommonResourceKeys.ContextMenuStyle] as GUIStyle, position);
+            return CreateContextMenu(dictionary[CommonResourceKeys.ContextMenuStyle] as GUIStyle);
         }
 
-        public static GUIContextMenu CreateContextMenu(GUIStyle style, Point position)
+        public static GUIContextMenu CreateContextMenu(GUIStyle style)
         {
             Point padding = style.Resources.WindowPadding;
 
             GUIContextMenu context = new GUIContextMenu();
-            context.Style = style;
-            context.LocalPosition = position;
             context.Pivot = new Vector2(0, 0);
             context.Padding = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
 
@@ -197,6 +205,7 @@ namespace Fitamas.UserInterface
             context.Content = group;
             context.Group = group;
 
+            context.Style = style;
             return context;
         }
 
@@ -215,7 +224,6 @@ namespace Fitamas.UserInterface
             Point padding = style.Resources.FramePadding;
 
             GUIContextItem item = new GUIContextItem();
-            item.Style = style;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -228,9 +236,10 @@ namespace Fitamas.UserInterface
             textBlock.Text = text;
             textBlock.TextHorisontalAlignment = GUITextHorisontalAlignment.Left;
             item.AddChild(textBlock);
-            
+
             item.LocalSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
 
+            item.Style = style;
             return item;
         }
 
@@ -251,7 +260,6 @@ namespace Fitamas.UserInterface
             GUITextInput input = new GUITextInput();
             input.LocalPosition = position;
             input.LocalSize = new Point(lenght, FontManager.GetHeight()) + padding + padding;
-            input.Style = style;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -269,6 +277,7 @@ namespace Fitamas.UserInterface
             //input.AddChild(textBlock);
             //input.TextBlock = textBlock;
 
+            input.Style = style;
             return input;
         }
 
@@ -298,10 +307,9 @@ namespace Fitamas.UserInterface
             }
 
             GUISlider slider = new GUISlider();
-            slider.Style = sliderStyle;
             slider.LocalPosition = position;
             slider.LocalSize = size;
-            slider.ControlTemplate = new ControlTemplate();
+            slider.ControlTemplate = new GUIControlTemplate();
 
             GUIImage slidingArea = new GUIImage();
             slidingArea.SetAlignment(GUIAlignment.Stretch);
@@ -312,12 +320,11 @@ namespace Fitamas.UserInterface
             GUITrack track = new GUITrack();
             track.Margin = new Thickness(padding.X, padding.Y, padding.X, padding.Y);
             track.SetAlignment(GUIAlignment.Stretch);
+            track.Direction = direction;
 
             GUIThumb thumb = new GUIThumb();
             thumb.Margin = new Thickness(-padding.X, -padding.Y, -padding.X, -padding.Y);
             thumb.SetAlignment(GUIAlignment.Stretch);
-            thumb.Style = thumbStyle;
-            track.Direction = direction;
             track.AddChild(thumb);
             track.Thumb = thumb;
             slider.AddChild(track);
@@ -327,6 +334,8 @@ namespace Fitamas.UserInterface
             image.SetAlignment(GUIAlignment.Stretch);
             thumb.AddChild(image);
 
+            thumb.Style = thumbStyle;
+            slider.Style = sliderStyle;
             return slider;
         }
 
@@ -391,7 +400,6 @@ namespace Fitamas.UserInterface
             GUITreeView tree = new GUITreeView();
             tree.LocalPosition = position;
             tree.LocalSize = size;
-            tree.Style = style;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -404,6 +412,7 @@ namespace Fitamas.UserInterface
             tree.AddChild(stack);
             tree.Container = stack;
 
+            tree.Style = style;
             return tree;
         }
 
@@ -423,11 +432,11 @@ namespace Fitamas.UserInterface
             int height = FontManager.GetHeight() + padding.Y * 2;
 
             GUITreeNode node = new GUITreeNode();
-            node.Margin = new Thickness(0, 0, 20, height);
+            node.Margin = new Thickness(0, 0, 0, height);
             node.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
             node.Pivot = new Vector2(0, 0);
-            node.Style = style;
-            node.ControlTemplate = new ControlTemplate();
+            node.ContainerPadding = new Thickness(padding.X + FontManager.GetHeight(), 0, 0, 0);
+            node.ControlTemplate = new GUIControlTemplate();
 
             GUIStack stack = new GUIStack();
             stack.Name = GUITreeStyle.Container;
@@ -445,13 +454,14 @@ namespace Fitamas.UserInterface
             button.Margin = new Thickness(0, 0, 0, height);
             button.Pivot = new Vector2(0, 0);
             button.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-            button.OnClicked.AddListener((b, a) => 
-            { 
+            button.OnClicked.AddListener(b =>
+            {
                 node.IsOpen = !node.IsOpen;
-                node.TreeView.Select(node, a);
+                node.TreeView.Select(node);
             });
             node.AddChild(button);
             node.Header = button;
+            node.SetBinding(GUIComponent.IsMouseOverProperty, button);
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -486,7 +496,59 @@ namespace Fitamas.UserInterface
             textBlock.Text = text;
             button.AddChild(textBlock);
 
+            node.Style = style;
             return node;
+        }
+
+        public static TWindow CreateWindow<TWindow>() where TWindow : GUIWindow, new()
+        {
+            return CreateWindow<TWindow>(ResourceDictionary.DefaultResources);
+        }
+
+        public static TWindow CreateWindow<TWindow>(ResourceDictionary dictionary) where TWindow : GUIWindow, new()
+        {
+            return CreateWindow<TWindow>(dictionary[CommonResourceKeys.WindowStyle] as GUIStyle);
+        }
+
+        public static TWindow CreateWindow<TWindow>(GUIStyle style) where TWindow : GUIWindow, new()
+        {
+            Point padding = style.Resources.WindowPadding;
+            int height = FontManager.GetHeight() + padding.Y * 2;
+
+            TWindow window = new TWindow();
+            window.ControlTemplate = new GUIControlTemplate();
+            window.Padding = new Thickness(padding.X, padding.Y + height, padding.X, padding.Y);
+
+            GUIImage image = new GUIImage();
+            image.SetAlignment(GUIAlignment.Stretch);
+            window.AddChild(image);
+
+            GUIThumb thumb = new GUIThumb();
+            thumb.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            thumb.LocalSize = new Point(0, height);
+            thumb.Pivot = new Vector2();
+            thumb.DragDelta.AddListener((t, a) =>
+            {
+                window.LocalPosition += a.Delta;
+            });
+            window.ControlTemplate.Add(thumb, GUIWindowStyle.Header);
+            window.AddChild(thumb);
+
+            GUIImage image1 = new GUIImage();
+            image1.SetAlignment(GUIAlignment.Stretch);
+            thumb.AddChild(image1);
+
+            GUIButton button = CreateButton(style.Resources, new Point(), "x", new Point(height));
+            button.SetAlignment(GUIAlignment.RightTop);
+            button.Pivot = new Vector2(1, 0);
+            button.OnClicked.AddListener(b =>
+            {
+                window.Close();
+            });
+            thumb.AddChild(button);
+
+            window.Style = style;
+            return window;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Fitamas.Input.InputListeners;
 using Fitamas.Math2D;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.UserInterface.Components
@@ -155,17 +156,22 @@ namespace Fitamas.UserInterface.Components
             Content.Pivot = (Vector2.One - viewportSize / contentSize) * Value;
         }
 
-        public void OnClickedMouse(MouseEventArgs mouse)
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
         {
 
         }
 
-        public void OnReleaseMouse(MouseEventArgs mouse)
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
         {
 
         }
 
-        public void OnScrollMouse(MouseEventArgs mouse)
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
         {
             if (IsMouseOver)
             {

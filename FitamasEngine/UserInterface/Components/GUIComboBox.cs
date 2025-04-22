@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
-using System.Linq;
 using System;
-using Fitamas.Serialization;
 using Fitamas.Input.InputListeners;
+using ObservableCollections;
+using Fitamas.Input;
+using Fitamas.UserInterface.Input;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -13,18 +13,16 @@ namespace Fitamas.UserInterface.Components
         public string Item { get; set; }
     }
 
-    public class GUIComboBox : GUIButton
+    public class GUIComboBox : GUIComponent, IMouseEvent
     {
         public static readonly DependencyProperty<int> SelectItemProperty = new DependencyProperty<int>(SelectItemChangedCallback, 0, false);
 
+        public static readonly DependencyProperty<bool> IsDropDownOpenProperty = new DependencyProperty<bool>(IsDropDownOpenChangedCallback, false, false);
+
         public static readonly RoutedEvent OnSelectItemEvent = new RoutedEvent();
 
-        private GUIContextMenu contextMenu;
-        private Dictionary<GUIContextItem, int> dictionary;
-        private string[] items;
-
-        public bool IsOpenMenu => contextMenu != null && contextMenu.IsActive;
-
+        public ObservableList<string> Items { get; }
+        public GUIPopup Popup { get; set; }
         public GUIEvent<GUIComboBox, ComboBoxEventArgs> OnSelectItem { get; }
 
         public int SelectedItem 
@@ -39,68 +37,77 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public bool IsDropDownOpen
+        {
+            get
+            {
+                return GetValue(IsDropDownOpenProperty);
+            }
+            set
+            {
+                SetValue(IsDropDownOpenProperty, value);
+            }
+        }
+
         public GUIComboBox()
         {
+            Items = new ObservableList<string>();
             OnSelectItem = eventHandlersStore.Create<GUIComboBox, ComboBoxEventArgs>(OnSelectItemEvent);
+            RaycastTarget = true;
         }
 
-        protected override void OnClickedButton(MouseEventArgs mouse)
+        protected override void OnFocus()
         {
-            OpenMenu();
+            IsDropDownOpen = true;
         }
 
-        public void SetItems<T>() where T : struct, Enum
+        protected override void OnUnfocus()
+        {
+            IsDropDownOpen = false;
+        }
+
+        public void AddItemsFromEnum<T>() where T : struct, Enum
         {
             var names = Enum.GetNames<T>();
-            SetItems(names);
+            Items.AddRange(names);
         }
 
-        public void SetItems(IEnumerable<string> items)
+        internal void SelectItem(GUIContextMenu menu, GUISelectContextItemEventArgs args)
         {
-            if (items == null)
-            {
-                return;
-            }
-
-            CloseMenu();
-            this.items = items.ToArray();
+            SelectedItem = args.Index;
         }
 
-        public void OpenMenu()
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
         {
-            if (!IsOpenMenu)
+
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+            if (IsMouseOver)
             {
-                dictionary = new Dictionary<GUIContextItem, int>();
-
-                GUIContextMenu menu = GUI.CreateContextMenu(new Point(Rectangle.Left, Rectangle.Bottom));
-                menu.OnSelectItem.AddListener(SelectItem);
-                menu.SetFixedWidth(LocalSize.X);
-
-                for (int i = 0; i < items.Length; i++)
+                if (Interacteble && mouse.Button == MouseButton.Left)
                 {
-                    GUIContextItem contextItem = menu.AddItem(items[i]);
-                    dictionary[contextItem] = i;
+                    if (IsFocused)
+                    {
+                        IsDropDownOpen = !IsDropDownOpen;
+                    }
+                    else
+                    {
+                        Focus();
+                    }
                 }
-
-                Root.OpenPopup(menu);
             }
         }
 
-        public void CloseMenu()
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
         {
-            if (IsOpenMenu)
-            {
-                contextMenu.OnSelectItem.RemoveListener(SelectItem);
-                Root.ClosePopup();
-            }
-        }
 
-        private void SelectItem(GUIContextMenu menu, GUIContextItem contextItem)
-        {
-            if (dictionary.TryGetValue(contextItem, out int index))
-            {
-                SelectedItem = index;
-            }
         }
 
         private static void SelectItemChangedCallback(DependencyObject dependencyObject, DependencyProperty<int> property, int oldValue, int newValue)
@@ -109,10 +116,10 @@ namespace Fitamas.UserInterface.Components
             {
                 ComboBoxEventArgs args = new ComboBoxEventArgs();
 
-                if (newValue >= 0 && comboBox.items.Length > newValue)
+                if (newValue >= 0 && comboBox.Items.Count > newValue)
                 {
                     args.Index = newValue;
-                    args.Item = comboBox.items[newValue];
+                    args.Item = comboBox.Items[newValue];
                 }
                 else
                 {
@@ -121,6 +128,17 @@ namespace Fitamas.UserInterface.Components
                 }
 
                 comboBox.OnSelectItem.Invoke(comboBox, args);
+            }
+        }
+
+        private static void IsDropDownOpenChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (dependencyObject is GUIComboBox comboBox)
+            {
+                if (comboBox.Popup != null)
+                {
+                    comboBox.Popup.IsOpen = newValue;
+                }
             }
         }
     }

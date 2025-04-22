@@ -21,11 +21,11 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
                 CommonResourceKeys.ComboBoxDisableColor, CommonResourceKeys.ComboBoxTextDisableColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
                 new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
                 new TriggerCondition(GUIComponent.InteractebleProperty, true)},
                 CommonResourceKeys.ComboBoxHoverColor, CommonResourceKeys.ComboBoxTextHoverColor);

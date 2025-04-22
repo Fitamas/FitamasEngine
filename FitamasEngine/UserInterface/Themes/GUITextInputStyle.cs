@@ -17,11 +17,11 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
                 CommonResourceKeys.TextInputDisableColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.IsFocusedProperty, true,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.IsFocusedProperty, true,
                 CommonResourceKeys.TextInputFocusedColor);
             style.Trigges.Add(trigger);
 

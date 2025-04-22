@@ -1,9 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fitamas.UserInterface.Input;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace Fitamas.UserInterface.Components
 {
-    public enum SizeToContent
+    public enum GUISizeToContent
     {
         Manual,
         Width,
@@ -11,13 +12,34 @@ namespace Fitamas.UserInterface.Components
         WidthAndHeight
     }
 
-    public class GUIWindow : GUIComponent
+    public class GUIWindow : GUIComponent, IMouseEvent
     {
-        public static readonly DependencyProperty<Thickness> PaddingProperty = new DependencyProperty<Thickness>(Thickness.Zero, false);
+        internal struct WindowMinMax
+        {
+            internal int minWidth;
 
-        public static readonly DependencyProperty<SizeToContent> SizeToContentProperty = new DependencyProperty<SizeToContent>(SizeToContent.Manual, false);
+            internal int maxWidth;
 
-        public static readonly DependencyProperty<bool> IsActiveProperty = new DependencyProperty<bool>(true, false);
+            internal int minHeight;
+
+            internal int maxHeight;
+
+            internal WindowMinMax(int minSize, int maxSize)
+            {
+                minWidth = minSize;
+                maxWidth = maxSize;
+                minHeight = minSize;
+                maxHeight = maxSize;
+            }
+        }
+
+        public static readonly DependencyProperty<Thickness> PaddingProperty = new DependencyProperty<Thickness>(PaddingChangedCallback, Thickness.Zero, false);
+
+        public static readonly DependencyProperty<GUISizeToContent> SizeToContentProperty = new DependencyProperty<GUISizeToContent>(SizeToContentChangedCallback, GUISizeToContent.Manual, false);
+
+        public static readonly DependencyProperty<bool> IsOnTopProperty = new DependencyProperty<bool>(false, false);
+
+        private GUIComponent content;
 
         public Thickness Padding
         {
@@ -31,7 +53,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public SizeToContent SizeToContent
+        public GUISizeToContent SizeToContent
         {
             get
             {
@@ -43,57 +65,135 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public bool IsActive
+        public bool IsOnTop
         {
             get
             {
-                return GetValue(IsActiveProperty);
+                return (bool)GetValue(IsOnTopProperty);
             }
             set
             {
-                SetValue(IsActiveProperty, value);
+                SetValue(IsOnTopProperty, value);
             }
         }
 
-        public GUIComponent Content { get; set; }
+        public GUIComponent Content
+        {
+            get
+            {
+                return content;
+            }
+            set
+            {
+                content = value;
+                Recalculate();
+            }
+        }
 
         public GUIWindow()
         {
             RaycastTarget = true;
+            IsFocusScope = true;
         }
 
         protected override void OnChildSizeChanged(GUIComponent component)
         {
             if (component == Content)
             {
-                Thickness padding = Padding;
-
-                switch (SizeToContent)
-                {
-                    case SizeToContent.Manual:
-                        break;
-                    case SizeToContent.Width:
-                        LocalSize = new Point(component.LocalSize.X + padding.Left + padding.Right, LocalSize.Y);
-                        break;
-                    case SizeToContent.Height:
-                        LocalSize = new Point(LocalSize.X, component.LocalSize.Y + padding.Top + padding.Bottom);
-                        break;
-                    case SizeToContent.WidthAndHeight:
-                        LocalSize = component.LocalSize + new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
-                        break;
-                }                
+                Recalculate();
             }
         }
 
-        public virtual void Open()
+        protected override void OnFocus()
         {
-            IsActive = true;
+            SetAsFirstSibling();
         }
 
-        public virtual void Close()
+        public void Close()
         {
-            IsActive = false;
-            Destroy();
+            if (IsInHierarchy)
+            {
+                System.Root.CloseWindow(this);
+                Destroy();
+                OnClose();
+            }
+        }
+
+        public virtual void OnClose()
+        {
+
+        }
+
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+            if (!IsFocused)
+            {
+                Focus();
+            }
+        }
+
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        private void Recalculate()
+        {
+            if (Content == null)
+            {
+                return;
+            }
+
+            Thickness padding = Padding;
+            Content.Pivot = Vector2.Zero;
+
+            switch (SizeToContent)
+            {
+                case GUISizeToContent.Manual:
+                    break;
+                case GUISizeToContent.Width:
+                    LocalSize = new Point(Content.LocalSize.X + padding.Left + padding.Right, LocalSize.Y);
+                    Content.HorizontalAlignment = GUIHorizontalAlignment.Left;
+                    Content.LocalPosition = new Point(padding.Left, Content.LocalSize.Y);
+                    break;
+                case GUISizeToContent.Height:
+                    LocalSize = new Point(LocalSize.X, Content.LocalSize.Y + padding.Top + padding.Bottom);
+                    Content.VerticalAlignment = GUIVerticalAlignment.Top;
+                    Content.LocalPosition = new Point(Content.LocalSize.X, padding.Top);
+                    break;
+                case GUISizeToContent.WidthAndHeight:
+                    LocalSize = Content.LocalSize + new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
+                    Content.HorizontalAlignment = GUIHorizontalAlignment.Left;
+                    Content.VerticalAlignment = GUIVerticalAlignment.Top;
+                    Content.LocalPosition = new Point(padding.Left, padding.Top);
+                    break;
+            }
+        }
+
+        private static void PaddingChangedCallback(DependencyObject dependencyObject, DependencyProperty<Thickness> property, Thickness oldValue, Thickness newValue)
+        {
+            if (dependencyObject is GUIWindow window)
+            {
+                window.Recalculate();
+            }
+        }
+
+        private static void SizeToContentChangedCallback(DependencyObject dependencyObject, DependencyProperty<GUISizeToContent> property, GUISizeToContent oldValue, GUISizeToContent newValue)
+        {
+            if (dependencyObject is GUIWindow window)
+            {
+                window.Recalculate();
+            }
         }
     }
 }

@@ -9,78 +9,85 @@ namespace Fitamas.UserInterface.ViewModel
 {
     public class GUIRootViewModel : IDisposable, IViewModel
     {
+        private ObservableList<GUIWindowViewModel> openedWindows;
         private ReactiveProperty<GUIWindowViewModel> openedScreen;
-        private ObservableList<GUIWindowViewModel> openedPopups;
-        private Dictionary<GUIWindowViewModel, IDisposable> popupSubscriptions;
+        private Dictionary<GUIWindowViewModel, IDisposable> windowSubscriptions;
 
+        public IObservableCollection<GUIWindowViewModel> OpenedWindows => openedWindows;
         public ReadOnlyReactiveProperty<GUIWindowViewModel> OpenedScreen => openedScreen;
-        public IObservableCollection<GUIWindowViewModel> OpenedPopups => openedPopups;
 
         public GUIRootViewModel()
         {
+            openedWindows = new ObservableList<GUIWindowViewModel>();
             openedScreen = new ReactiveProperty<GUIWindowViewModel>();
-            openedPopups = new ObservableList<GUIWindowViewModel>();
-            popupSubscriptions = new Dictionary<GUIWindowViewModel, IDisposable>();
+
+            windowSubscriptions = new Dictionary<GUIWindowViewModel, IDisposable>();
         }
 
         public void OpenScreen(GUIWindowViewModel screenViewModel)
         {
             openedScreen.Value?.Dispose();
             openedScreen.Value = screenViewModel;
+            windowSubscriptions[screenViewModel] = screenViewModel.CloseRequested.Subscribe(Close);
         }
 
-        public void OpenPopup(GUIWindowViewModel popupViewModel)
+        public void OpenWindow(GUIWindowViewModel windowViewModel)
         {
-            if (openedPopups.Contains(popupViewModel))
+            if (openedWindows.Contains(windowViewModel))
             {
                 return;
             }
 
-            var subscription = popupViewModel.CloseRequested.Subscribe(ClosePopup);
-            popupSubscriptions.Add(popupViewModel, subscription);
-            openedPopups.Add(popupViewModel);
+            var subscription = windowViewModel.CloseRequested.Subscribe(Close);
+            windowSubscriptions.Add(windowViewModel, subscription);
+            openedWindows.Add(windowViewModel);
         }
 
-        public void ClosePopup(GUIWindowViewModel popupViewModel)
+        public void Close(GUIWindowViewModel windowViewModel)
         {
-            if (openedPopups.Contains(popupViewModel))
+            if (openedScreen.Value == windowViewModel)
             {
-                popupViewModel.Dispose();
-                openedPopups.Remove(popupViewModel);
+                windowViewModel.Dispose();
+            }
 
-                var popupSubscription = popupSubscriptions[popupViewModel];
-                popupSubscription?.Dispose();
-                popupSubscriptions.Remove(popupViewModel);
+            if (openedWindows.Remove(windowViewModel))
+            {
+                windowViewModel.Dispose();
+            }
+
+            if (windowSubscriptions.Remove(windowViewModel, out var subscription))
+            {
+                subscription.Dispose();
             }
         }
 
-        public bool ContainPopup<T>() where T : GUIWindowViewModel
+        public bool ContainWindow<T>() where T : GUIWindowViewModel
         {
-            return openedPopups.FirstOrDefault(p => p.GetType() == typeof(T)) != null;
+            return openedWindows.FirstOrDefault(p => p.GetType() == typeof(T)) != null;
         }
 
-        public void ClosePopup<T>() where T : GUIWindowViewModel
+        public void CloseWindow<T>() where T : GUIWindowViewModel
         {
-            var openedPopupViewModel = openedPopups.FirstOrDefault(p => p.GetType() == typeof(T));
-            ClosePopup(openedPopupViewModel);
+            var openedPopupViewModel = openedWindows.FirstOrDefault(p => p.GetType() == typeof(T));
+            Close(openedPopupViewModel);
         }
 
-        public void CloseAllPopups()
+        public void CloseAllWindows()
         {
-            foreach (var openedPopup in openedPopups.ToArray())
+            foreach (var openedPopup in openedWindows.ToArray())
             {
-                ClosePopup(openedPopup);
+                Close(openedPopup);
             }
         }
 
-        public void CloseLastPopup()
+        public void CloseLastWindow()
         {
-            ClosePopup(openedPopups.Last());
+            Close(openedWindows.Last());
         }
 
         public void Dispose()
         {
-            CloseAllPopups();
+            CloseAllWindows();
             openedScreen.Value?.Dispose();
         }
     }

@@ -18,16 +18,16 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
                 CommonResourceKeys.CheckBoxDisableColor, null);
             style.Trigges.Add(trigger);
 
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
                 CommonResourceKeys.CheckBoxPressedColor, null);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
                 new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
                 new TriggerCondition(GUIComponent.InteractebleProperty, true)},
                 CommonResourceKeys.CheckBoxHoverColor, null);

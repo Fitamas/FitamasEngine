@@ -1,28 +1,153 @@
 ﻿using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Input;
+using ObservableCollections;
 using System;
 
 namespace Fitamas.UserInterface.Components
 {
-    public class GUIPopup : GUIWindow, IMouseEvent
+    public enum GUIPlacementMode
     {
-        public GUIComponent Target { get; set; }
+        Left,
+        Top,
+        Right,
+        Bottom,
+        Center,
+        MousePoint,
+    }
 
-        public void OnClickedMouse(MouseEventArgs mouse)
+    public class GUIPopup : GUIComponent, IMouseEvent
+    {
+        public static readonly DependencyProperty<GUIPlacementMode> PlacementModeProperty = new DependencyProperty<GUIPlacementMode>(GUIPlacementMode.Center, false);
+
+        public static readonly DependencyProperty<bool> IsOpenProperty = new DependencyProperty<bool>(IsOpenChangedCallback, false, false);
+
+        public static readonly RoutedEvent OnOpenEvent = new RoutedEvent();
+
+        public static readonly RoutedEvent OnCloseEvent = new RoutedEvent();
+
+        private GUIWindow window;
+
+        public GUIEvent<GUIPopup> OnOpen { get; }
+        public GUIEvent<GUIPopup> OnClose { get; }
+
+        public GUIPlacementMode PlacementMode
         {
-            if (!Contains(mouse.Position))
+            get
             {
-                Close();
+                return GetValue(PlacementModeProperty);
+            }
+            set
+            {
+                SetValue(PlacementModeProperty, value);
             }
         }
 
-        public void OnReleaseMouse(MouseEventArgs mouse)
+        public bool IsOpen
         {
-            
+            get
+            {
+                return GetValue(IsOpenProperty);
+            }
+            set
+            {
+                SetValue(IsOpenProperty, value);
+            }
         }
 
-        public void OnScrollMouse(MouseEventArgs mouse)
+        public GUIWindow Window 
         {
-            
+            get
+            {
+                return window;
+            }
+            set
+            {
+                if (window != value)
+                {
+                    window = value;
+                    window.Enable = IsOpen;
+                    UpdatePosition();
+                }
+            }
+        }
+
+        public GUIPopup()
+        {
+            OnOpen = eventHandlersStore.Create<GUIPopup>(OnOpenEvent);
+            OnClose = eventHandlersStore.Create<GUIPopup>(OnCloseEvent);
+        }
+
+        protected override void OnRemoveChild(GUIComponent component)
+        {
+            if (component == window)
+            {
+                window = null;
+            }
+        }
+
+        private void UpdatePosition()
+        {
+            //TODO
+        }
+
+        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        {
+            UpdatePosition();
+        }
+
+        public void OnClickedMouse(GUIMouseEventArgs mouse)
+        {
+            if (Window != null && !Window.Contains(mouse.Position))
+            {
+                IsOpen = false;
+            }
+        }
+
+        public void OnReleaseMouse(GUIMouseEventArgs mouse)
+        {
+            if (Window != null && !Window.Contains(mouse.Position))
+            {
+                IsOpen = false;
+            }
+        }
+
+        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        {
+
+        }
+
+        private void OpenPopup()
+        {
+            System.Root.PopupWindow = Window;
+            System.Mouse.MouseCapture = this;
+            OnOpen.Invoke(this);
+        }
+
+        private void ClosePopup()
+        {
+            System.Root.PopupWindow = null;
+            System.Mouse.MouseCapture = null;
+            OnClose.Invoke(this);
+        }
+
+        private static void IsOpenChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)
+        {
+            if (dependencyObject is GUIPopup popup)
+            {
+                if (popup.Window != null)
+                {
+                    popup.Window.Enable = newValue;
+                }
+
+                if (newValue)
+                {
+                    popup.OpenPopup();
+                }
+                else
+                {
+                    popup.ClosePopup();
+                }
+            }
         }
     }
 }

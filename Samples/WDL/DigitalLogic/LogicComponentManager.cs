@@ -13,30 +13,6 @@ namespace WDL.DigitalLogic
         public const string RootDirectory = "Saves";
         public const string FileExtension = ".lc";
 
-        public static readonly LogicComponentDescription And = new LogicComponentDescription((manager, descriptoin, data) => new LogicAnd(descriptoin, data))
-        {
-            TypeId = "And", Namespace = "Default",
-            PinInputName = { "InA", "InB" }, PinOutputName = { "Out" }
-        };
-
-        public static readonly LogicComponentDescription Not = new LogicComponentDescription((manager, descriptoin, data) => new LogicNot(descriptoin, data))
-        {
-            TypeId = "Not", Namespace = "Default",
-            PinInputName = { "In" }, PinOutputName = { "Out" }
-        };
-
-        public static readonly LogicComponentDescription Input = new LogicComponentDescription((manager, descriptoin, data) => new LogicInput(descriptoin, data))
-        {
-            TypeId = "Input", Namespace = "Default",
-            PinOutputName = { "Out" }
-        };
-
-        public static readonly LogicComponentDescription Output = new LogicComponentDescription((manager, descriptoin, data) => new LogicOutput(descriptoin, data))
-        {
-            TypeId = "Output", Namespace = "Default",
-            PinInputName = { "In" }
-        };
-
         private ObservableList<LogicComponentDescription> components;
 
         public IObservableCollection<LogicComponentDescription> Components => components;
@@ -45,24 +21,10 @@ namespace WDL.DigitalLogic
         {
             components = new ObservableList<LogicComponentDescription>();
 
-            AddComponent(And);
-            AddComponent(Not);
-            AddComponent(Input);
-            AddComponent(Output);
-
-            //var nand = new LogicComponentDescription(typeof(LogicCircuit))
-            //{
-            //    Name = "Nand",
-            //    PinInputName = { "InA", "InB" },
-            //    PinOutputName = { "Out" },
-            //    Components = [output, input, input, and, not],
-            //    Connections = [
-            //            new Connection() { OutputComponentId = 1, InputComponentId = 3, InputIndex = 0 },
-            //            new Connection() { OutputComponentId = 2, InputComponentId = 3, InputIndex = 1 },
-            //            new Connection() { OutputComponentId = 3, InputComponentId = 4 },
-            //            new Connection() { OutputComponentId = 4, InputComponentId = 0 }]
-            //};
-            //AddComponent(nand);
+            AddComponent(LogicComponents.And);
+            AddComponent(LogicComponents.Not);
+            AddComponent(LogicComponents.Input);
+            AddComponent(LogicComponents.Output);
         }
 
         public void AddComponent(LogicComponentDescription component)
@@ -70,6 +32,28 @@ namespace WDL.DigitalLogic
             if (!components.Contains(component))
             {
                 components.Add(component);
+            }
+        }
+
+        public void Remove(string path)
+        {
+            LogicComponentDescription description = GetComponent(path);
+            Remove(description);
+        }
+
+        public void Remove(LogicComponentDescription description)
+        {
+            if (ContainComponent(description))
+            {
+                string path = Path.Combine(RootDirectory, description.FullName) + FileExtension;
+                File.Delete(path);
+
+                components.Remove(description);
+
+                foreach (var component in components)
+                {
+                    component.RemoveComponents(description);
+                }
             }
         }
 
@@ -102,11 +86,17 @@ namespace WDL.DigitalLogic
             }
 
             return null;
-
-            //return Load(path); TODO convert full name to path
         }
 
-        public void Save(LogicComponentDescription description)
+        public void SaveComponents()
+        {
+            foreach (var item in components)
+            {
+                Save(item);
+            }
+        }
+
+        private void Save(LogicComponentDescription description)
         {
             string contentPath = Path.Combine(RootDirectory, description.FullName) + FileExtension;
 
@@ -117,51 +107,6 @@ namespace WDL.DigitalLogic
             using (JsonWriter writer = new JsonTextWriter(sw))
             {
                 serializer.Serialize(writer, description);
-            }
-        }
-
-        public void SaveAll()
-        {
-            foreach (var item in components)
-            {
-                //if (!item.IsBase)
-                {
-                    Save(item);
-                }                
-            }
-        }
-
-        public LogicComponentDescription Load(string path)
-        {
-            using (var stream = TitleContainer.OpenStream(path))
-            using (var reader = new StreamReader(stream))
-            using (var jsonReader = new JsonTextReader(reader))
-            {
-                LogicComponentDescription description = null;
-
-                try
-                {
-                    var serializer = new DigitalLogicJsonSerializer(this);
-                    description = serializer.Deserialize<LogicComponentDescription>(jsonReader);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError(ex.Message);
-                }
-
-                if (description != null)
-                {
-                    string localPath = Path.GetRelativePath(RootDirectory, path);
-
-                    int lastSeparatorIndex = localPath.LastIndexOf('\\');
-                    if (lastSeparatorIndex != -1)
-                    {
-                        description.Namespace = localPath.Substring(0, lastSeparatorIndex);
-                    }
-
-                    Debug.Log("Load component description: " + description.FullName);
-                }
-                return description;
             }
         }
 
@@ -183,61 +128,63 @@ namespace WDL.DigitalLogic
             }
         }
 
-        public void Remove(string path)
+        private LogicComponentDescription Load(string path)
         {
-            LogicComponentDescription description = GetComponent(path);
-            Remove(description);
-        }
-
-        public void Remove(LogicComponentDescription description)
-        {
-            if (ContainComponent(description))
+            using (var stream = TitleContainer.OpenStream(path))
+            using (var reader = new StreamReader(stream))
+            using (var jsonReader = new JsonTextReader(reader))
             {
-                string path = Path.Combine(RootDirectory, description.FullName) + FileExtension;
-                File.Delete(path);
+                LogicComponentDescription description = null;
 
-                components.Remove(description);
-
-                foreach (var component in components)
+                try
                 {
-                    component.Remove(description);
+                    var serializer = new DigitalLogicJsonSerializer(this);
+                    description = serializer.Deserialize<LogicComponentDescription>(jsonReader);
                 }
+                catch (Exception ex)
+                {
+                    Debug.LogError(ex.Message);
+                }
+
+                Debug.Log("Load component description: " + description.FullName);
+
+                return description;
             }
         }
 
-        public void Import(string path)
-        {
-            string target;
+        //public void Import(string path)
+        //{
+        //    string target;
 
-            if (File.Exists(path) || Directory.Exists(path))
-            {
-                target = Path.Combine(RootDirectory, Path.GetFileName(path));
-                Directory.CreateDirectory(target);
-            }
-            else
-            {
-                Debug.LogError("File or directory not exists");
-                return;
-            }
+        //    if (File.Exists(path) || Directory.Exists(path))
+        //    {
+        //        target = Path.Combine(RootDirectory, Path.GetFileName(path));
+        //        Directory.CreateDirectory(target);
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("File or directory not exists");
+        //        return;
+        //    }
 
-            Debug.Log("Copy files from: " + path + " to: " + target);
-            CopyFilesRecursively(path, target);
+        //    Debug.Log("Copy files from: " + path + " to: " + target);
+        //    CopyFilesRecursively(path, target);
 
-            Debug.Log("Import");
-            LoadAll();
-        }
+        //    Debug.Log("Import");
+        //    LoadAll();
+        //}
 
-        private static void CopyFilesRecursively(string sourcePath, string targetPath)
-        {
-            foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
-            {
-                Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
-            }
+        //private static void CopyFilesRecursively(string sourcePath, string targetPath)
+        //{
+        //    foreach (string dirPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+        //    {
+        //        Directory.CreateDirectory(dirPath.Replace(sourcePath, targetPath));
+        //    }
 
-            foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
-            {
-                File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
-            }
-        }
+        //    foreach (string newPath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+        //    {
+        //        File.Copy(newPath, newPath.Replace(sourcePath, targetPath), true);
+        //    }
+        //}
     }
 }

@@ -11,9 +11,6 @@ namespace Fitamas.Scene
         public string Name;
         public List<Component> Components = new List<Component>();
 
-        public Prefab Prefab; 
-        //TODO prefab and PrefabVariables
-
         public GameObject(ICollection<Component> components = null, string name = "Entity")
         {
             if (components != null)

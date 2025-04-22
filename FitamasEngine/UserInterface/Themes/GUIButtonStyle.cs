@@ -17,15 +17,15 @@ namespace Fitamas.UserInterface.Themes
 
             TriggerBase trigger;
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
                 CommonResourceKeys.ButtonDisableColor, CommonResourceKeys.ButtonTextDisableColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
                 CommonResourceKeys.ButtonPressedColor, CommonResourceKeys.ButtonTextPressedColor);
             style.Trigges.Add(trigger);
 
-            trigger = CommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() { 
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() { 
                 new TriggerCondition(GUIComponent.IsMouseOverProperty, true), 
                 new TriggerCondition(GUIComponent.InteractebleProperty, true)}, 
                 CommonResourceKeys.ButtonHoverColor, CommonResourceKeys.ButtonTextHoverColor);

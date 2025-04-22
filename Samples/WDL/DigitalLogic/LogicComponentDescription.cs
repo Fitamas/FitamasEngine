@@ -1,8 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fitamas;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace WDL.DigitalLogic
 {
@@ -12,16 +11,12 @@ namespace WDL.DigitalLogic
         public string Namespace;
         public int ThemeId;
 
-        public List<string> PinInputName = new List<string>();
-        public List<string> PinOutputName = new List<string>();
-
         public List<LogicComponentData> Components = new List<LogicComponentData>();
         public List<LogicConnectionData> Connections = new List<LogicConnectionData>();
 
-        public Func<LogicComponentManager, LogicComponentDescription, LogicComponentData, LogicComponent> CreateFunc { get; set; }
+        public Dictionary<int, string> Connectors = new Dictionary<int, string>();
 
-        public int ComponentsCount => Components.Count;
-        public int ConnectionsCount => Connections.Count;
+        public Func<LogicComponentManager, LogicComponentDescription, LogicComponentData, LogicComponent> CreateFunc { get; set; }
 
         public string FullName
         {
@@ -42,6 +37,8 @@ namespace WDL.DigitalLogic
             {
                 return new LogicCircuit(manager, description, data);
             };
+
+            TypeId = Guid.NewGuid().ToString();
         }
 
         public LogicComponentDescription(Func<LogicComponentManager, LogicComponentDescription, LogicComponentData, LogicComponent> createFunc)
@@ -54,41 +51,7 @@ namespace WDL.DigitalLogic
             return CreateFunc?.Invoke(manager, this, data);
         }
 
-        //public LogicComponentData GetFromIndex(int index)
-        //{
-        //    return Components[index];
-        //}
-
-        //public LogicComponentData GetFromId(int id)
-        //{
-        //    foreach (var component in Components)
-        //    {
-        //        if (component.Id == id)
-        //        {
-        //            return component;
-        //        }
-        //    }
-
-        //    return default;
-        //}
-
-        //public void RemoveFromIndex(int index)
-        //{
-        //    Components.RemoveAt(index);
-        //}
-
-        //public void RemoveFromId(int id)
-        //{
-        //    for (int i = 0; i < Components.Count; i++)
-        //    {
-        //        if (Components[i].Id == id)
-        //        {
-        //            Components.RemoveAt(i);
-        //        }
-        //    }
-        //}
-
-        public void Remove(LogicComponentDescription description)
+        public void RemoveComponents(LogicComponentDescription description)
         {
             for (int i = 0; i < Components.Count; i++)
             {
@@ -98,91 +61,6 @@ namespace WDL.DigitalLogic
                 }
             }
         }
-
-        //public void Add(LogicComponentData component)
-        //{
-        //    if (component.NotNull)
-        //    {
-        //        Components.Add(component);
-        //    }
-        //}
-
-        //public bool Contains(LogicComponentDescription description)
-        //{
-        //    if (description != null)
-        //    {
-        //        foreach (var component in Components)
-        //        {
-        //            if (component.NotNull)
-        //            {
-        //                if (component.Description == description || component.Description.Contains(description))
-        //                {
-        //                    return true;
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return false;
-        //}
-
-        //public LogicComponent CreateComponent()
-        //{
-        //    if (ComponentType != null)
-        //    {
-        //        LogicComponent result;
-
-        //        if (!IsBase)
-        //        {
-        //            Dictionary<int, LogicComponent> components = new Dictionary<int, LogicComponent>();
-
-        //            foreach (var component in Components)
-        //            {
-        //                LogicComponent logicComponent = component.Description.CreateComponent();
-        //                components[component.Id] = logicComponent;
-
-        //                for (int j = 0; j < logicComponent.InputCount; j++)
-        //                {
-        //                    var connector = new ConnectorInput(j);
-        //                    logicComponent.SetInput(connector, j);
-        //                }
-
-        //                for (int j = 0; j < logicComponent.OutputCount; j++)
-        //                {
-        //                    var connector = new ConnectorOutput(j);
-        //                    logicComponent.SetOutput(connector, j);
-        //                }
-        //            }
-
-        //            foreach (var connection in Connections)
-        //            {
-        //                if (!(components.ContainsKey(connection.OutputComponentId) && components.ContainsKey(connection.InputComponentId)))
-        //                {
-        //                    continue;
-        //                }
-
-        //                LogicComponent inputComponent = components[connection.InputComponentId];
-        //                LogicComponent outputComponent = components[connection.OutputComponentId];
-
-        //                ConnectorInput input = inputComponent.GetInput(connection.InputIndex);
-        //                ConnectorOutput output = outputComponent.GetOutput(connection.OutputIndex);
-
-        //                output.Connectors.Add(input);
-        //            }
-
-        //            //result = new LogicCircuit(components.Values.ToArray());
-        //        }
-        //        else
-        //        {
-        //            //result = (LogicComponent)Activator.CreateInstance(ComponentType);
-        //        }
-
-        //        //result.Description = this;
-        //        //return result;
-        //    }
-
-        //    return null;
-        //}
 
         private static bool CompareBaseObject(LogicComponentDescription a, LogicComponentDescription b)
         {

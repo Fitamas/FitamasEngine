@@ -20,11 +20,15 @@ namespace Fitamas.UserInterface.Components
                 {
                     if (track != null)
                     {
-                        track.Thumb.DragDelta.RemoveListener(UpdateThumb);
+                        track.Thumb.DragStart.RemoveListener(StartDrag);
+                        track.Thumb.DragDelta.RemoveListener(UpdateDrag);
+                        track.Thumb.DragEnd.RemoveListener(EndDrag);
                     }
 
                     track = value;
-                    track.Thumb.DragDelta.AddListener(UpdateThumb);
+                    track.Thumb.DragStart.AddListener(StartDrag);
+                    track.Thumb.DragDelta.AddListener(UpdateDrag);
+                    track.Thumb.DragEnd.AddListener(EndDrag);
                     UpdateThumb();
                 }
 
@@ -36,9 +40,19 @@ namespace Fitamas.UserInterface.Components
             RaycastTarget = true;
         }
 
-        private void UpdateThumb(GUIThumb thumb, DragEventArgs args)
+        private void StartDrag(GUIThumb thumb, DragEventArgs args)
+        {
+            Focus();
+        }
+
+        private void UpdateDrag(GUIThumb thumb, DragEventArgs args)
         {
             track.Value = FindNearestValue(args.Position);
+        }
+
+        private void EndDrag(GUIThumb thumb, DragEventArgs args)
+        {
+
         }
 
         private void UpdateThumb()

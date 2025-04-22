@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 namespace Fitamas.UserInterface
 {
-    public class ControlTemplate
+    public class GUIControlTemplate
     {
         private Dictionary<string, GUIComponent> componentsMap;
 
-        public ControlTemplate()
+        public GUIControlTemplate()
         {
             componentsMap = new Dictionary<string, GUIComponent>();
         }

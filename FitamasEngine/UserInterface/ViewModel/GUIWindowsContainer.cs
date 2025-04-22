@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using Fitamas.Core;
+using Fitamas.UserInterface.Components;
 namespace Fitamas.UserInterface.ViewModel
 {
     public class GUIWindowsContainer
     {
         private Dictionary<GUIWindowViewModel, IGUIWindowBinder> openedWindowBinders;
         private IGUIWindowBinder openedScreenBinder;
-        private IGUIWindowBinder openedPopupBinder;
         private GUISystem system;
 
         public GUIWindowsContainer(GUISystem system)
@@ -22,10 +21,10 @@ namespace Fitamas.UserInterface.ViewModel
                 return;
             }
 
-            GUIWindowBinder binder = viewModel.Type.Create();
-            binder.Bind(system, viewModel);
+            IGUIWindowBinder binder = viewModel.Type.Create();
+            binder.Bind(viewModel);
             openedWindowBinders.Add(viewModel, binder);
-            system.Root.OpenWindow(binder.Window);
+            system.Root.OpenWindow(binder as GUIWindow);
         }
 
         public void CloseWindow(GUIWindowViewModel popupViewModel)
@@ -45,34 +44,15 @@ namespace Fitamas.UserInterface.ViewModel
 
             CloseScreen();
 
-            GUIWindowBinder binder = viewModel.Type.Create();
-            binder.Bind(system, viewModel);
+            IGUIWindowBinder binder = viewModel.Type.Create();
+            binder.Bind(viewModel);
             openedScreenBinder = binder;
-            system.Root.MainWindow = binder.Window;
+            system.Root.Screen = binder as GUIWindow;
         }
 
         public void CloseScreen()
         {
             openedScreenBinder?.Close();
-        }
-
-        public void OpenPopup(GUIWindowViewModel viewModel)
-        {
-            if (viewModel == null)
-            {
-                return;
-            }
-
-            ClosePopup();
-            GUIWindowBinder binder = viewModel.Type.Create();
-            binder.Bind(system, viewModel);
-            openedPopupBinder = binder;
-            system.Root.OpenPopup(binder.Window);
-        }
-
-        public void ClosePopup()
-        {
-            openedPopupBinder?.Close();
         }
     }
 }

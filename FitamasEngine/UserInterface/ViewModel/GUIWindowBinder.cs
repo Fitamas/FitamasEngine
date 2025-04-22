@@ -4,32 +4,32 @@ using System;
 
 namespace Fitamas.UserInterface.ViewModel
 {
-    public class GUIWindowBinder : Binder<GUIWindowViewModel>, IGUIWindowBinder
+    public class GUIWindowBinder<T> : GUIWindow, IGUIWindowBinder where T : GUIWindowViewModel
     {
-        public GUIWindow Window { get; set; }
+        private IDisposable disposable;
+
+        protected T ViewModel;
 
         public GUIWindowBinder()
         {
 
         }
 
-        public void Bind(GUISystem system, GUIWindowViewModel viewModel)
+        public void Bind(GUIWindowViewModel viewModel)
         {
-            Bind(viewModel);
-            BindOverride(viewModel);
+            ViewModel = (T)viewModel;
+            disposable = OnBind(ViewModel);
         }
 
-        protected sealed override IDisposable OnBind(GUIWindowViewModel viewModel)
+        protected virtual IDisposable OnBind(T viewModel)
         {
-            return viewModel;
+            return null;
         }
 
-        public void Close()
+        public override void OnClose()
         {
-            Window?.Close();
-            Dispose();
+            ViewModel?.RequestClose();
+            disposable?.Dispose();
         }
-
-        protected virtual void BindOverride(object viewModel) { }
     }
 }
