@@ -6,10 +6,51 @@ using R3;
 using System;
 using System.Collections.Generic;
 using WDL.DigitalLogic;
+using WDL.DigitalLogic.Components;
 
 namespace WDL.Gameplay.ViewModel
 {
     public class LogicSimulationWindowViewModel : GUIWindowViewModel
+    {
+        private LogicSimulationViewModel simulation;
+
+        public LogicComponentDescription Description => simulation.Description;
+        public IObservableCollection<LogicComponentViewModel> Components => simulation.Components;
+        public IObservableCollection<LogicConnectionViewModel> Connections => simulation.Connections;
+        public override GUIWindowType Type => GUIWindowTypes.SimulationWindow;
+
+        public LogicSimulationWindowViewModel(LogicSimulationViewModel simulation)
+        {
+            this.simulation = simulation;
+        }
+
+        public void CreateComponent(LogicComponentDescription description)
+        {
+            simulation.CreateComponent(description);
+        }
+
+        public void DestroyComponent(LogicComponentViewModel viewModel)
+        {
+            simulation.DestroyComponent(viewModel);
+        }
+
+        public void CreateConnect(LogicConnectorViewModel connectorA, LogicConnectorViewModel connectorB, List<Point> points)
+        {
+            simulation.CreateConnect(connectorA, connectorB, points);
+        }
+
+        public void DestroyConnect(LogicConnectorViewModel connectorA, LogicConnectorViewModel connectorB)
+        {
+            simulation.DestroyConnect(connectorA, connectorB);
+        }
+
+        public void DestroyConnect(LogicConnectionViewModel viewModel)
+        {
+            simulation.DestroyConnect(viewModel);
+        }
+    }
+
+    public class LogicSimulationViewModel
     {
         private class ViewModelStore
         {
@@ -32,9 +73,8 @@ namespace WDL.Gameplay.ViewModel
         public LogicComponentDescription Description => simulation.Description;
         public IObservableCollection<LogicComponentViewModel> Components => components;
         public IObservableCollection<LogicConnectionViewModel> Connections => connections;
-        public override GUIWindowType Type => GUIWindowTypes.SimulationWindow;
 
-        public LogicSimulationWindowViewModel(LogicSimulation simulation)
+        public LogicSimulationViewModel(LogicSimulation simulation)
         {
             this.simulation = simulation;
 

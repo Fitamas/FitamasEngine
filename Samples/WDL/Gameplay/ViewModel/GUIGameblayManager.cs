@@ -15,7 +15,7 @@ namespace WDL.Gameplay.ViewModel
             viewModel = Container.Resolve<GUIRootViewModel>(ApplicationKey.GUIRootViewModel);
         }
 
-        public GameplayScreenViewModel OpenGameplayViewModel()
+        public GameplayScreenViewModel OpenGameplayScreen()
         {
             GameplayScreenViewModel screen = new GameplayScreenViewModel(this);
             viewModel.OpenScreen(screen);
@@ -25,26 +25,25 @@ namespace WDL.Gameplay.ViewModel
 
         public LogicComponentsWindowViewModel OpenComponents()
         {
-            GameplayViewModel gameplay = Container.Resolve<GameplayViewModel>();
+            GameplayScreenViewModel gameplay = Container.Resolve<GameplayScreenViewModel>();
             LogicComponentsWindowViewModel logicComponents = new LogicComponentsWindowViewModel(gameplay);
             viewModel.OpenWindow(logicComponents);
 
             return logicComponents;
         }
 
-        public LogicSimulationWindowViewModel OpenSimulation(LogicComponentDescription description)
+        public LogicSimulationWindowViewModel OpenSimulation(LogicSimulationViewModel simulationViewModel)
         {
-            GameplayViewModel gameplay = Container.Resolve<GameplayViewModel>();
-            LogicSimulationWindowViewModel simulation = gameplay.CreateSimulation(description);
+            LogicSimulationWindowViewModel simulation = new LogicSimulationWindowViewModel(simulationViewModel);
             viewModel.OpenWindow(simulation);
 
             return simulation;
         }
 
-        public LogicDescriptionWindowViewModel OpenCreateDescriptionPopup()
+        public LogicDescriptionWindowViewModel OpenCreateDescription(LogicComponentDescription description)
         {
             GameplayViewModel gameplay = Container.Resolve<GameplayViewModel>();
-            LogicDescriptionWindowViewModel popup = new LogicDescriptionWindowViewModel(gameplay);
+            LogicDescriptionWindowViewModel popup = new LogicDescriptionWindowViewModel(gameplay, description);
             viewModel.OpenWindow(popup);
 
             return popup;

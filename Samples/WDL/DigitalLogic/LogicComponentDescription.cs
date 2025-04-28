@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using WDL.DigitalLogic.Components;
 
 namespace WDL.DigitalLogic
 {
@@ -10,6 +11,7 @@ namespace WDL.DigitalLogic
         public string TypeId;
         public string Namespace;
         public int ThemeId;
+        public bool IsBase;
 
         public List<LogicComponentData> Components = new List<LogicComponentData>();
         public List<LogicConnectionData> Connections = new List<LogicConnectionData>();

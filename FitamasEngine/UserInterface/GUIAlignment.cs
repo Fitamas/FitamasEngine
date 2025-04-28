@@ -6,9 +6,13 @@ namespace Fitamas.UserInterface
     {
         Center,
         LeftTop,
+        LeftCenter,
         LeftBottom,
-        RightTop,
+        CenterBottom,
         RightBottom,
+        RightCenter,
+        RightTop,
+        CenterTop,
         Stretch,
     }
 

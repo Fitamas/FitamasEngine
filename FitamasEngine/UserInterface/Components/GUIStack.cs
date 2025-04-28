@@ -91,18 +91,21 @@ namespace Fitamas.UserInterface.Components
             return size;
         }
 
-        protected override void CalculateComponents(GUIComponent[] components, Rectangle rectangle)
+        protected override void CalculateComponents(GUIComponent[] components)
         {
             if (Inverted)
             {
                 components = components.Reverse().ToArray();
             }
 
+            Rectangle rectangle = AvailableRectangle(this);
             GUIGroupOrientation orientation = Orientation;
             bool flagWidth = ControlChildSizeWidth;
             bool flagHeight = ControlChildSizeHeight;
             int spacing = Spacing;
-            Point newSize = new Point();
+            Point position = Point.Zero;
+            Point newSize = Point.Zero;
+
             if (flagWidth)
             {
                 if (orientation == GUIGroupOrientation.Horizontal)
@@ -126,8 +129,7 @@ namespace Fitamas.UserInterface.Components
                     newSize.Y = rectangle.Height;
                 }
             }
-            
-            Point position = Point.Zero;
+
             foreach (GUIComponent component in components)
             {
                 Point size = component.LocalSize;
@@ -143,6 +145,25 @@ namespace Fitamas.UserInterface.Components
 
                 Vector2 pivot = component.Pivot;
                 Point localPosition = new Point((int)(size.X * pivot.X), (int)(size.Y * pivot.Y)) + position;
+
+                if (component.HorizontalAlignment == GUIHorizontalAlignment.Center)
+                {
+                    localPosition.X -= size.X / 2;
+                }
+                else if (component.HorizontalAlignment == GUIHorizontalAlignment.Right)
+                {
+                    localPosition.X -= size.X;
+                }
+
+                if (component.VerticalAlignment == GUIVerticalAlignment.Center)
+                {
+                    localPosition.Y -= size.Y / 2;
+                }
+                else if (component.VerticalAlignment == GUIVerticalAlignment.Bottom)
+                {
+                    localPosition.Y -= size.Y;
+                }
+
                 component.Margin = new Thickness(localPosition.X, localPosition.Y, size.X, size.Y);
 
                 if (orientation == GUIGroupOrientation.Horizontal)

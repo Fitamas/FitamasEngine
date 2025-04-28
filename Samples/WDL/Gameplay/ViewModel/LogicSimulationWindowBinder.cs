@@ -279,6 +279,7 @@ namespace WDL.Gameplay.ViewModel
 
             GUIWire wire = GUINodeUtils.CreateWire(GUIUtils.GetWireStyle(ResourceDictionary.DefaultResources, viewModel.ThemeId.Value));
             wire.CreateConnection(pinA, pinB);
+            wire.Anchors.AddRange(viewModel.Points);
             GUIContextMenuManager.SetContextMenu(wire, wireContextMenu);
             editor.AddItem(wire);
             connectionToWire.Add(viewModel, wire);

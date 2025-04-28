@@ -8,11 +8,16 @@ namespace Fitamas.UserInterface.Components
         public GUIComponent Header { get; set; }
         public GUIComponent Content { get; set; }
 
-        protected override void OnChildSizeChanged(GUIComponent component)
+        protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
         {
-            Point size0 = Header.LocalSize;
-            Point size1 = Content.LocalSize;    
-            LocalSize = new Point(Math.Max(size0.X, size1.X), size0.Y + size1.Y);
+            base.OnChildPropertyChanged(component, property);
+
+            if (property == MarginProperty)
+            {
+                Point size0 = Header.LocalSize;
+                Point size1 = Content.LocalSize;
+                LocalSize = new Point(Math.Max(size0.X, size1.X), size0.Y + size1.Y);
+            }
         }
     }
 }

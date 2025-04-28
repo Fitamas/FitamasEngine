@@ -43,11 +43,13 @@ namespace WDL.DigitalLogic
 
         public void Remove(LogicComponentDescription description)
         {
+            if (description.IsBase)
+            {
+                return;
+            }
+
             if (ContainComponent(description))
             {
-                string path = Path.Combine(RootDirectory, description.FullName) + FileExtension;
-                File.Delete(path);
-
                 components.Remove(description);
 
                 foreach (var component in components)
@@ -90,6 +92,8 @@ namespace WDL.DigitalLogic
 
         public void SaveComponents()
         {
+            Directory.Delete(RootDirectory, true);
+
             foreach (var item in components)
             {
                 Save(item);
@@ -98,6 +102,11 @@ namespace WDL.DigitalLogic
 
         private void Save(LogicComponentDescription description)
         {
+            if (description.IsBase)
+            {
+                return;
+            }
+
             string contentPath = Path.Combine(RootDirectory, description.FullName) + FileExtension;
 
             Directory.CreateDirectory(Path.GetDirectoryName(contentPath));

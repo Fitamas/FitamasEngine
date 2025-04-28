@@ -28,37 +28,37 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Fitamas.Graphics.TextureAtlases
+namespace Fitamas.Graphics
 {
-    public static class TextureAtlasExtensions
+    public static class SpriteExtensions
     {
-        public static void Draw(this SpriteBatch spriteBatch, TextureRegion2D textureRegion, Vector2 position, Color color, Rectangle? clippingRectangle = null)
+        public static void Draw(this SpriteBatch spriteBatch, Sprite sprite, Vector2 position, Color color, Rectangle? clippingRectangle = null)
         {
-            spriteBatch.Draw(textureRegion, position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0, clippingRectangle);
+            spriteBatch.Draw(sprite, position, color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0, clippingRectangle);
         }
 
-        public static void Draw(this SpriteBatch spriteBatch, TextureRegion2D textureRegion, Vector2 position, Color color,
+        public static void Draw(this SpriteBatch spriteBatch, Sprite sprite, Vector2 position, Color color,
             float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, Rectangle? clippingRectangle = null)
         {
-            var sourceRectangle = textureRegion.Bounds;
+            var sourceRectangle = sprite.Bounds;
 
             if (clippingRectangle.HasValue)
             {
                 var x = (int)(position.X - origin.X);
                 var y = (int)(position.Y - origin.Y);
-                var width = (int)(textureRegion.Width * scale.X);
-                var height = (int)(textureRegion.Height * scale.Y);
+                var width = (int)(sprite.Width * scale.X);
+                var height = (int)(sprite.Height * scale.Y);
                 var destinationRectangle = new Rectangle(x, y, width, height);
 
-                sourceRectangle = ClipSourceRectangle(textureRegion.Bounds, destinationRectangle, clippingRectangle.Value);
-                position.X += (sourceRectangle.X - textureRegion.Bounds.X) * scale.X;
-                position.Y += (sourceRectangle.Y - textureRegion.Bounds.Y) * scale.Y;
+                sourceRectangle = ClipSourceRectangle(sprite.Bounds, destinationRectangle, clippingRectangle.Value);
+                position.X += (sourceRectangle.X - sprite.Bounds.X) * scale.X;
+                position.Y += (sourceRectangle.Y - sprite.Bounds.Y) * scale.Y;
 
                 if (sourceRectangle.Width <= 0 || sourceRectangle.Height <= 0)
                     return;
             }
 
-            spriteBatch.Draw(textureRegion.Texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+            spriteBatch.Draw(sprite.Texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
         }
 
         private static Rectangle ClipSourceRectangle(Rectangle sourceRectangle, Rectangle destinationRectangle, Rectangle clippingRectangle)

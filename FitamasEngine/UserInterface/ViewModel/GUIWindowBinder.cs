@@ -26,7 +26,7 @@ namespace Fitamas.UserInterface.ViewModel
             return null;
         }
 
-        public override void OnClose()
+        protected override void OnCloseWindow()
         {
             ViewModel?.RequestClose();
             disposable?.Dispose();

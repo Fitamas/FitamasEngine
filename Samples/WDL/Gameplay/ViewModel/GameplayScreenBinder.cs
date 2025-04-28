@@ -1,4 +1,5 @@
 ﻿using Fitamas;
+using Fitamas.MVVM;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.ViewModel;
@@ -6,8 +7,6 @@ using Microsoft.Xna.Framework;
 using ObservableCollections;
 using R3;
 using System;
-using System.Collections.Generic;
-using WDL.DigitalLogic;
 
 namespace WDL.Gameplay.ViewModel
 {
@@ -15,7 +14,6 @@ namespace WDL.Gameplay.ViewModel
     {
         protected override IDisposable OnBind(GameplayScreenViewModel viewModel)
         {
-            GameplayViewModel gameplay = viewModel.Gameplay;
             SetAlignment(GUIAlignment.Stretch);
 
             //TOOLBAR
@@ -37,13 +35,19 @@ namespace WDL.Gameplay.ViewModel
             GUIButton button0 = GUI.CreateButton(new Point(0, 100), "Save", new Point(100, 100));
             button0.OnClicked.AddListener(b => 
             {
-                if (!gameplay.IsSaveed())
+                if (!viewModel.IsSavedCurrentComponent() && viewModel.Simulation.CurrentValue != null)
                 {
-                    viewModel.OpenCreateDescriptionPopup();
+                    GUIMessageBox.Show("Do you want save this logic component?", string.Empty, GUIMessageBoxType.YesNo, res =>
+                    {
+                        if (res == GUIMessageBoxResult.Yes)
+                        {
+                            viewModel.OpenDescription(viewModel.Simulation.CurrentValue.Description);
+                        }
+                    });
                 }
                 else
                 {
-                    gameplay.SaveProject();
+                    viewModel.SaveProject();
                 }
             });
             stack.AddChild(button0);
@@ -51,13 +55,23 @@ namespace WDL.Gameplay.ViewModel
             GUIButton button1 = GUI.CreateButton(new Point(0, 100), "New", new Point(100, 100));
             button1.OnClicked.AddListener(b => 
             {
-                if (!gameplay.IsSaveed())
+                if (!viewModel.IsSavedCurrentComponent() && viewModel.Simulation.CurrentValue != null)
                 {
-                    viewModel.OpenCreateDescriptionPopup();
+                    GUIMessageBox.Show("Do you want save this logic component?", string.Empty, GUIMessageBoxType.YesNo, res =>
+                    {
+                        if (res == GUIMessageBoxResult.Yes)
+                        {
+                            viewModel.OpenDescription(viewModel.Simulation.CurrentValue.Description);
+                        }
+                        else
+                        {
+                            viewModel.CreateSimulation();
+                        }    
+                    });
                 }
                 else
                 {
-                    viewModel.OpenSimulation();
+                    viewModel.CreateSimulation();
                 }
             });
             stack.AddChild(button1);

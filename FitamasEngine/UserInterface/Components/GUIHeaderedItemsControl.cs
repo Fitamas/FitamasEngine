@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -29,9 +27,14 @@ namespace Fitamas.UserInterface.Components
             UpdateSize();
         }
 
-        protected override void OnChildSizeChanged(GUIComponent component)
+        protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
         {
-            UpdateSize();
+            base.OnChildPropertyChanged(component, property);
+
+            if (property == MarginProperty || property == EnableProperty)
+            {
+                UpdateSize();
+            }
         }
 
         protected override void OnAddItem(GUIComponent component)
@@ -39,15 +42,23 @@ namespace Fitamas.UserInterface.Components
             Container.AddChild(component);
         }
 
+        protected override Rectangle AvailableRectangle(GUIComponent component)
+        {
+            Rectangle rectangle = base.AvailableRectangle(component);
+            if (component == Container)
+            {
+                Thickness padding = ContainerPadding;
+                rectangle.Location += new Point(padding.Left, padding.Top);
+                rectangle.Size -= new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
+            }
+            return rectangle;
+        }
+
         protected void UpdateSize()
         {
-            Thickness thickness = ContainerPadding;
-
             Point size0 = Point.Zero;
             if (Header != null && Header.Enable)
             {
-                Header.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
-                Header.Pivot = new Vector2(0, 0);
                 size0 = Header.LocalSize;
             }
 
@@ -55,12 +66,9 @@ namespace Fitamas.UserInterface.Components
             if (Container != null && Container.Enable)
             {
                 size1 = Container.LocalSize;
-                Container.LocalPosition = new Point(thickness.Left, -thickness.Top);
-                Container.Pivot = new Vector2(0, 1);
-                Container.VerticalAlignment = GUIVerticalAlignment.Bottom;
+                Thickness thickness = ContainerPadding;
+                size1 += new Point(thickness.Left + thickness.Right, thickness.Top + thickness.Bottom);
             }
-
-            size1 += new Point(thickness.Left + thickness.Right, thickness.Top + thickness.Bottom);
 
             LocalSize = new Point(Math.Max(size0.X, size1.X), size0.Y + size1.Y);
         }

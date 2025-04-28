@@ -39,7 +39,14 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<bool> IsOnTopProperty = new DependencyProperty<bool>(false, false);
 
+        public static readonly DependencyProperty<bool> DestroyOnCloseProperty = new DependencyProperty<bool>(true, false);
+
+
+        public static readonly RoutedEvent OnCloseEvent = new RoutedEvent();
+
         private GUIComponent content;
+
+        public GUIEvent<GUIWindow> OnClose { get; }
 
         public Thickness Padding
         {
@@ -77,6 +84,18 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
+        public bool DestroyOnClose
+        {
+            get
+            {
+                return GetValue(DestroyOnCloseProperty);
+            }
+            set
+            {
+                SetValue(DestroyOnCloseProperty, value);
+            }
+        }
+
         public GUIComponent Content
         {
             get
@@ -94,11 +113,15 @@ namespace Fitamas.UserInterface.Components
         {
             RaycastTarget = true;
             IsFocusScope = true;
+
+            OnClose = eventHandlersStore.Create<GUIWindow>(OnCloseEvent);
         }
 
-        protected override void OnChildSizeChanged(GUIComponent component)
+        protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
         {
-            if (component == Content)
+            base.OnChildPropertyChanged(component, property);
+
+            if (property == MarginProperty)
             {
                 Recalculate();
             }
@@ -109,17 +132,33 @@ namespace Fitamas.UserInterface.Components
             SetAsFirstSibling();
         }
 
+        protected override Rectangle AvailableRectangle(GUIComponent component)
+        {
+            Rectangle rectangle = base.AvailableRectangle(component);
+            if (component == Content)
+            {
+                Thickness padding = Padding;
+                rectangle.Location += new Point(padding.Left, padding.Top);
+                rectangle.Size -= new Point(padding.Right, padding.Bottom) + new Point(padding.Left, padding.Top);
+            }
+            return rectangle;
+        }
+
         public void Close()
         {
             if (IsInHierarchy)
             {
                 System.Root.CloseWindow(this);
-                Destroy();
-                OnClose();
+                if (DestroyOnClose)
+                {
+                    Destroy();
+                }
+                OnCloseWindow();
+                OnClose.Invoke(this);
             }
         }
 
-        public virtual void OnClose()
+        protected virtual void OnCloseWindow()
         {
 
         }
@@ -164,18 +203,15 @@ namespace Fitamas.UserInterface.Components
                 case GUISizeToContent.Width:
                     LocalSize = new Point(Content.LocalSize.X + padding.Left + padding.Right, LocalSize.Y);
                     Content.HorizontalAlignment = GUIHorizontalAlignment.Left;
-                    Content.LocalPosition = new Point(padding.Left, Content.LocalSize.Y);
                     break;
                 case GUISizeToContent.Height:
                     LocalSize = new Point(LocalSize.X, Content.LocalSize.Y + padding.Top + padding.Bottom);
                     Content.VerticalAlignment = GUIVerticalAlignment.Top;
-                    Content.LocalPosition = new Point(Content.LocalSize.X, padding.Top);
                     break;
                 case GUISizeToContent.WidthAndHeight:
                     LocalSize = Content.LocalSize + new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
                     Content.HorizontalAlignment = GUIHorizontalAlignment.Left;
                     Content.VerticalAlignment = GUIVerticalAlignment.Top;
-                    Content.LocalPosition = new Point(padding.Left, padding.Top);
                     break;
             }
         }

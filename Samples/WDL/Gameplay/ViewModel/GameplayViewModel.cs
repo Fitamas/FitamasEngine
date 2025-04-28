@@ -1,6 +1,5 @@
 ﻿using Fitamas;
 using Fitamas.MVVM;
-using Microsoft.Xna.Framework;
 using ObservableCollections;
 using R3;
 using WDL.DigitalLogic;
@@ -10,24 +9,24 @@ namespace WDL.Gameplay.ViewModel
     public class GameplayViewModel : IViewModel
     {
         private LogicSystem logicSystem;
-        private ReactiveProperty<LogicSimulationWindowViewModel> simulation;
+        private ReactiveProperty<LogicSimulationViewModel> simulation;
 
         public IObservableCollection<LogicComponentDescription> ComponentDescriptions => logicSystem.Manager.Components;
-        public ReadOnlyReactiveProperty<LogicSimulationWindowViewModel> Simulation => simulation;
+        public ReadOnlyReactiveProperty<LogicSimulationViewModel> Simulation => simulation;
 
         public GameplayViewModel(LogicSystem logicSystem)
         {
             this.logicSystem = logicSystem;
-            simulation = new ReactiveProperty<LogicSimulationWindowViewModel>();
+            simulation = new ReactiveProperty<LogicSimulationViewModel>();
             if (logicSystem.Simulation.Value != null)
             {
-                simulation.Value = new LogicSimulationWindowViewModel(logicSystem.Simulation.Value);
+                simulation.Value = new LogicSimulationViewModel(logicSystem.Simulation.Value);
             }
-            logicSystem.Simulation.Subscribe(s => 
-            { 
+            logicSystem.Simulation.Subscribe(s =>
+            {
                 if (s != null)
                 {
-                    simulation.Value = new LogicSimulationWindowViewModel(s);
+                    simulation.Value = new LogicSimulationViewModel(s);
                 }
                 else
                 {
@@ -36,10 +35,9 @@ namespace WDL.Gameplay.ViewModel
             });
         }
 
-        public LogicSimulationWindowViewModel CreateSimulation(LogicComponentDescription description)
+        public void CreateSimulation(LogicComponentDescription description)
         {
             logicSystem.CreateSimulation(description);
-            return Simulation.CurrentValue;
         }
 
         public void SaveProject()
@@ -47,22 +45,25 @@ namespace WDL.Gameplay.ViewModel
             logicSystem.Manager.SaveComponents();
         }
 
-        public bool IsSaveed()
+        public bool IsSavedCurrentComponent()
         {
-            LogicComponentDescription description = logicSystem.Simulation.Value.Description;
+            if (simulation.Value == null)
+            {
+                return false;
+            }
+
+            LogicComponentDescription description = simulation.Value.Description;
             return logicSystem.Manager.ContainComponent(description);
         }
 
-        public bool TrySaveComponent()
+        public bool Contain(string fullname)
         {
-            LogicComponentDescription description = logicSystem.Simulation.Value.Description;
-            if (!logicSystem.Manager.ContainComponent(description))
-            {
-                logicSystem.Manager.AddComponent(description);
-                return true;
-            }
+            return logicSystem.Manager.ContainComponent(fullname);
+        }
 
-            return false;
+        public void SaveComponent(LogicComponentDescription description)
+        {
+            logicSystem.Manager.AddComponent(description);
         }
 
         public void Remove(LogicComponentDescription description)

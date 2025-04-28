@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Fitamas.Entities;
-using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -19,30 +18,6 @@ namespace Fitamas.Graphics
         public int spriteLayer = 0;
         public bool flipHorizontally = false;
         public bool flipVertically = false;
-
-        public int RegionWidth
-        {
-            get
-            {
-                if (sprite.Texture2D != null)
-                {
-                    return GetRegion().Width;
-                }
-                return 0;
-            }
-        }
-
-        public int RegionHeight
-        {
-            get
-            {
-                if (sprite.Texture2D != null)
-                {
-                    return GetRegion().Height;
-                }
-                return 0;
-            }
-        }
 
         public SpriteEffects SpriteEffect
         {
@@ -67,7 +42,7 @@ namespace Fitamas.Graphics
         { 
             get
             {
-                return new Vector2(0.5f * RegionWidth, 0.5f * RegionHeight);
+                return new Vector2(0.5f * sprite.Width, 0.5f * sprite.Height);
             }
         }
        
@@ -87,11 +62,6 @@ namespace Fitamas.Graphics
             alpha = 1.0f;
             color = Color.White;
             isVisible = true;
-        }
-        
-        public TextureRegion2D GetRegion()
-        {
-            return sprite.GetRegion(selectRegion);
         }
 
         public Vector2[] GetAbsoluteSpriteRectangle(Transform transform)
@@ -117,7 +87,7 @@ namespace Fitamas.Graphics
 
             float pixelInUnit = sprite.PixelInUnit;
             Vector2 min = -Origin / pixelInUnit;
-            Vector2 max = min + new Vector2(RegionWidth / pixelInUnit, RegionHeight / pixelInUnit);
+            Vector2 max = min + new Vector2(sprite.Width / pixelInUnit, sprite.Height / pixelInUnit);
 
             var corners = new Vector2[4];
             corners[0] = min;

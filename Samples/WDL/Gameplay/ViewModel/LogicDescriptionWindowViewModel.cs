@@ -8,23 +8,35 @@ namespace WDL.Gameplay.ViewModel
     {
         private GameplayViewModel gameplay;
 
-        public LogicComponentDescription Description { get; }
+        private LogicComponentDescription description;
 
+        public string Name { get; set; }
+        public int ThemeId { get; set; }
         public override GUIWindowType Type => GUIWindowTypes.CreateDescriptionPopup;
 
-        public LogicDescriptionWindowViewModel(GameplayViewModel gameplay)
+        public LogicDescriptionWindowViewModel(GameplayViewModel gameplay, LogicComponentDescription description)
         {
             this.gameplay = gameplay;
-            Description = gameplay.Simulation.CurrentValue.Description;
+            this.description = description;
+            Name = description.TypeId;
+            ThemeId = description.ThemeId;
         }
 
-        public bool TrySaveComponent()
+        public bool IsSavedCurrentComponent()
         {
-            return gameplay.TrySaveComponent();
+            return gameplay.IsSavedCurrentComponent();
         }
 
-        public void SaveProject()
+        public bool Contain(string fullname)
         {
+            return gameplay.Contain(fullname);
+        }
+
+        public void SaveComponent()
+        {
+            description.TypeId = Name;
+            description.ThemeId = ThemeId;
+            gameplay.SaveComponent(description);
             gameplay.SaveProject();
         }
     }

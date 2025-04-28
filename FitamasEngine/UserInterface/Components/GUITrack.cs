@@ -117,7 +117,7 @@ namespace Fitamas.UserInterface.Components
             OnValueChanged = eventHandlersStore.Create<GUITrack, float>(OnValueChangedEvent);
         }
 
-        protected override Rectangle AvailableRectangle()
+        protected override Rectangle AvailableRectangle(GUIComponent component)
         {
             Point position = CalculateSliderPosition() + Rectangle.Location;
             Point size;

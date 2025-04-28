@@ -8,15 +8,20 @@ namespace WDL.Gameplay.ViewModel
 {
     public class LogicComponentsWindowViewModel : GUIWindowViewModel
     {
-        private GameplayViewModel gameplay;
+        private GameplayScreenViewModel gameplay;
 
         public override GUIWindowType Type => GUIWindowTypes.LogicComponents;
         public IObservableCollection<LogicComponentDescription> ComponentDescriptions => gameplay.ComponentDescriptions;
         public ReadOnlyReactiveProperty<LogicSimulationWindowViewModel> Simulation => gameplay.Simulation;
 
-        public LogicComponentsWindowViewModel(GameplayViewModel gameplay)
+        public LogicComponentsWindowViewModel(GameplayScreenViewModel gameplay)
         {
             this.gameplay = gameplay;
+        }
+
+        public bool IsSavedCurrentComponent()
+        {
+            return gameplay.IsSavedCurrentComponent();
         }
 
         public void Remove(LogicComponentDescription description)
@@ -27,6 +32,11 @@ namespace WDL.Gameplay.ViewModel
         public void CreateSimulation(LogicComponentDescription description)
         {
             gameplay.CreateSimulation(description);
+        }
+
+        public void OpenDescription(LogicComponentDescription description)
+        {
+            gameplay.OpenDescription(description);
         }
     }
 }

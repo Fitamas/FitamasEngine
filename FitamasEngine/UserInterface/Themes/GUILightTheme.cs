@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Fitamas.UserInterface.Themes
 {
@@ -44,7 +45,6 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.NodeEditorNodeHeadDefaultColor] = new Color(0.07f, 0.43f, 0.7f);
             dictionary[CommonResourceKeys.NodeEditorNodeBodyDefaultColor] = new Color(0.1f, 0.6f, 0.8f);
             dictionary[CommonResourceKeys.NodeEditorNodeSelectColor] = new Color(0.8f, 0.8f, 0.8f, 0.6f);
-            dictionary[CommonResourceKeys.NodeEditorPinConnectedDefaultColor] = Color.Gray;
             dictionary[CommonResourceKeys.NodeEditorWireDefaultColor] = Color.White;
 
             dictionary[CommonResourceKeys.TextBlockDefaultColor] = Color.Black;
@@ -60,9 +60,12 @@ namespace Fitamas.UserInterface.Themes
             dictionary[CommonResourceKeys.TrackBarThumbHoverColor] = Color.DeepSkyBlue;
             dictionary[CommonResourceKeys.TrackBarThumbPressedColor] = Color.LightSkyBlue;
 
+            dictionary[CommonResourceKeys.TreeNodeArrowColor] = Color.White;
+            dictionary[CommonResourceKeys.TreeNodeIconColor] = Color.White;
+
             dictionary[CommonResourceKeys.WindowBackgroundColor] = new Color(0.75f, 0.75f, 0.75f);
             dictionary[CommonResourceKeys.WindowHeaderColor] = Color.White;
-            dictionary[CommonResourceKeys.WindowTextColor] = Color.Black;
+            dictionary[CommonResourceKeys.WindowTextColor] = Color.White;
         }
     }
 }

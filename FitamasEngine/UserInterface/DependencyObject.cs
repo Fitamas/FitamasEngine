@@ -112,7 +112,7 @@ namespace Fitamas.UserInterface
             OnPropertyChanged(property);
         }
 
-        public virtual void OnPropertyChanged<T>(DependencyProperty<T> property) { }
+        public virtual void OnPropertyChanged(DependencyProperty property) { }
 
         public bool ContainsProperty(DependencyProperty property)
         {

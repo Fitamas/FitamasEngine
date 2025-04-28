@@ -9,6 +9,8 @@ namespace WDL.Gameplay.ViewModel
 {
     public class LogicDescriptionWindowBinder : GUIWindowBinder<LogicDescriptionWindowViewModel>
     {
+        public const string DefaultName = "NewComponent";
+
         protected override IDisposable OnBind(LogicDescriptionWindowViewModel viewModel)
         {
             SetAlignment(GUIAlignment.Center);
@@ -38,11 +40,28 @@ namespace WDL.Gameplay.ViewModel
 
             GUITextInput input = GUI.CreateTextInput(Point.Zero, 500);
             input.OneLine = true;
-            input.Text = "NewComponent";
-            viewModel.Description.TypeId = input.Text;
+            input.Text = DefaultName;
+            bool flag = viewModel.IsSavedCurrentComponent();
+            if (flag)
+            {
+                input.Text = viewModel.Name;
+            }
+            else if (viewModel.Contain(DefaultName))
+            {
+                int id = 1;
+                while (viewModel.Contain(DefaultName + id))
+                {
+                    id++;
+                }
+                input.Text += id;
+            }
+            viewModel.Name = input.Text;
             input.OnEndEdit.AddListener((i, s) =>
             {
-                viewModel.Description.TypeId = s;
+                if (!viewModel.Contain(s))
+                {
+                    viewModel.Name = s;
+                }
             });
             stack1.AddChild(input);
 
@@ -53,10 +72,10 @@ namespace WDL.Gameplay.ViewModel
             GUIComboBox comboBox = GUI.CreateComboBox(Point.Zero);
             comboBox.LocalSize += new Point(200, 0);
             comboBox.Items.AddRange(["Red", "Green", "Blue"]);
-            comboBox.SelectedItem = 0;
+            comboBox.SelectedItem = viewModel.ThemeId;
             comboBox.OnSelectItem.AddListener((b, a) =>
             {
-                viewModel.Description.ThemeId = a.Index;
+                viewModel.ThemeId = a.Index;
             });
             stack2.AddChild(comboBox);
 
@@ -72,9 +91,9 @@ namespace WDL.Gameplay.ViewModel
             GUIButton button0 = GUI.CreateButton(Point.Zero, "Save");
             button0.OnClicked.AddListener(b =>
             {
-                if (viewModel.TrySaveComponent())
+                if (!viewModel.Contain(viewModel.Name))
                 {
-                    viewModel.SaveProject();
+                    viewModel.SaveComponent();
                     Close();
                 }
                 else

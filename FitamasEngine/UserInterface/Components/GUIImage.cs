@@ -1,5 +1,4 @@
 ﻿using Fitamas.Graphics;
-using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using System;
@@ -188,13 +187,12 @@ namespace Fitamas.UserInterface.Components
 
             if (Sprite != null)
             {
-                TextureRegion2D textureRegion = Sprite.GetRegion(selectRegion);
-                Rectangle rectangle = GetImageRactengle(textureRegion.Bounds, Rectangle);
+                Rectangle rectangle = GetImageRactengle(Sprite.Bounds, Rectangle);
 
                 switch (ImageType)
                 {
                     case GUIImageType.Simple:
-                        Render.Draw(textureRegion, Color, rectangle, ImageEffect);
+                        Render.Draw(Sprite, Color, rectangle, ImageEffect);
                         break;
                     case GUIImageType.Sliced: //TODO
                         break;
@@ -202,7 +200,7 @@ namespace Fitamas.UserInterface.Components
                         break;
                     case GUIImageType.Filled:
                         Rectangle mask = GetFilledMask(rectangle);
-                        Render.Draw(textureRegion, Color, rectangle, ImageEffect);
+                        Render.Draw(Sprite, Color, rectangle, ImageEffect);
                         break;
                 }
             }
@@ -280,7 +278,7 @@ namespace Fitamas.UserInterface.Components
 
         public void SetNativeSize()
         {
-            LocalSize = Sprite.GetRegion(selectRegion).Bounds.Size;
+            LocalSize = Sprite.Bounds.Size;
         }
     }
 }

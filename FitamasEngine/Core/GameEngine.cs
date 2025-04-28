@@ -51,21 +51,25 @@ namespace Fitamas.Core
             GraphicsDeviceManager.PreferredBackBufferWidth = 1800;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1080;
             GraphicsDeviceManager.ApplyChanges();
-
             Window.AllowUserResizing = true;
+
+            Debug.Log("Load game content");
+
+            base.Initialize();
 
             Debug.Log("Initialize systems");
 
             world = CreateWorldBuilder().Build();
 
-            base.Initialize();
+            Debug.Log("Load systems content");
+
+            world.LoadContent(Content);
         }
 
         protected virtual WorldBuilder CreateWorldBuilder()
         {
             return new WorldBuilder(this)
                 //Load content
-                .AddSystem(new ScriptingSystem())
                 .AddSystem(new SceneSystem())
 
                 //Input
@@ -82,8 +86,10 @@ namespace Fitamas.Core
                 //Render
                 .AddSystem(new CameraSystem(this))
                 .AddSystem(new RenderSystem(GraphicsDevice))
-                .AddSystem(CreateGUISystem())
-                .AddSystem(new DebugRenderSystem(GraphicsDevice));
+                .AddSystem(new DebugRenderSystem(GraphicsDevice))
+                
+                //User interface
+                .AddSystem(CreateGUISystem());
         }
 
         protected virtual GUISystem CreateGUISystem()
@@ -101,17 +107,10 @@ namespace Fitamas.Core
             return system;
         }
 
-        protected override void LoadContent()
-        {
-            Debug.Log("Load content");
-
-            world.LoadContent(Content);
-
-            base.LoadContent();
-        }
-
         protected override void Update(GameTime gameTime)
         {
+            base.Update(gameTime);
+
             accamulatorTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
             while (accamulatorTime > FixedTimeStep)
             {
@@ -126,24 +125,22 @@ namespace Fitamas.Core
             }
 
             world.Update(gameTime);
-
-            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            base.Draw(gameTime);
+
             Camera.Current = Camera.Main;
 
             world.Draw(gameTime);
-
-            base.Draw(gameTime);
         }
 
         protected override void Dispose(bool disposing)
         {
-            world.Dispose();
-
             base.Dispose(disposing);
+
+            world.Dispose();
         }
     }
 }

@@ -9,6 +9,7 @@ using WDL.DigitalLogic;
 using ObservableCollections;
 using R3;
 using Fitamas;
+using Fitamas.UserInterface.Themes;
 
 namespace WDL.Gameplay.ViewModel
 {
@@ -49,8 +50,8 @@ namespace WDL.Gameplay.ViewModel
             GUIPopup popup = new GUIPopup();
             contextMenu = GUI.CreateContextMenu();
             contextMenu.AddItem("Remove description");
-            contextMenu.AddItem("Rename");
             contextMenu.AddItem("Edit");
+            contextMenu.AddItem("Properties");
             contextMenu.OnSelectItem.AddListener((m, a) =>
             {
                 if (m.Target is GUITreeNode node && nodeToDescription.TryGetValue(node, out LogicComponentDescription description))
@@ -61,11 +62,27 @@ namespace WDL.Gameplay.ViewModel
                             viewModel.Remove(description);
                             break;
                         case 1:
-
-                            //TODO RENAME
+                            if (!viewModel.IsSavedCurrentComponent() && viewModel.Simulation.CurrentValue != null)
+                            {
+                                GUIMessageBox.Show("Do you want save this logic component?", string.Empty, GUIMessageBoxType.YesNo, res =>
+                                {
+                                    if (res == GUIMessageBoxResult.Yes)
+                                    {
+                                        viewModel.OpenDescription(viewModel.Simulation.CurrentValue.Description);
+                                    }
+                                    else if (res == GUIMessageBoxResult.No)
+                                    {
+                                        viewModel.CreateSimulation(description);
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                viewModel.CreateSimulation(description);
+                            }
                             break;
                         case 2:
-                            viewModel.CreateSimulation(description);
+                            viewModel.OpenDescription(description);
                             break;
                     }
                 }
@@ -96,6 +113,10 @@ namespace WDL.Gameplay.ViewModel
         {
             GUITreeNode treeNode = treeView.CreateTreeNode(description.TypeId);
             GUIContextMenuManager.SetContextMenu(treeNode, contextMenu);
+            treeNode.ControlTemplate[GUITreeStyle.Icon].SetResourceReference(
+                GUIImage.SpriteProperty, ResourceDictionary.DefaultResources, GUIStyleHelpers.CircuitTexture);
+            treeNode.ControlTemplate[GUITreeStyle.Icon].SetResourceReference(
+                GUIImage.ColorProperty, ResourceDictionary.DefaultResources, CommonResourceKeys.NodeEditorNodeBodyDefaultColor + description.ThemeId);
             descriptionToNode[description] = treeNode;
             nodeToDescription[treeNode] = description;
         }
@@ -114,7 +135,6 @@ namespace WDL.Gameplay.ViewModel
                 {
                     node.TreeView.RemoveItem(node);
                 }
-                //((GUIItemsControl)node.Parent).RemoveItem(node);
             }
         }
     }

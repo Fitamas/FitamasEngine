@@ -49,12 +49,6 @@ namespace Fitamas.UserInterface.Themes
 
             style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.NodeEditorPinDefaultColor)));
 
-            TriggerBase trigger;
-
-            trigger = new Trigger(GUIPin.IsConnectedProperty, true);
-            trigger.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.NodeEditorPinConnectedDefaultColor)));
-            style.Trigges.Add(trigger);
-
             return style;
         }
 

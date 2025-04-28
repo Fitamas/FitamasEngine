@@ -263,7 +263,7 @@ namespace Fitamas.UserInterface.Components
 
                     if (parent != null)
                     {
-                        Rectangle parentRectangle = parent.AvailableRectangle();
+                        Rectangle parentRectangle = parent.AvailableRectangle(this);
                         Point parentPosition = parentRectangle.Location;
                         Point parentSize = parentRectangle.Size;    
                         Point position = new Point();
@@ -379,7 +379,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        protected virtual Rectangle AvailableRectangle()
+        protected virtual Rectangle AvailableRectangle(GUIComponent component)
         {
             return Rectangle;
         }
@@ -461,7 +461,12 @@ namespace Fitamas.UserInterface.Components
 
         public virtual void RaycastAll(Point point, List<GUIComponent> result)
         {
-            if (Enable && RaycastTarget && Contains(point))
+            if (!Enable)
+            {
+                return;
+            }
+
+            if (RaycastTarget && Contains(point))
             {
                 result.Add(this);
             }
@@ -546,17 +551,33 @@ namespace Fitamas.UserInterface.Components
                     HorizontalAlignment = GUIHorizontalAlignment.Left;
                     VerticalAlignment = GUIVerticalAlignment.Top;
                     break;
+                case GUIAlignment.LeftCenter:
+                    HorizontalAlignment = GUIHorizontalAlignment.Left;
+                    VerticalAlignment = GUIVerticalAlignment.Center;
+                    break;
                 case GUIAlignment.LeftBottom:
                     HorizontalAlignment = GUIHorizontalAlignment.Left;
                     VerticalAlignment = GUIVerticalAlignment.Bottom;
+                    break;
+                case GUIAlignment.CenterBottom:
+                    HorizontalAlignment = GUIHorizontalAlignment.Center;
+                    VerticalAlignment = GUIVerticalAlignment.Bottom;
+                    break;
+                case GUIAlignment.RightBottom:
+                    HorizontalAlignment = GUIHorizontalAlignment.Right;
+                    VerticalAlignment = GUIVerticalAlignment.Bottom;
+                    break;
+                case GUIAlignment.RightCenter:
+                    HorizontalAlignment = GUIHorizontalAlignment.Right;
+                    VerticalAlignment = GUIVerticalAlignment.Center;
                     break;
                 case GUIAlignment.RightTop:
                     HorizontalAlignment = GUIHorizontalAlignment.Right;
                     VerticalAlignment = GUIVerticalAlignment.Top;
                     break;
-                case GUIAlignment.RightBottom:
-                    HorizontalAlignment = GUIHorizontalAlignment.Right;
-                    VerticalAlignment = GUIVerticalAlignment.Bottom;
+                case GUIAlignment.CenterTop:
+                    HorizontalAlignment = GUIHorizontalAlignment.Center;
+                    VerticalAlignment = GUIVerticalAlignment.Top;
                     break;
                 case GUIAlignment.Stretch:
                     HorizontalAlignment = GUIHorizontalAlignment.Stretch;
@@ -624,17 +645,13 @@ namespace Fitamas.UserInterface.Components
 
         protected virtual void OnInit() { }
 
+        protected virtual void OnEnable() { }
+
+        protected virtual void OnDisable() { }
+
         protected virtual void OnAddChild(GUIComponent component) { }
 
         protected virtual void OnRemoveChild(GUIComponent component) { }
-
-        protected virtual void OnPositionChanged() { }
-
-        protected virtual void OnSizeChanged() { }
-
-        protected virtual void OnChildPositionChanged(GUIComponent component) { }
-
-        protected virtual void OnChildSizeChanged(GUIComponent component) { }
 
         protected virtual void OnFocus() { }
 
@@ -646,13 +663,20 @@ namespace Fitamas.UserInterface.Components
 
         protected virtual void OnDestroy() { }
 
-        public override void OnPropertyChanged<T>(DependencyProperty<T> property)
+        public override void OnPropertyChanged(DependencyProperty property)
         {
             if (property.Id != StyleProperty.Id)
             {
                 GUIStyle style = GetValue(StyleProperty);
                 style?.ProcessTriggers(this, property);
             }
+
+            parent?.OnChildPropertyChanged(this, property);
+        }
+
+        protected virtual void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
+        {
+
         }
 
         private static void MarginChangedCallback(DependencyObject dependencyObject, DependencyProperty<Thickness> property, Thickness oldValue, Thickness newValue)
@@ -660,18 +684,6 @@ namespace Fitamas.UserInterface.Components
             if (dependencyObject is GUIComponent component)
             {
                 component.SetDirty();
-
-                if (oldValue.Left != newValue.Left || oldValue.Top != newValue.Top)
-                {
-                    component.OnPositionChanged();
-                    component.parent?.OnChildPositionChanged(component);
-                }
-
-                if (oldValue.Right != newValue.Right || oldValue.Bottom != newValue.Bottom)
-                {
-                    component.OnSizeChanged();
-                    component.parent?.OnChildSizeChanged(component);
-                }
             }
         }
 
@@ -758,9 +770,15 @@ namespace Fitamas.UserInterface.Components
         {
             if (dependencyObject is GUIComponent component)
             {
-                foreach (var child in component.childrensComponent)
+                component.SetDirty();
+
+                if (newValue)
                 {
-                    child.Enable = newValue;
+                    component.OnEnable();
+                }
+                else
+                {
+                    component.OnDisable();
                 }
             }
         }

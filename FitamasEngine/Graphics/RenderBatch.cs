@@ -1,5 +1,4 @@
 ﻿using Fitamas.Entities;
-using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -45,7 +44,7 @@ namespace Fitamas.Graphics
 
         public static void Render(Transform transform, SpriteRender spriteRender)
         {
-            if (spriteRender.sprite == null || spriteRender.sprite.Texture2D == null || !spriteRender.isVisible)
+            if (spriteRender.sprite == null || spriteRender.sprite.Texture == null || !spriteRender.isVisible)
             {
                 return;
             }
@@ -56,7 +55,7 @@ namespace Fitamas.Graphics
             float layer = (float)spriteRender.spriteLayer / maxSpriteLayers;
 
             spriteBatch.Draw(
-                spriteRender.GetRegion(), position, spriteRender.color, angle,
+                spriteRender.sprite, position, spriteRender.color, angle,
                 spriteRender.Origin, scale, spriteRender.SpriteEffect, layer);
         }
 

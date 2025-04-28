@@ -31,14 +31,18 @@ namespace Fitamas.UserInterface
 
             primitiveBatch.Begin(ref projection, ref view);
 
-            RenderComponent(component);
+            RenderComponent(component, EnableColor);
 
             primitiveBatch.End();
         }
 
-        private void RenderComponent(GUIComponent component)
+        private void RenderComponent(GUIComponent component, Color color)
         {
-            Color color = component.Enable ? EnableColor : DisableColor;
+            if (!component.Enable)
+            {
+                color = DisableColor;
+            }
+
             Rectangle rectangle = component.Rectangle;
             Vector2 pivot = component.Pivot;
             Vector2 position = new Vector2(rectangle.X, rectangle.Y);
@@ -53,7 +57,7 @@ namespace Fitamas.UserInterface
 
             foreach (var child in component.ChildrensComponent)
             {
-                RenderComponent(child);
+                RenderComponent(child, color);
             }
         }
     }

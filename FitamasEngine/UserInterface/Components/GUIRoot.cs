@@ -8,6 +8,7 @@ namespace Fitamas.UserInterface.Components
     {
         private GUIWindow screen;
         private List<GUIWindow> windows;
+        private GUIWindow messageBox;
 
         public GUIWindow PopupWindow { get; set; }
 
@@ -43,12 +44,22 @@ namespace Fitamas.UserInterface.Components
         public GUIRoot()
         {
             IsFocusScope = true;
-
             windows = new List<GUIWindow>();
+        }
+
+        protected override void OnInit()
+        {
+            messageBox = GUIMessageBox.Instance.Init(this);
         }
 
         public override void RaycastAll(Point point, List<GUIComponent> result)
         {
+            if (messageBox != null && messageBox.Enable)
+            {
+                messageBox.RaycastAll(point, result);
+                return;
+            }
+
             bool flag = false;
             foreach (GUIWindow window in windows)
             {
@@ -94,6 +105,11 @@ namespace Fitamas.UserInterface.Components
             if (PopupWindow != null)
             {
                 PopupWindow.Draw(gameTime, context);
+            }
+
+            if (messageBox != null)
+            {
+                messageBox.Draw(gameTime, context);
             }
         }
 

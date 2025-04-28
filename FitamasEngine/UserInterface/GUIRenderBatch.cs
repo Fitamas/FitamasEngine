@@ -1,5 +1,4 @@
 ﻿using Fitamas.Graphics;
-using Fitamas.Graphics.TextureAtlases;
 using Fitamas.Math2D;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -80,13 +79,13 @@ namespace Fitamas.UserInterface
             spriteBatch.DrawString(font, text, position.ToVector2(), color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 1);
         }
 
-        public void Draw(TextureRegion2D textureRegion, Color color, Rectangle rectangle, GUIImageEffect effect)
+        public void Draw(Sprite sprite, Color color, Rectangle rectangle, GUIImageEffect effect)
         {
             Vector2 position = rectangle.Location.ToVector2();
-            Vector2 sourceSize = textureRegion.Bounds.Size.ToVector2();
+            Vector2 sourceSize = sprite.Bounds.Size.ToVector2();
             Vector2 scale = rectangle.Size.ToVector2() / sourceSize;
 
-            spriteBatch.Draw(textureRegion, position, color, 0, Vector2.Zero, scale, (SpriteEffects)effect, 1);
+            spriteBatch.Draw(sprite, position, color, 0, Vector2.Zero, scale, (SpriteEffects)effect, 1);
         }
 
         public virtual Point GetViewportSize()

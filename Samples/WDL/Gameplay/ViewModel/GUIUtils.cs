@@ -5,6 +5,8 @@ using Fitamas.UserInterface;
 using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using Fitamas.Graphics;
+using nkast.Aether.Physics2D.Collision;
 
 namespace WDL.Gameplay.ViewModel
 {
@@ -39,7 +41,19 @@ namespace WDL.Gameplay.ViewModel
 
         public static void CreateStyles(ResourceDictionary dictionary)
         {
+            dictionary[GUIStyleHelpers.PumpkinTexture] = Sprite.Create("Pumpkin");
+            dictionary[GUIStyleHelpers.PinOffTexture] = Sprite.Create("PinOff");
+            dictionary[GUIStyleHelpers.PinOnTexture] = Sprite.Create("PinOn");
+            dictionary[GUIStyleHelpers.OpenTreeNodeTexture] = Sprite.Create("OpenTreeNode");
+            dictionary[GUIStyleHelpers.CloseTreeNodeTexture] = Sprite.Create("CloseTreeNode");
+            dictionary[GUIStyleHelpers.EnableButtonTexture] = Sprite.Create("EnableButton");
+            dictionary[GUIStyleHelpers.DisableButtonTexture] = Sprite.Create("DisableButton");
+            dictionary[GUIStyleHelpers.FolderTexture] = Sprite.Create("Folder");
+            dictionary[GUIStyleHelpers.CircuitTexture] = Sprite.Create("Circuit");
+
             dictionary[GUIStyleHelpers.CheckBoxStyle1] = GUIStyleHelpers.CreateCheckBox(dictionary);
+            dictionary[CommonResourceKeys.NodeEditorPinStyle] = GUIStyleHelpers.CreatePin(dictionary);
+            dictionary[CommonResourceKeys.TreeNodeStyle] = GUIStyleHelpers.CreateTreeNode(dictionary);
 
             CreateWireStyle(dictionary, 0);
             CreateWireStyle(dictionary, 1);

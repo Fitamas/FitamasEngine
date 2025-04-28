@@ -1,4 +1,5 @@
 ﻿using System;
+using WDL.DigitalLogic.Components;
 
 namespace WDL.DigitalLogic
 {
@@ -9,6 +10,7 @@ namespace WDL.DigitalLogic
         {
             TypeId = "And",
             Namespace = "Default",
+            IsBase = true,
             Connectors =
             {
                 { 0, "InA" },
@@ -21,6 +23,7 @@ namespace WDL.DigitalLogic
         {
             TypeId = "Not",
             Namespace = "Default",
+            IsBase = true,
             Connectors =
             {
                 { 0, "In" },
@@ -32,6 +35,7 @@ namespace WDL.DigitalLogic
         {
             TypeId = "Input",
             Namespace = "Default",
+            IsBase = true,
             Connectors =
             {
                 { 0, "Out" },
@@ -42,6 +46,7 @@ namespace WDL.DigitalLogic
         {
             TypeId = "Output",
             Namespace = "Default",
+            IsBase = true,
             Connectors =
             {
                 { 0, "In" },

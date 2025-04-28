@@ -4,6 +4,7 @@ using R3;
 using System;
 using System.Collections.Generic;
 using WDL.DigitalLogic;
+using WDL.DigitalLogic.Components;
 
 namespace WDL.Gameplay.ViewModel
 {

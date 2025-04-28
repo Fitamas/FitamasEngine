@@ -40,7 +40,6 @@ namespace Fitamas.UserInterface
             root = new GUIRoot();
             root.SetAlignment(GUIAlignment.Stretch);
             canvas.AddChild(root);
-            canvas.Init(this);
 
             Mouse = new GUIMouse();
             Keyboard = new GUIKeyboard();
@@ -48,7 +47,7 @@ namespace Fitamas.UserInterface
 
         public void Initialize(GameWorld world)
         {
-
+            canvas.Init(this);
         }
 
         public void LoadContent(ContentManager content)

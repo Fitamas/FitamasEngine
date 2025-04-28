@@ -87,9 +87,14 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             CalculateSize();
         }
 
-        protected override void OnChildSizeChanged(GUIComponent component)
+        protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
         {
-            CalculateSize();
+            base.OnChildPropertyChanged(component, property);
+
+            if (property == MarginProperty)
+            {
+                CalculateSize();
+            }
         }
 
         private void RecalculateContent()

@@ -9,13 +9,6 @@ namespace Fitamas.Samples.HelloWorld
 {
     public class HelloWorldGame : GameEngine
     {
-        protected override void Initialize()
-        {
-            base.Initialize();
-
-            Debug.Log("Hello World");
-        }
-
         protected override void LoadContent()
         {
             base.LoadContent();
@@ -24,13 +17,18 @@ namespace Fitamas.Samples.HelloWorld
 
             FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
             ResourceDictionary.DefaultResources[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
+        }
+
+        protected override void Initialize()
+        {
+            base.Initialize();
 
             GUISystem system = Container.Resolve<GUISystem>(ApplicationKey.GUISystem);
 
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
-            button.OnClicked.AddListener(b => 
-            { 
+            button.OnClicked.AddListener(b =>
+            {
                 Debug.Log(b);
             });
             system.AddComponent(button);
@@ -141,6 +139,10 @@ namespace Fitamas.Samples.HelloWorld
                 if (a.Index == 0)
                 {
                     CreateWindow().LocalPosition = InputSystem.mouse.MousePosition;
+                }
+                else if (a.Index == 1)
+                {
+                    GUIMessageBox.Show("Hi world!", string.Empty, GUIMessageBoxType.OK, null);
                 }
             });
             popup.Window = contextMenu;

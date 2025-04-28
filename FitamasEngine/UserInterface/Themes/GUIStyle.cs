@@ -44,7 +44,7 @@ namespace Fitamas.UserInterface.Themes
             GUIStyleHelpers.UpdateTriggerEvents(component, TriggerEvents);
         }
 
-        public void ProcessTriggers<T>(GUIComponent component, DependencyProperty<T> property)
+        public void ProcessTriggers(GUIComponent component, DependencyProperty property)
         {
             GUIStyleHelpers.ProcessTriggers(component, property, Trigges);
         }

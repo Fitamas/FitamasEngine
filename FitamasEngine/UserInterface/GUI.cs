@@ -195,8 +195,6 @@ namespace Fitamas.UserInterface
             context.AddChild(image);
 
             GUIStack group = new GUIStack();
-            group.LocalPosition = new Point(padding.X, padding.Y);
-            group.Pivot = new Vector2(0, 0);
             group.Orientation = GUIGroupOrientation.Vertical;
             group.ControlChildSizeWidth = true;
             group.ControlSizeWidth = true;
@@ -236,8 +234,8 @@ namespace Fitamas.UserInterface
             textBlock.Text = text;
             textBlock.TextHorisontalAlignment = GUITextHorisontalAlignment.Left;
             item.AddChild(textBlock);
-
-            item.LocalSize = padding + padding + textBlock.Font.MeasureString(text).ToPoint();
+            
+            item.LocalSize = padding + padding + FontManager.DefaultFont.MeasureString(text).ToPoint();
 
             item.Style = style;
             return item;
@@ -432,16 +430,15 @@ namespace Fitamas.UserInterface
             int height = FontManager.GetHeight() + padding.Y * 2;
 
             GUITreeNode node = new GUITreeNode();
-            node.Margin = new Thickness(0, 0, 0, height);
-            node.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
+            //node.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
             node.Pivot = new Vector2(0, 0);
             node.ContainerPadding = new Thickness(padding.X + FontManager.GetHeight(), 0, 0, 0);
             node.ControlTemplate = new GUIControlTemplate();
 
             GUIStack stack = new GUIStack();
             stack.Name = GUITreeStyle.Container;
-            stack.LocalPosition = new Point(0, height);
             stack.Pivot = new Vector2(0, 0);
+            stack.LocalPosition = new Point(0, height);
             stack.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
             stack.Orientation = GUIGroupOrientation.Vertical;
             stack.ControlChildSizeWidth = true;

@@ -96,8 +96,9 @@ namespace Fitamas.UserInterface.Components
             return size;
         }
 
-        protected override void CalculateComponents(GUIComponent[] components, Rectangle rectangle)
+        protected override void CalculateComponents(GUIComponent[] components)
         {
+            Rectangle rectangle = AvailableRectangle(this);
             Point cellSize = CellSize;
             Point spacing = Spacing;
             GUIGridGroupStartCorner startCorner = StartCorner;

@@ -23,6 +23,8 @@ namespace Fitamas.UserInterface.Components
         public GUITreeView()
         {
             OnSelectTreeNode = eventHandlersStore.Create<SelectNodeArgs>(OnSelectTreeNodeEvent);
+
+            RaycastTarget = true;
         }
 
         protected override bool IsItemItsOwnContainerOverride(GUIComponent component)

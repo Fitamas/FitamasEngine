@@ -11,13 +11,76 @@ namespace WDL.Gameplay.ViewModel
     {
         public static readonly string CheckBoxStyle1 = nameof(CheckBoxStyle1);
 
+        public static readonly string PumpkinTexture = nameof(PumpkinTexture);
+
+        public static readonly string PinOffTexture = nameof(PinOffTexture);
+
+        public static readonly string PinOnTexture = nameof(PinOnTexture);
+
+        public static readonly string OpenTreeNodeTexture = nameof(OpenTreeNodeTexture);
+
+        public static readonly string CloseTreeNodeTexture = nameof(CloseTreeNodeTexture);
+
+        public static readonly string EnableButtonTexture = nameof(EnableButtonTexture);
+
+        public static readonly string DisableButtonTexture = nameof(DisableButtonTexture);
+
+        public static readonly string FolderTexture = nameof(FolderTexture);
+
+        public static readonly string CircuitTexture = nameof(CircuitTexture);
+
+        public static GUIStyle CreateTreeNode(ResourceDictionary dictionary)
+        {
+            GUIStyle style = new GUIStyle(dictionary);
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.ItemDefaultColor)));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITextBlock.ColorProperty, dictionary, CommonResourceKeys.ItemTextDefaultColor)));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITextBlock.FontProperty, dictionary, CommonResourceKeys.DefaultFont)));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.TreeNodeArrowColor), GUITreeStyle.ArrowIcon));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, CloseTreeNodeTexture), GUITreeStyle.ArrowIcon));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.TreeNodeIconColor), GUITreeStyle.Icon));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, FolderTexture), GUITreeStyle.Icon));
+
+            TriggerBase trigger;
+
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+                CommonResourceKeys.ItemDisableColor, CommonResourceKeys.ItemTextDisableColor);
+            style.Trigges.Add(trigger);
+
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
+                CommonResourceKeys.ItemPressedColor, CommonResourceKeys.ItemTextPressedColor);
+            style.Trigges.Add(trigger);
+
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+                new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
+                new TriggerCondition(GUIComponent.InteractebleProperty, true)},
+                CommonResourceKeys.ItemHoverColor, CommonResourceKeys.ItemTextHoverColor);
+            style.Trigges.Add(trigger);
+
+            trigger = new Trigger(GUITreeNode.IsOpenProperty, true);
+            trigger.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, OpenTreeNodeTexture), GUITreeStyle.ArrowIcon));
+            style.Trigges.Add(trigger);
+
+            trigger = new Trigger(GUITreeNode.IsLeafProperty, false);
+            trigger.Setters.Add(new Setter(new ValueExpression<bool>(GUIComponent.EnableProperty, false, true), GUITreeStyle.ArrowIcon));
+            style.Trigges.Add(trigger);
+
+            return style;
+        }
+
         public static GUIStyle CreateCheckBox(ResourceDictionary dictionary)
         {
             GUIStyle style = new GUIStyle(dictionary);
 
-            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.CheckBoxDefaultColor)));
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, DisableButtonTexture)));
 
-            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.CheckBoxMarkColor), GUICheckBoxStyle.CheckMark));
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, EnableButtonTexture), GUICheckBoxStyle.CheckMark));
 
             TriggerBase trigger;
 
@@ -59,6 +122,8 @@ namespace WDL.Gameplay.ViewModel
         {
             GUIStyle style = new GUIStyle(dictionary);
 
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITextBlock.ColorProperty, dictionary, CommonResourceKeys.NodeEditorTextColor)));
+
             style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.NodeEditorNodeHeadDefaultColor + index), GUINodeEditorStyle.NodeHead));
 
             style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.NodeEditorNodeBodyDefaultColor + index), GUINodeEditorStyle.NodeBody));
@@ -74,5 +139,19 @@ namespace WDL.Gameplay.ViewModel
             return style;
         }
 
+        public static GUIStyle CreatePin(ResourceDictionary dictionary)
+        {
+            GUIStyle style = new GUIStyle(dictionary);
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, PinOffTexture)));
+
+            TriggerBase trigger;
+
+            trigger = new Trigger(GUIPin.IsConnectedProperty, true);
+            trigger.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.SpriteProperty, dictionary, PinOnTexture)));
+            style.Trigges.Add(trigger);
+
+            return style;
+        }
     }
 }

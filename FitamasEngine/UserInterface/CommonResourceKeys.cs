@@ -135,6 +135,8 @@ namespace Fitamas.UserInterface
 
         public static readonly string NodeEditorStyle = nameof(NodeEditorStyle);
 
+        public static readonly string NodeEditorTextColor = nameof(NodeEditorTextColor);
+
         public static readonly string NodeEditorSelectColor = nameof(NodeEditorSelectColor);
 
         public static readonly string NodeEditorNodeStyle = nameof(NodeEditorNodeStyle);
@@ -148,8 +150,6 @@ namespace Fitamas.UserInterface
         public static readonly string NodeEditorPinStyle = nameof(NodeEditorPinStyle);
 
         public static readonly string NodeEditorPinDefaultColor = nameof(NodeEditorPinDefaultColor);
-
-        public static readonly string NodeEditorPinConnectedDefaultColor = nameof(NodeEditorPinConnectedDefaultColor);
 
         public static readonly string NodeEditorWireStyle = nameof(NodeEditorWireStyle);
 
@@ -192,6 +192,10 @@ namespace Fitamas.UserInterface
         public static readonly string TreeViewStyle = nameof(TreeViewStyle);
 
         public static readonly string TreeNodeStyle = nameof(TreeNodeStyle);
+
+        public static readonly string TreeNodeArrowColor = nameof(TreeNodeArrowColor);
+
+        public static readonly string TreeNodeIconColor = nameof(TreeNodeIconColor);
 
         //public static readonly string SliderTrackBackgroundBrushKey = "SliderTrackBackgroundBrush";
 

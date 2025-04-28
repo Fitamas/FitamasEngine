@@ -1,6 +1,8 @@
 ﻿using R3;
 using Fitamas;
 using ObservableCollections;
+using SharpFont;
+using WDL.DigitalLogic.Components;
 
 namespace WDL.DigitalLogic
 {
@@ -55,8 +57,12 @@ namespace WDL.DigitalLogic
         private void AddComponent(LogicComponentData data)
         {
             LogicComponentDescription description = manager.GetComponent(data.TypeId);
-            LogicComponent component = description.CreateComponent(manager, data);
-            components.Add(component);
+
+            if (description != null)
+            {
+                LogicComponent component = description.CreateComponent(manager, data);
+                components.Add(component);
+            }
         }
 
         private void AddConnection(LogicConnectionData connection)
@@ -64,10 +70,22 @@ namespace WDL.DigitalLogic
             LogicComponent outputComponent = GetComponent(connection.OutputComponentId);
             LogicComponent inputComponent = GetComponent(connection.InputComponentId);
 
+            if (outputComponent == null || inputComponent == null)
+            {
+                return;
+            }
+
             LogicConnectorOutput outputConnector = outputComponent.GetOutputFromId(connection.OutputId);
             LogicConnectorInput inputConnector = inputComponent.GetInputFromId(connection.InputId);
 
+            if (outputConnector == null || inputConnector == null)
+            {
+                return;
+            }
+
             LogicConnection logicConnection = new LogicConnection(connection, inputConnector, outputConnector);
+            outputConnector.Connect(logicConnection);
+            inputConnector.Connect(logicConnection);
             connections.Add(logicConnection);
         }
 

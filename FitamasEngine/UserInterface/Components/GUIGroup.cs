@@ -16,6 +16,8 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<GUIGroupOrientation> OrientationProperty = new DependencyProperty<GUIGroupOrientation>(GUIGroupOrientation.Horizontal);
 
+        public static readonly DependencyProperty<GUIAlignment> ChildAlignmentProperty = new DependencyProperty<GUIAlignment>(GUIAlignment.LeftTop);
+
         public static readonly DependencyProperty<bool> ControlSizeWidthProperty = new DependencyProperty<bool>(false);
 
         public static readonly DependencyProperty<bool> ControlSizeHeightProperty = new DependencyProperty<bool>(false);
@@ -41,6 +43,18 @@ namespace Fitamas.UserInterface.Components
             set
             {
                 SetValue(OrientationProperty, value);
+            }
+        }
+
+        public GUIAlignment ChildAlignment
+        {
+            get
+            {
+                return GetValue(ChildAlignmentProperty);
+            }
+            set
+            {
+                SetValue(ChildAlignmentProperty, value);
             }
         }
 
@@ -78,23 +92,41 @@ namespace Fitamas.UserInterface.Components
             CalculateComponents();
         }
 
-        protected override void OnSizeChanged()
+        protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
         {
-            CalculateComponents();
+            base.OnChildPropertyChanged(component, property);
+
+            if (property == EnableProperty || property == MarginProperty)
+            {
+                CalculateComponents();
+            }
         }
 
-        protected override void OnChildSizeChanged(GUIComponent component)
+        public override void OnPropertyChanged(DependencyProperty property)
         {
-            CalculateComponents();
+            base.OnPropertyChanged(property);
+
+            if (property == MarginProperty)
+            {
+                CalculateComponents();
+            }
+        }
+
+        protected override Rectangle AvailableRectangle(GUIComponent component)
+        {
+            Rectangle rectangle = base.AvailableRectangle(component);
+            Thickness padding = Padding;
+            rectangle.Location += new Point(padding.Left, padding.Top);
+            rectangle.Size -= new Point(padding.Right, padding.Bottom) + new Point(padding.Left, padding.Top);
+            return rectangle;
         }
 
         private void CalculateComponents()
         {
-            GUIComponent[] components = ChildrensComponent.ToArray();
+            GUIComponent[] components = ChildrensComponent.Where(e => e.Enable).ToArray();
             foreach (var component in components)
             {
-                component.HorizontalAlignment = GUIHorizontalAlignment.Left;
-                component.VerticalAlignment = GUIVerticalAlignment.Top;
+                component.SetAlignment(ChildAlignment);
             }
 
             if (ControlSizeWidth || ControlSizeHeight)
@@ -106,15 +138,11 @@ namespace Fitamas.UserInterface.Components
                 LocalSize = size;
             }
 
-            Rectangle rectangle = Rectangle;
-            Thickness padding = Padding;
-            rectangle.Location += new Point(padding.Left, padding.Top);
-            rectangle.Size -= new Point(padding.Right, padding.Bottom) + new Point(padding.Left, padding.Top);
-            CalculateComponents(components, rectangle);
+            CalculateComponents(components);
         }
 
         protected abstract Point CalculateSize(GUIComponent[] components, Point size);
 
-        protected abstract void CalculateComponents(GUIComponent[] components, Rectangle rectangle);
+        protected abstract void CalculateComponents(GUIComponent[] components);
     }
 }

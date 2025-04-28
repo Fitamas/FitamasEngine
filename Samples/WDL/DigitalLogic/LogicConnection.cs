@@ -28,6 +28,10 @@ namespace WDL.DigitalLogic
             });
             Signal = new ReactiveProperty<LogicSignal>();
             Points = new ObservableList<Point>();
+            if (Data.Points != null)
+            {
+                Points.AddRange(Data.Points);
+            }
             Points.ObserveChanged().Subscribe(e =>
             {
                 Data.Points = Points.ToList();

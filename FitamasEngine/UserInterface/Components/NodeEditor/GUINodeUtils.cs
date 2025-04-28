@@ -1,4 +1,5 @@
-﻿using Fitamas.Input;
+﻿using Assimp;
+using Fitamas.Input;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System;
@@ -44,6 +45,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public static GUINode CreateNode(GUIStyle style, Point position, string name)
         {
             Point padding = style.Resources.FramePadding;
+            int height = FontManager.GetHeight() + padding.Y * 2;
 
             GUINode node = new GUINode();
             node.LocalPosition = position;
@@ -65,8 +67,11 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             stack.Orientation = GUIGroupOrientation.Horizontal;
             stack.ControlSizeWidth = true;
             stack.ControlSizeHeight = true;
-            node.AddChild(stack);
+            stack.Spacing = padding.X;
+            stack.LocalPosition = new Point(0, height);
+            stack.Pivot = new Vector2(0, 0);
             node.Container = stack;
+            node.AddChild(stack);
 
             GUIStack leftStack = new GUIStack();
             leftStack.Orientation = GUIGroupOrientation.Vertical;
@@ -83,6 +88,9 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             node.RightStack = rightStack;
 
             GUIFrame header = new GUIFrame();
+            header.Margin = new Thickness(0, 0, 0, height);
+            header.Pivot = new Vector2(0, 0);
+            header.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
             node.AddChild(header);
             node.Header = header;
             node.ControlTemplate.Add(header, GUINodeEditorStyle.NodeHead);
@@ -96,11 +104,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             textBlock.TextHorisontalAlignment = GUITextHorisontalAlignment.Middle;
             textBlock.SetAlignment(GUIAlignment.Center);
             header.AddChild(textBlock);
-
-            if (textBlock.Font != null)
-            {
-                header.LocalSize = new Point(0, padding.Y * 2 + (int)textBlock.Font.MeasureString(name).Y);
-            }
 
             node.Style = style;
             return node;

@@ -28,6 +28,8 @@ namespace Fitamas.UserInterface.Input
 
         public GUIComponent MouseCapture {  get; set; }
 
+        public Point Position => listener.MousePosition;
+
         public GUIMouse()
         {
             listener = new MouseListener();
