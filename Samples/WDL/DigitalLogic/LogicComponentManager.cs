@@ -1,4 +1,5 @@
 ﻿using Fitamas;
+using Fitamas.Core;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using ObservableCollections;
@@ -10,7 +11,7 @@ namespace WDL.DigitalLogic
 {
     public class LogicComponentManager
     {
-        public const string RootDirectory = "Saves";
+        public static readonly string RootDirectory = Path.Combine(Application.DataPath, "Saves");
         public const string FileExtension = ".lc";
 
         private ObservableList<LogicComponentDescription> components;
@@ -139,8 +140,7 @@ namespace WDL.DigitalLogic
 
         private LogicComponentDescription Load(string path)
         {
-            using (var stream = TitleContainer.OpenStream(path))
-            using (var reader = new StreamReader(stream))
+            using (var reader = new StreamReader(path))
             using (var jsonReader = new JsonTextReader(reader))
             {
                 LogicComponentDescription description = null;

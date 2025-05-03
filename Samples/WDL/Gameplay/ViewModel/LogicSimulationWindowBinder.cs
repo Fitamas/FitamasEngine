@@ -10,6 +10,7 @@ using ObservableCollections;
 using R3;
 using Microsoft.Xna.Framework;
 using Fitamas;
+using Fitamas.UserInterface.Themes;
 
 namespace WDL.Gameplay.ViewModel
 {
@@ -162,7 +163,7 @@ namespace WDL.Gameplay.ViewModel
             creatorMap.Add(LogicComponents.Input, (viewModel, node) =>
             {
                 ViewModelStore model = new ViewModelStore(viewModel);
-                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(100), GUINodeItemAlignment.Right, GUIPinType.Output);
+                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(79, 67), GUINodeItemAlignment.Right, GUIPinType.Output);
                 model.ConnectorMap[item.Pin] = viewModel.Connectors[0];
                 GUICheckBox checkBox = (GUICheckBox)item.Content;
                 checkBox.OnValueChanged.AddListener((b, a) =>
@@ -175,7 +176,7 @@ namespace WDL.Gameplay.ViewModel
             creatorMap.Add(LogicComponents.Output, (viewModel, node) =>
             {
                 ViewModelStore model = new ViewModelStore(viewModel);
-                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(100), GUINodeItemAlignment.Left, GUIPinType.Input);
+                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(79, 67), GUINodeItemAlignment.Left, GUIPinType.Input);
                 model.ConnectorMap[item.Pin] = viewModel.Connectors[0];
                 GUICheckBox checkBox = (GUICheckBox)item.Content;
                 checkBox.Interacteble = false;
@@ -186,6 +187,7 @@ namespace WDL.Gameplay.ViewModel
                         checkBox.Value = v;
                     });
                 }
+                checkBox.SetValue(GUIImage.ImageEffectProperty, GUIImageEffect.FlipHorizontally);
                 node.AddItem(item);
                 return model;
             });

@@ -1,6 +1,5 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Extended.Entities;
-using Fitamas.Input;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
@@ -23,7 +22,6 @@ namespace Fitamas.UserInterface
         public GUIMouse Mouse { get; }
         public GUIKeyboard Keyboard { get; }
 
-        public bool MouseOnGUI => onMouse.Count != 0;
         public GraphicsDevice GraphicsDevice => graphics;
         public GUIRenderBatch Render => render;
         public GUICanvas Canvas => canvas;
@@ -60,27 +58,10 @@ namespace Fitamas.UserInterface
             Mouse.Update(gameTime);
             Keyboard.Update(gameTime);
 
-            Point mousePosition = InputSystem.mouse.MousePosition;
-
-            GUIComponent onMouseOld = onMouse.LastOrDefault();
             onMouse.Clear();
+            Point mousePosition = Mouse.Position;
             RaycastAll(mousePosition, onMouse);
-            GUIComponent onMouseNew = onMouse.LastOrDefault();
-
-            if (onMouseOld != onMouseNew)
-            {
-                if (onMouseOld != null)
-                {
-                    onMouseOld.IsMouseOver = false;
-                }
-
-                if (onMouseNew != null)
-                {
-                    onMouseNew.IsMouseOver = true;
-                }
-
-                Mouse.MouseOver = onMouseNew;
-            }
+            Mouse.MouseOver = onMouse.LastOrDefault();
         }
 
         public void Draw(GameTime gameTime)

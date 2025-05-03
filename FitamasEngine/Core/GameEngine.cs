@@ -27,7 +27,6 @@ namespace Fitamas.Core
 
         public static GameEngine Instance { get; private set; }
         public DIContainer Container { get; }
-        public ObjectManager ObjectManager { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
 
         public GameEngine()
@@ -36,7 +35,6 @@ namespace Fitamas.Core
             Instance = this;
 
             Container = new DIContainer();
-            ObjectManager = new ObjectManager(this, "Content");
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
         }
 
@@ -44,10 +42,9 @@ namespace Fitamas.Core
         {
             Debug.Log("Load application settings");
 
-            //TODO
+            PlayerPrefs.Load();
 
             IsMouseVisible = true;
-
             GraphicsDeviceManager.PreferredBackBufferWidth = 1800;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1080;
             GraphicsDeviceManager.ApplyChanges();

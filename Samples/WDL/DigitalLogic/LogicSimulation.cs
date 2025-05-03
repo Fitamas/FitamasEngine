@@ -12,8 +12,8 @@ namespace WDL.DigitalLogic
         private LogicComponentDescription description;
         private ObservableList<LogicComponent> components;
         private ObservableList<LogicConnection> connections;
-        private int componentCount = 0;
-        private int connectionsCount = 0;
+        private ReactiveProperty<int> componentCount;
+        private ReactiveProperty<int> connectionCount;
 
         public LogicComponentDescription Description => description;
         public IObservableCollection<LogicComponent> Components => components;
@@ -23,9 +23,14 @@ namespace WDL.DigitalLogic
         {
             this.manager = manager;
             this.description = description;
-            components = new ObservableList<LogicComponent>();
-            connections = new ObservableList<LogicConnection>();
 
+            componentCount = new ReactiveProperty<int>(description.ComponentCount);
+            componentCount.Subscribe(value => description.ComponentCount = value);
+
+            connectionCount = new ReactiveProperty<int>(description.ConnectionCount);
+            connectionCount.Subscribe(value => description.ConnectionCount = value);
+
+            components = new ObservableList<LogicComponent>();
             foreach (var item in description.Components)
             {
                 AddComponent(item);
@@ -39,6 +44,7 @@ namespace WDL.DigitalLogic
                 description.Components.Add(component.Value.Data);
             });
 
+            connections = new ObservableList<LogicConnection>();
             foreach (var item in description.Connections)
             {
                 AddConnection(item);
@@ -47,7 +53,6 @@ namespace WDL.DigitalLogic
             {
                 description.Connections.Add(connector.Value.Data);
             });
-
             connections.ObserveRemove().Subscribe(connector =>
             {
                 description.Connections.Add(connector.Value.Data);
@@ -137,7 +142,7 @@ namespace WDL.DigitalLogic
             {
                 LogicConnectionData data = new LogicConnectionData()
                 {
-                    Id = connectionsCount,
+                    Id = connectionCount.Value,
                     OutputComponentId = output.Component.Id,
                     OutputId = output.Id,
                     InputComponentId = input.Component.Id,
@@ -147,7 +152,7 @@ namespace WDL.DigitalLogic
                 output.Connect(connection);
                 input.Connect(connection);
                 connections.Add(connection);
-                connectionsCount++;
+                connectionCount.Value++;
                 return connection;
             }
 
@@ -196,11 +201,11 @@ namespace WDL.DigitalLogic
             LogicComponentData data = new LogicComponentData()
             {
                 TypeId = description.FullName,
-                Id = componentCount
+                Id = componentCount.Value
             };
             LogicComponent component = description.CreateComponent(manager, data);
             components.Add(component);
-            componentCount++;
+            componentCount.Value++;
         }
 
         public void DestroyComponent(int id)

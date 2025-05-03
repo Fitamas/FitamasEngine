@@ -40,7 +40,6 @@ namespace Fitamas.Serialization.Json
         {
             {typeof(int), s => int.Parse(s, CultureInfo.InvariantCulture.NumberFormat)},
             {typeof(float), s => float.Parse(s, CultureInfo.InvariantCulture.NumberFormat)},
-            //{typeof(HslColor), s => ColorExtensions.FromHex(s).ToHsl() }
         };
 
         public static T[] ReadAsMultiDimensional<T>(this JsonReader reader)

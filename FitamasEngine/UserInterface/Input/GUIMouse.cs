@@ -2,6 +2,7 @@
 using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace Fitamas.UserInterface.Input
@@ -22,13 +23,51 @@ namespace Fitamas.UserInterface.Input
 
         public static readonly RoutedEvent MouseDragEndEvent = new RoutedEvent();
 
+        public static readonly RoutedEvent MouseEnterGUIEvent = new RoutedEvent();
+
+        public static readonly RoutedEvent MouseExitGUIEvent = new RoutedEvent();
+
         private MouseListener listener;
-
-        public GUIComponent MouseOver {  get; set; }
-
-        public GUIComponent MouseCapture {  get; set; }
+        private GUIComponent mouseOver;
 
         public Point Position => listener.MousePosition;
+        public bool MouseOnGUI => mouseOver != null;
+
+        public GUIComponent MouseCapture { get; set; }
+
+        public GUIComponent MouseOver 
+        { 
+            get
+            {
+                return mouseOver;
+            }
+            set
+            {
+                GUIComponent oldMouseOver = mouseOver;
+                mouseOver = value;
+
+                if (mouseOver != oldMouseOver)
+                {
+                    if (oldMouseOver != null)
+                    {
+                        oldMouseOver.IsMouseOver = false;
+                        if (mouseOver == null)
+                        {
+                            oldMouseOver?.RaiseEvent(new GUIEventArgs(MouseExitGUIEvent, oldMouseOver));
+                        }
+                    }
+
+                    if (mouseOver != null)
+                    {
+                        mouseOver.IsMouseOver = true;
+                        if (oldMouseOver == null)
+                        {
+                            mouseOver?.RaiseEvent(new GUIEventArgs(MouseEnterGUIEvent, mouseOver));
+                        }
+                    }
+                }
+            }
+        }
 
         public GUIMouse()
         {
@@ -69,7 +108,7 @@ namespace Fitamas.UserInterface.Input
             listener.Update(gameTime);
         }
 
-        private void InvokeEvent(GUIMouseEventArgs args)
+        private void InvokeEvent(GUIEventArgs args)
         {
             if (MouseCapture != MouseOver)
             {

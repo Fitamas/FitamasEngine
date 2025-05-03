@@ -29,21 +29,22 @@ using Fitamas;
 using Fitamas.Entities;
 using Fitamas.Scene;
 using Fitamas.Serialization;
+using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 
 namespace Fitamas.Serialization.Json.Converters
 {
-    public class MonoObjectConverter : JsonConverter
+    public class MonoObjectConverter<T> : JsonConverter where T : MonoObject
     {
-        private ObjectManager objectManager;
+        private ContentManager manager;
         private bool canRead = false;
         private bool canWrite = false;
 
-        public MonoObjectConverter(ObjectManager objectManager)
+        public MonoObjectConverter(ContentManager manager)
         {
-            this.objectManager = objectManager;
+            this.manager = manager;
         }
 
         public override bool CanRead
@@ -110,15 +111,15 @@ namespace Fitamas.Serialization.Json.Converters
                 return null;
             }
 
-            return objectManager.LoadAsset(path, objectType);
+            return manager.Load<T>(path);
         }
 
-        public void WriteJson(JsonWriter writer, MonoObject value, JsonSerializer serializer)
-        {
-            if (objectManager.TryGetPath(value, out string path))
-            {
-                serializer.Serialize(writer, path);
-            }
-        }
+        //public void WriteJson(JsonWriter writer, MonoObject value, JsonSerializer serializer)
+        //{
+        //    if (manager.TryGetPath(value, out string path))
+        //    {
+        //        serializer.Serialize(writer, path);
+        //    }
+        //}
     }
 }

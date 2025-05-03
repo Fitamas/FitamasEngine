@@ -1,4 +1,5 @@
-﻿using Fitamas.Serialization;
+﻿using Fitamas.Core;
+using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -7,27 +8,30 @@ namespace Fitamas.Serialization.Json
 {
     public static class JsonUtility
     {
-        public static T Load<T>(ObjectManager manager, string path)
+        public static T Load<T>(string path)
         {
-            return (T)Load(manager, path, typeof(T));
+            return (T)Load(path, typeof(T));
         }
 
-        public static object Load(ObjectManager manager, string path, Type type)
+        public static object Load(string path, Type type)
         {
-            JsonContentLoader loader = new JsonContentLoader();
-
-            return loader.Load(manager, path, type);
-        }
-
-        public static void Save(ObjectManager manager, string path, object data)
-        {
-            string contentPath = Path.Combine(manager.RootDirectory, path);
-            var serializer = new MonoGameJsonSerializer(manager);
-
-            using (var sw = new StreamWriter(contentPath))
-            using (JsonWriter writer = new JsonTextWriter(sw))
+            ContentManager manager = GameEngine.Instance.Content;
+            using (var reader = new StreamReader(path))
+            using (var jsonReader = new JsonTextReader(reader))
             {
-                serializer.Serialize(writer, data);
+                var serializer = new MonoJsonSerializer(manager);
+                return serializer.Deserialize(jsonReader, type);
+            }
+        }
+
+        public static void Save(string path, object data)
+        {
+            ContentManager manager = GameEngine.Instance.Content;
+            using (var writer = new StreamWriter(path))
+            using (JsonWriter jsonWriter = new JsonTextWriter(writer))
+            {
+                var serializer = new MonoJsonSerializer(manager);
+                serializer.Serialize(jsonWriter, data);
             }
         }
     }

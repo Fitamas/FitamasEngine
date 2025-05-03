@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Data;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -91,9 +92,14 @@ namespace Fitamas.UserInterface.Components
 
         protected override Point CalculateSize(GUIComponent[] components, Point size)
         {
-            //TODO
-
-            return size;
+            if (Constraint == GUIGridGroupConstraint.Flexible)
+            {
+                return size;
+            }
+            else
+            {
+                return (GetCount(size) + new Point(1, 1)) * (CellSize + Spacing);
+            }
         }
 
         protected override void CalculateComponents(GUIComponent[] components)
@@ -103,52 +109,30 @@ namespace Fitamas.UserInterface.Components
             Point spacing = Spacing;
             GUIGridGroupStartCorner startCorner = StartCorner;
             GUIGroupOrientation orientation = Orientation;
-            GUIGridGroupConstraint constraint = Constraint;
             Point position;
             Point direction;
             switch (startCorner)
             {
                 case GUIGridGroupStartCorner.LeftTop:
                     position = Point.Zero;
-                    direction = new Point(1, -1);
+                    direction = new Point(1, 1);
                     break;
                 case GUIGridGroupStartCorner.LeftBottom:
                     position = new Point(0, -rectangle.Height);
-                    direction = new Point(1, 1);
+                    direction = new Point(1, -1);
                     break;
                 case GUIGridGroupStartCorner.RightTop:
                     position = new Point(rectangle.Width, 0);
-                    direction = new Point(-1, -1);
+                    direction = new Point(-1, 1);
                     break;
                 default:
                     position = new Point(rectangle.Width, -rectangle.Height);
-                    direction = new Point(-1, 1);
+                    direction = new Point(-1, -1);
                     break;
             }
 
-            Point count = new Point(-1, -1);
+            Point count = GetCount(rectangle.Size);
             Point index = Point.Zero;
-            switch (constraint)
-            {
-                case GUIGridGroupConstraint.Flexible:
-                    if (orientation == GUIGroupOrientation.Horizontal)
-                    {
-                        int l = cellSize.X + spacing.X;
-                        count.X = l > 0 ? rectangle.Width / l : 1;
-                    }
-                    else
-                    {
-                        int l = cellSize.Y + spacing.Y;
-                        count.Y = l > 0 ? rectangle.Height / l : 1;
-                    }
-                    break;
-                case GUIGridGroupConstraint.FixedColumnCount:
-                    count.X = Count;
-                    break;
-                case GUIGridGroupConstraint.FixedRowCount:
-                    count.Y = Count;
-                    break;
-            }
 
             foreach (var component in components)
             {
@@ -178,6 +162,39 @@ namespace Fitamas.UserInterface.Components
                     }
                 }
             }
+        }
+
+        public Point GetCount(Point size)
+        {
+            Point cellSize = CellSize;
+            Point spacing = Spacing;
+            GUIGroupOrientation orientation = Orientation;
+            GUIGridGroupConstraint constraint = Constraint;
+
+            Point count = Point.Zero;
+            switch (constraint)
+            {
+                case GUIGridGroupConstraint.Flexible:
+                    if (orientation == GUIGroupOrientation.Horizontal)
+                    {
+                        int l = cellSize.X + spacing.X;
+                        count.X = l > 0 ? size.X/ l : 1;
+                    }
+                    else
+                    {
+                        int l = cellSize.Y + spacing.Y;
+                        count.Y = l > 0 ? size.Y / l : 1;
+                    }
+                    break;
+                case GUIGridGroupConstraint.FixedColumnCount:
+                    count.X = Count;
+                    break;
+                case GUIGridGroupConstraint.FixedRowCount:
+                    count.Y = Count;
+                    break;
+            }
+
+            return count;
         }
     }
 }

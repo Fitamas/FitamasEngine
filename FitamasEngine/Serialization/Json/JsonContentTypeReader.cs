@@ -1,5 +1,3 @@
-using System.IO;
-
 /*
     The MIT License (MIT)
 
@@ -29,6 +27,7 @@ using System.IO;
 
 using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace Fitamas.Serialization.Json
 {

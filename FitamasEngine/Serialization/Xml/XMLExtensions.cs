@@ -16,7 +16,6 @@ namespace Fitamas.Serialization.Xml
             {typeof(int), s => int.Parse(s, CultureInfo.InvariantCulture.NumberFormat)},
             {typeof(float), s => float.Parse(s, CultureInfo.InvariantCulture.NumberFormat)},
             {typeof(bool), s => bool.Parse(s)},
-            //{typeof(HslColor), s => ColorExtensions.FromHex(s).ToHsl() }
         };
 
         public static string GetAttributeString(this XElement element, string name, string defaultValue = "")

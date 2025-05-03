@@ -317,7 +317,9 @@ namespace Fitamas.UserInterface.Components
                         absoluteRectangle = new Rectangle(thickness.Left, thickness.Top, thickness.Right, thickness.Bottom);
                     }
 
-                    isDirty = false;                   
+                    isDirty = false;
+
+                    OnRecalculateRectangle(absoluteRectangle);
                 }
 
                 return absoluteRectangle;
@@ -648,6 +650,8 @@ namespace Fitamas.UserInterface.Components
         protected virtual void OnEnable() { }
 
         protected virtual void OnDisable() { }
+
+        protected virtual void OnRecalculateRectangle(Rectangle rectangle) { }
 
         protected virtual void OnAddChild(GUIComponent component) { }
 

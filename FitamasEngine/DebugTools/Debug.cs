@@ -4,11 +4,11 @@ namespace Fitamas
 {
     public static class Debug
     {
-        private static DebugLogger main = DebugLogger.Create("logs");
+        private static readonly DebugLogger main = new DebugLogger("logs");
 
         public static void Log(string message)
         {
-            main.LogRaw(MessegeType.info, message);
+            main.LogRaw(MessageType.info, message);
         }
 
         public static void Log(object value)
@@ -18,7 +18,7 @@ namespace Fitamas
 
         public static void LogError(string message)
         {
-            main.LogRaw(MessegeType.error, message);
+            main.LogRaw(MessageType.error, message);
         }
 
         public static void LogError(object value)
@@ -28,7 +28,7 @@ namespace Fitamas
 
         public static void LogWarning(string message)
         {
-            main.LogRaw(MessegeType.warning, message);
+            main.LogRaw(MessageType.warning, message);
         }
 
         public static void LogWarning(object value)

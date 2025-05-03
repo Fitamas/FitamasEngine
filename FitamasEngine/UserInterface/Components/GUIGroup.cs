@@ -1,5 +1,6 @@
 ﻿using Fitamas.UserInterface;
 using Microsoft.Xna.Framework;
+using nkast.Aether.Physics2D.Dynamics;
 using System.Linq;
 
 namespace Fitamas.UserInterface.Components
@@ -84,12 +85,12 @@ namespace Fitamas.UserInterface.Components
 
         protected override void OnAddChild(GUIComponent component)
         {
-            CalculateComponents();
+            CalculateComponentsAndSize();
         }
 
         protected override void OnRemoveChild(GUIComponent component)
         {
-            CalculateComponents();
+            CalculateComponentsAndSize();
         }
 
         protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
@@ -98,7 +99,7 @@ namespace Fitamas.UserInterface.Components
 
             if (property == EnableProperty || property == MarginProperty)
             {
-                CalculateComponents();
+                CalculateComponentsAndSize();
             }
         }
 
@@ -108,7 +109,7 @@ namespace Fitamas.UserInterface.Components
 
             if (property == MarginProperty)
             {
-                CalculateComponents();
+                CalculateComponentsAndSize();
             }
         }
 
@@ -121,13 +122,25 @@ namespace Fitamas.UserInterface.Components
             return rectangle;
         }
 
-        private void CalculateComponents()
+        protected override void OnRecalculateRectangle(Rectangle rectangle)
+        {
+            CalculateComponents();
+        }
+
+        private GUIComponent[] GetComponents()
         {
             GUIComponent[] components = ChildrensComponent.Where(e => e.Enable).ToArray();
             foreach (var component in components)
             {
                 component.SetAlignment(ChildAlignment);
             }
+
+            return components;
+        }
+
+        private void CalculateComponentsAndSize()
+        {
+            GUIComponent[] components = GetComponents();
 
             if (ControlSizeWidth || ControlSizeHeight)
             {
@@ -139,6 +152,11 @@ namespace Fitamas.UserInterface.Components
             }
 
             CalculateComponents(components);
+        }
+
+        private void CalculateComponents()
+        {
+            CalculateComponents(GetComponents());
         }
 
         protected abstract Point CalculateSize(GUIComponent[] components, Point size);

@@ -6,7 +6,7 @@ namespace Fitamas.Scene
     public class SceneSystem : ISystem
     {
         private static EntityManager entityManager;
-        private static SerializebleScene activeScene;
+        private static Scene activeScene;
 
         public void Initialize(GameWorld world)
         {
@@ -27,12 +27,12 @@ namespace Fitamas.Scene
 
             Debug.Log("Open Scene: " + name);
 
-            SerializebleScene scene = GetSceneByPath(name);
+            Scene scene = GetSceneByPath(name);
 
             LoadScene(scene);
         }
 
-        public static void LoadScene(SerializebleScene scene)
+        public static void LoadScene(Scene scene)
         {
             if (scene == null)
             {
@@ -68,12 +68,12 @@ namespace Fitamas.Scene
             }
         }
 
-        public static SerializebleScene GetSceneByPath(string name)
+        public static Scene GetSceneByPath(string name)
         {
-            return Resources.Load<SerializebleScene>(name);
+            return Resources.Load<Scene>(name);
         }
 
-        public static SerializebleScene GetActiveScene()
+        public static Scene GetActiveScene()
         {
             return activeScene;
         }

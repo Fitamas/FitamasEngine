@@ -26,31 +26,18 @@
 */
 
 using System;
-using System.IO;
-using Fitamas.Serialization;
-using Newtonsoft.Json;
 
-namespace Fitamas.Serialization.Json
+namespace Fitamas.Content.Pipeline
 {
-    public class JsonContentLoader
+    public class ContentImporterResult<T>
     {
-        public MonoGameJsonSerializer Serializer { get; private set; }
-
-        public T Load<T>(ObjectManager objectManager, string path)
+        public ContentImporterResult(string filePath, T data)
         {
-            return (T)Load(objectManager, path, typeof(T));
+            FilePath = filePath;
+            Data = data;
         }
 
-        public object Load(ObjectManager objectManager, string path, Type type)
-        {
-            using (var stream = objectManager.OpenStream(path))
-            using (var reader = new StreamReader(stream))
-            using (var jsonReader = new JsonTextReader(reader))
-            {
-                var serializer = new MonoGameJsonSerializer(objectManager);
-                Serializer = serializer;
-                return serializer.Deserialize(jsonReader, type);
-            }
-        }
+        public string FilePath { get; }
+        public T Data { get; }
     }
 }

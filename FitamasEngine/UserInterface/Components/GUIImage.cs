@@ -166,13 +166,9 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        private int selectRegion;
-
         public GUIImage()
         {
-            selectRegion = 0;
-            ImageType = GUIImageType.Simple;
-            ImageEffect = GUIImageEffect.None;
+
         }
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)

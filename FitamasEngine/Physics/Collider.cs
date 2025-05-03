@@ -143,14 +143,14 @@ namespace Fitamas.Physics
 
         }
 
-        public Collider(ColliderType colliderType, Layer layer, BodyType bodyType)
+        public Collider(ColliderType colliderType, Layer layer, BodyType bodyType = BodyType.Dynamic)
         {
             this.layer = layer;
             this.bodyType = bodyType;
             this.colliderType = colliderType;
         }
 
-        public Collider(ColliderType colliderType, Vector2 scale, Vector2 offset, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Static) 
+        public Collider(ColliderType colliderType, Vector2 scale, Vector2 offset, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Dynamic) 
             : this(colliderType, layer, bodyType)
         {
             this.scale = scale;
@@ -159,7 +159,7 @@ namespace Fitamas.Physics
             this.offset = offset;
         }
 
-        public Collider(float radius, Vector2 offset, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Static)
+        public Collider(float radius, Vector2 offset, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Dynamic)
             : this(ColliderType.Circle, layer, bodyType)
         {
             this.radius = radius;
@@ -168,7 +168,7 @@ namespace Fitamas.Physics
             this.offset = offset;
         }
 
-        public Collider(Vector2[][] compositeShape, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Static) 
+        public Collider(Vector2[][] compositeShape, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Dynamic) 
             : this(ColliderType.Polygon, layer, bodyType)
         {
             this.bodyType = bodyType;
@@ -179,7 +179,7 @@ namespace Fitamas.Physics
             CreatePolygonShape(verts, ind);
         }
 
-        public Collider(Vector2[] verts, int[] ind, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Static) 
+        public Collider(Vector2[] verts, int[] ind, float density = 1, Layer layer = Layer.Defoult, BodyType bodyType = BodyType.Dynamic) 
             : this(ColliderType.Polygon, layer, bodyType)
         {
             this.bodyType = bodyType;

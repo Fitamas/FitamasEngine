@@ -25,7 +25,6 @@
     SOFTWARE.
 */
 
-using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
@@ -33,12 +32,23 @@ using System.Reflection;
 using System;
 using Fitamas.Core;
 using Fitamas.Serialization.Json.Converters;
+using Microsoft.Xna.Framework.Content;
+using Fitamas.Graphics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Fitamas.Serialization.Json
 {
-    public sealed class MonoGameJsonSerializer : JsonSerializer
+    //public static Dictionary<string, Type> dictionary = new Dictionary<string, Type>()
+    //{
+    //    { ".scene", typeof(SerializebleScene) },
+    //    { ".spr", typeof(Sprite) },
+    //    { ".mat", typeof(Matireal) },
+    //    { ".prefab", typeof(Prefab) },
+    //};
+
+    public class MonoJsonSerializer : JsonSerializer
     {
-        public MonoGameJsonSerializer(ObjectManager objectManager)
+        public MonoJsonSerializer(ContentManager manager)
         {
             Converters.Add(new RangeJsonConverter<int>());
             Converters.Add(new RangeJsonConverter<float>());
@@ -49,10 +59,10 @@ namespace Fitamas.Serialization.Json
             Converters.Add(new RectangleJsonConverter());
             Converters.Add(new ColorJsonConverter());
 
-            Converters.Add(new ContentManagerJsonConverter<Texture2D>(objectManager, (texture) => { return texture.Name; }));
-            Converters.Add(new ContentManagerJsonConverter<SpriteFont>(objectManager, (font) => { return font.Texture.Name; }));
+            Converters.Add(new ContentManagerJsonConverter<Texture2D>(manager, (texture) => { return texture.Name; }));
+            Converters.Add(new ContentManagerJsonConverter<SpriteFont>(manager, (font) => { return font.Texture.Name; }));
 
-            Converters.Add(new MonoObjectConverter(objectManager));
+            Converters.Add(new MonoObjectConverter<Sprite>(manager));
 
             ReferenceResolver = new MonoObjectResolver();
             PreserveReferencesHandling = PreserveReferencesHandling.Objects;
@@ -109,7 +119,7 @@ namespace Fitamas.Serialization.Json
         {
             if (value is MonoObject monoObject)
             {
-                return dictionary.ContainsKey(monoObject.GetGuid());
+                return dictionary.ContainsKey(monoObject.Guid);
             }
 
             return false;
@@ -120,7 +130,7 @@ namespace Fitamas.Serialization.Json
         {
             if (value is MonoObject monoObject)
             {
-                Guid guid = monoObject.GetGuid();
+                Guid guid = monoObject.Guid;
                 dictionary[guid] = monoObject;
                 return guid.ToString();
             }

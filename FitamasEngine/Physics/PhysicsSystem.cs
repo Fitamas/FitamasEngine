@@ -8,7 +8,6 @@ namespace Fitamas.Physics
 {
     public class PhysicsSystem : EntityFixedUpdateSystem
     {
-        public static PhysicsSystem Instance { get; set; }
         public World World { get; }
 
         private ComponentMapper<Transform> transformMapper;
@@ -19,8 +18,8 @@ namespace Fitamas.Physics
         {
             Vector2 gravity = new Vector2(0, -9.8f);
 
-            Instance = this;
             World = new World(gravity);
+            Physics2D.World = World;
         }
 
         public override void Initialize(IComponentMapperService mapperService)

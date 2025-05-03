@@ -162,6 +162,21 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             }
         }
 
+        protected override void OnDraw(GameTime gameTime, GUIContextRender context)
+        {
+            foreach (var component in wires)
+            {
+                component.Draw(gameTime, context);
+            }
+
+            foreach (var component in nodes)
+            {
+                component.Draw(gameTime, context);
+            }
+
+            SelectRegion.Draw(gameTime, context);
+        }
+
         public GUINode CreateNode(string name)
         {
             GUINode node = GUINodeUtils.CreateNode(new Point(), name);

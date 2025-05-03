@@ -11,12 +11,12 @@ namespace Fitamas.Scene
     }
 
     [AssetMenu(fileName: "NewScene.scene", title: "Scene")]
-    public class SerializebleScene : MonoObject
+    public class Scene : MonoObject
     {
         public List<GameObject> GameObjects;
         public SceneProperties SceneProperties;
 
-        public SerializebleScene()
+        public Scene()
         {
             GameObjects = new List<GameObject>();
             SceneProperties = new SceneProperties();

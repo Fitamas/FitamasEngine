@@ -6,11 +6,13 @@ namespace Fitamas.Serialization
 {
     public abstract class MonoObject
     {
-        private Guid guid;
+        [SerializableField] private Guid guid = Guid.NewGuid();
+
+        public Guid Guid => guid;
 
         public MonoObject()
         {
-            guid = Guid.NewGuid();
+
         }
 
         public static MonoObject Instantiate(MonoObject original)
@@ -27,11 +29,6 @@ namespace Fitamas.Serialization
             }
 
             return instance;
-        }
-
-        public Guid GetGuid()
-        {
-            return guid;
         }
 
         private static bool CompareBaseObject(MonoObject a, MonoObject b)

@@ -15,7 +15,7 @@ namespace Fitamas.Physics
 
         public static bool IsConnected => isConnect;
 
-        public static void RemoveDebugMouseJoint()
+        public static void RemoveMouseJoint()
         {
             if (mouseJoint != null)
             {
@@ -25,19 +25,25 @@ namespace Fitamas.Physics
             }
         }
 
-        public static void SetDebugMousePosition(Vector2 position)
+        public static void SetMousePosition(Vector2 position)
         {
-            if (mouseJoint == null)
-            {
-                return;
-            }
-            else
+            if (mouseJoint != null)
             {
                 mouseJoint.WorldAnchorB = position;
             }
         }
 
-        public static void CreateDebugMousJoint(Entity entity, Vector2 position)
+        public static void CreateMousJoint(Vector2 position)
+        {
+            Fixture fixture = Physics2D.World.TestPoint(position);
+
+            if (fixture != null)
+            {
+                CreateMousJoint(fixture.Body, position);
+            }
+        }
+
+        public static void CreateMousJoint(Entity entity, Vector2 position)
         {
             Collider collider = entity.Get<Collider>();
             if (!collider.IsReady)
@@ -45,15 +51,13 @@ namespace Fitamas.Physics
                 return;
             }
 
-            CreateDebugMousJoint(collider.Body, position);
+            CreateMousJoint(collider.Body, position);
         }
 
-        public static void CreateDebugMousJoint(Body body, Vector2 position)
+        public static void CreateMousJoint(Body body, Vector2 position)
         {
-            if (mouseJoint != null)
-            {
-                Physics2D.World.Remove(mouseJoint);
-            }
+            RemoveMouseJoint();
+
             mouseJoint = JointFactory.CreateFixedMouseJoint(Physics2D.World, body, position);
             isConnect = true;
 

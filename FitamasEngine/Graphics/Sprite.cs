@@ -15,7 +15,7 @@ namespace Fitamas.Graphics
         Multiple
     }
 
-    [AssetMenu(fileName: "NewSprite.spr", title: "Sprite")]
+    [AssetMenu(fileName: "NewSprite.sprite", title: "Sprite")]
     public class Sprite : MonoObject
     {
         [SerializableField] private string name;
@@ -36,6 +36,11 @@ namespace Fitamas.Graphics
         public Rectangle Border => border;
         public int TextureWidth => texture.Width;
         public int TextureHeight => texture.Height;
+
+        private Sprite()
+        {
+
+        }
 
         public Sprite(string name, Texture2D texture, Rectangle bounds)
         {

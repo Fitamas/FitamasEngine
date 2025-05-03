@@ -26,8 +26,6 @@
 */
 
 using System;
-using System.IO;
-using Fitamas.Serialization;
 using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 
@@ -39,21 +37,19 @@ namespace Fitamas.Serialization.Json.Converters
     /// <typeparam name="T">The type of content to load</typeparam>
     public class ContentManagerJsonConverter<T> : JsonConverter
     {
-        private readonly ObjectManager _objectManager;
-        private readonly ContentManager _contentManager;
-        private readonly Func<T, string> _getAssetName;
+        private readonly ContentManager manager;
+        private readonly Func<T, string> getAssetName;
 
-        public ContentManagerJsonConverter(ObjectManager objectManager, Func<T, string> getAssetName)
+        public ContentManagerJsonConverter(ContentManager manager, Func<T, string> getAssetName)
         {
-            _objectManager = objectManager;
-            _contentManager = objectManager.Game.Content;
-            _getAssetName = getAssetName;
+            this.manager = manager;
+            this.getAssetName = getAssetName;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var asset = (T)value;
-            var assetName = _getAssetName(asset);
+            var assetName = getAssetName(asset);
             writer.WriteValue(assetName);
         }
 
@@ -66,12 +62,7 @@ namespace Fitamas.Serialization.Json.Converters
                 return null;
             }
 
-            if (_objectManager.ReadOnlyXNB)
-            {
-                assetName = Path.ChangeExtension(assetName, null);
-            }
-
-            return _contentManager.Load<T>(assetName);
+            return manager.Load<T>(assetName);
         }
 
         public override bool CanConvert(Type objectType)

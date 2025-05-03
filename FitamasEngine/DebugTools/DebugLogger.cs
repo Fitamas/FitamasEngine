@@ -1,47 +1,30 @@
-﻿using System;
+﻿using Fitamas.Core;
+using System;
 using System.IO;
 using System.Text;
 
 namespace Fitamas.DebugTools
 {
-    public class DebugLogger : TextWriter
+    public class DebugLogger
     {
-        public const string Root = "Logs";
-        private StreamWriter memoryStream;
-        private string path;
+        public static readonly string RootDirectory = Path.Combine(Application.DataPath, "Logs");
 
-        public delegate void LogMessage(MessegeType type, DateTime time, string message);
+        public delegate void LogMessage(MessageType type, DateTime time, string message);
 
         public static event LogMessage OnLogMessage;
 
-        public static DebugLogger Create(string name)
+        private StreamWriter memoryStream;
+
+        public DebugLogger(string name)
         {
-            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Root);
-            string filePath = Path.Combine(folderPath, $"{name}.txt");
+            Directory.CreateDirectory(RootDirectory);
 
-            Directory.CreateDirectory(folderPath);
+            string filePath = Path.Combine(RootDirectory, $"{name}.txt");
 
-            return new DebugLogger()
-            {
-                path = filePath,
-                memoryStream = new StreamWriter(filePath),
-            };
+            memoryStream = new StreamWriter(filePath);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            memoryStream.Close();
-            memoryStream.Dispose();
-            base.Dispose(disposing);
-        }
-
-        public override void WriteLine(string value)
-        {
-            LogRaw(value);
-            base.WriteLine(value);
-        }
-
-        public void LogRaw(MessegeType type, DateTime time, string message)
+        public void LogRaw(MessageType type, DateTime time, string message)
         {
             string typeStr = "[" + type.ToString() + "] ";
             string date = "[" + time.ToLongTimeString() + "] ";
@@ -50,7 +33,7 @@ namespace Fitamas.DebugTools
             OnLogMessage?.Invoke(type, time, message);
         }
 
-        public void LogRaw(MessegeType type, string message)
+        public void LogRaw(MessageType type, string message)
         {
             LogRaw(type, DateTime.Now, message);
         }
@@ -61,14 +44,9 @@ namespace Fitamas.DebugTools
             memoryStream.Flush();
             Console.WriteLine(message);
         }
-
-        public override Encoding Encoding
-        {
-            get { return Encoding.ASCII; }
-        }
     }
 
-    public enum MessegeType
+    public enum MessageType
     {
         info,
         warning,

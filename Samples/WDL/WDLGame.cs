@@ -10,11 +10,24 @@ namespace WDL
 {
     public class WDLGame : GameEngine
     {
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            GUIGameblayManager manager = new GUIGameblayManager(Container);
+            Container.RegisterInstance(manager);
+            GameplayScreenViewModel viewModel = manager.OpenGameplayScreen();
+            Container.RegisterInstance(viewModel);
+
+            viewModel.CreateSimulation();
+            viewModel.OpenComponents();
+        }
+
         protected override void LoadContent()
         {
             base.LoadContent();
 
-            GUIDebug.Active = true;
+            //GUIDebug.Active = true;
 
             FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
             ResourceDictionary dictionary = ResourceDictionary.DefaultResources;
@@ -31,21 +44,6 @@ namespace WDL
 
             return base.CreateWorldBuilder()
                     .AddSystem(logicSystem);
-        }
-
-        protected override GUISystem CreateGUISystem()
-        {
-            GUISystem system = base.CreateGUISystem();
-
-            GUIGameblayManager manager = new GUIGameblayManager(Container);
-            Container.RegisterInstance(manager);
-            GameplayScreenViewModel viewModel = manager.OpenGameplayScreen();
-            Container.RegisterInstance(viewModel);
-
-            viewModel.CreateSimulation();
-            viewModel.OpenComponents();
-
-            return system;
         }
     }
 }

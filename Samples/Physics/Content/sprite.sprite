@@ -1,0 +1,9 @@
+{
+  "$id": "4ef454a8-b39c-4146-afb4-a1d75254a1cf",
+  "guid": "4ef454a8-b39c-4146-afb4-a1d75254a1cf",
+  "name": "Pumpkin",
+  "texture": "Pumpkin",
+  "bounds": "0 0 37 38",
+  "border": "0 0 0 0",
+  "PixelInUnit": 32
+}

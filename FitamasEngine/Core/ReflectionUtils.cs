@@ -8,7 +8,7 @@ using System.Reflection;
 
 namespace Fitamas.Core
 {
-    public static class ReflectionUtil
+    public static class ReflectionUtils
     {
         public static Type[] GetTypesAssignableFrom<T>() where T : class
         {

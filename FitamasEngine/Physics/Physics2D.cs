@@ -16,8 +16,8 @@ namespace Fitamas.Physics
 {
     public static class Physics2D
     {
-        public static World World => PhysicsSystem.Instance.World;
-        public const int MaxCastDepth = 10;
+        internal static World World;
+        internal const int MaxCastDepth = 10;
 
         //private static RealExplosion realExplosion;
 

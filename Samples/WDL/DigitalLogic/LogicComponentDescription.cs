@@ -1,4 +1,5 @@
 ﻿using Fitamas;
+using R3;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +13,8 @@ namespace WDL.DigitalLogic
         public string Namespace;
         public int ThemeId;
         public bool IsBase;
+        public int ComponentCount;
+        public int ConnectionCount;
 
         public List<LogicComponentData> Components = new List<LogicComponentData>();
         public List<LogicConnectionData> Connections = new List<LogicConnectionData>();
