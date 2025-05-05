@@ -56,12 +56,47 @@ namespace Physics.View
             });
             grid.AddChild(button3);
 
-            GUIButton button4 = GUI.CreateButton(Point.Zero, "TEST");
+            GUIButton button4 = GUI.CreateButton(Point.Zero, "TestBox");
             button4.OnClicked.AddListener(s =>
             {
-                viewModel.SelectTool(Tool.None);
+                viewModel.SelectTool(Tool.TestBox);
             });
             grid.AddChild(button4);
+
+            GUIButton button5 = GUI.CreateButton(Point.Zero, "Wheel");
+            button5.OnClicked.AddListener(s =>
+            {
+                viewModel.SelectTool(Tool.Wheel);
+            });
+            grid.AddChild(button5);
+
+            GUIButton button6 = GUI.CreateButton(Point.Zero, "Destroy");
+            button6.OnClicked.AddListener(s =>
+            {
+                viewModel.SelectTool(Tool.Destroy);
+            });
+            grid.AddChild(button6);
+
+            GUIButton button7 = GUI.CreateButton(Point.Zero, "RopeJoint");
+            button7.OnClicked.AddListener(s =>
+            {
+                viewModel.SelectTool(Tool.RopeJoint);
+            });
+            grid.AddChild(button7);
+
+            GUIButton button8 = GUI.CreateButton(Point.Zero, "RevoltJoint");
+            button8.OnClicked.AddListener(s =>
+            {
+                viewModel.SelectTool(Tool.RevoltJoint);
+            });
+            grid.AddChild(button8);
+
+            GUIButton button9 = GUI.CreateButton(Point.Zero, "WheelJoint");
+            button9.OnClicked.AddListener(s =>
+            {
+                viewModel.SelectTool(Tool.WheelJoint);
+            });
+            grid.AddChild(button9);
 
             return base.OnBind(viewModel);
         }

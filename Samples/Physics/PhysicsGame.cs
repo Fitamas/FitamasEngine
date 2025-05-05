@@ -27,6 +27,7 @@ namespace Physics
             binder.Bind(viewModel);
 
             EntityHelper.CreatePumpkin(World, Vector2.Zero);
+            EntityHelper.CreateRock(World, new Vector2(0, -15));
         }
 
         protected override void LoadContent()

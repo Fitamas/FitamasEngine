@@ -71,9 +71,9 @@ namespace Fitamas.Graphics
 
             SetStates();
 
-            if (render.matireal != null)
+            if (render.Matireal != null)
             {
-                basicEffect.Texture = render.matireal.Texture;
+                basicEffect.Texture = render.Matireal.Texture;
             }            
 
             foreach (EffectPass effectPass in basicEffect.CurrentTechnique.Passes)

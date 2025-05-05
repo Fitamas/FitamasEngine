@@ -7,10 +7,12 @@ namespace Fitamas.Physics
 {
     public struct RayCastHit
     {
-        public Vector2 point { get; set; }
-        public Vector2 normal {  get; set; }
-        public Collider collider { get; set; }
-        public Body body { get; set; }
-        public float distance { get; set; }
+        public Vector2 Point { get; set; }
+        public Vector2 Normal {  get; set; }
+        public float Distance { get; set; }
+        public Entity Entity { get; set; }
+        public Collider Collider { get; set; }
+
+        internal Body Body { get; set; }
     }
 }

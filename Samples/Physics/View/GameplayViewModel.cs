@@ -14,6 +14,12 @@ namespace Physics.View
         None,
         Pumpkin,
         Log,
+        TestBox,
+        Wheel,
+        Destroy,
+        RopeJoint,
+        RevoltJoint,
+        WheelJoint,
     }
 
     public class GameplayViewModel : IViewModel
@@ -56,10 +62,33 @@ namespace Physics.View
                     case Tool.Log:
                         EntityHelper.CreateLog(world, position);
                         break;
+                    case Tool.TestBox:
+                        EntityHelper.CreateTestBox(world, position);
+                        break;
+                    case Tool.Wheel:
+                        EntityHelper.CreateWheel(world, position);
+                        break;
+                    case Tool.Destroy:
+
+                        RayCastHit hit = Physics2D.TestPoint(position);
+
+                        if (hit.Entity != null)
+                        {
+                            world.DestroyEntity(hit.Entity);
+                        }
+                        break;
+                    case Tool.RopeJoint:
+                        PhysicsDebugTools.CreateRopeJoint(position);
+                        break;
+                    case Tool.RevoltJoint:
+                        PhysicsDebugTools.CreateRevoltJoint(position);
+                        break;
+                    case Tool.WheelJoint:
+                        PhysicsDebugTools.CreateWheelJoint(position);
+                        break;
                 }
             }
             use = true;
-            
         }
 
         public void UseTool(Point point)

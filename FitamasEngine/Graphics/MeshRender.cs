@@ -8,7 +8,7 @@ namespace Fitamas.Graphics
     public class MeshRender : Component
     {
         public RectangleF TextureBounds = new RectangleF(Vector2.Zero, Vector2.One);
-        public Matireal matireal;
+        public Matireal Matireal;
 
         public MeshRender()
         {
@@ -17,7 +17,7 @@ namespace Fitamas.Graphics
 
         public MeshRender(Matireal matireal, RectangleF textureBounds)
         {
-            this.matireal = matireal;
+            this.Matireal = matireal;
             TextureBounds = textureBounds;
         }
 

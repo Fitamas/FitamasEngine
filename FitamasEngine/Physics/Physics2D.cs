@@ -8,7 +8,6 @@ using nkast.Aether.Physics2D.Dynamics;
 using System.Collections.Generic;
 using Fitamas.Math2D;
 using System;
-using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
 
@@ -16,14 +15,37 @@ namespace Fitamas.Physics
 {
     public static class Physics2D
     {
-        internal static World World;
         internal const int MaxCastDepth = 10;
+
+        internal static PhysicsSystem System;
+        internal static World World => System.World;
 
         //private static RealExplosion realExplosion;
 
         public static void Explosion(Vector2 position, float radius, float force)
         {
             //realExplosion.Activate(position, radius, force);
+        }
+
+        public static RayCastHit TestPoint(Vector2 position, LayerMask layers = default)
+        {
+            Fixture fixture = World.TestPoint(position);
+
+            if (fixture != null)
+            {
+                if (System.TryGet(fixture.Body, out Entity entity, out Collider collider))
+                {
+                    return new RayCastHit()
+                    {
+                        Point = position,
+                        Entity = entity,
+                        Collider = collider,
+                        Body = fixture.Body,
+                    };
+                }
+            }
+
+            return default;
         }
 
         public static RayCastHit[] RayCast(Vector2 position1, Vector2 position2, LayerMask layers = default)
@@ -35,10 +57,10 @@ namespace Fitamas.Physics
                 if (category.HasFlag(fixture.CollisionCategories))
                 {
                     RayCastHit hit = new RayCastHit();
-                    hit.point = point;
-                    hit.normal = normal;
-                    hit.body = fixture.Body;
-                    hit.distance = fraction;
+                    hit.Point = point;
+                    hit.Normal = normal;
+                    hit.Body = fixture.Body;
+                    hit.Distance = fraction;
                     hits.Add(hit);
                 }
                 return 1;
@@ -73,10 +95,10 @@ namespace Fitamas.Physics
                     if (output.Distance <= radius)
                     {
                         RayCastHit hit = new RayCastHit();
-                        hit.normal = (output.PointA - output.PointB).NormalizeF();
-                        hit.distance = output.Distance;
-                        hit.point = output.PointB;
-                        hit.body = fixture.Body;
+                        hit.Normal = (output.PointA - output.PointB).NormalizeF();
+                        hit.Distance = output.Distance;
+                        hit.Point = output.PointB;
+                        hit.Body = fixture.Body;
                         hits.Add(hit);
                     }
                 }
@@ -112,7 +134,7 @@ namespace Fitamas.Physics
 
                 for (int i = 0; i < hits.Length; i++)
                 {
-                    Vector2 point = hits[i].point;
+                    Vector2 point = hits[i].Point;
                     Vector2 result = MathV.ProjectOnTo(origin, origin + direction, point);
                     float a = Vector2.Distance(point, result);
                     float b = MathF.Sqrt(MathF.Abs(radius * radius - a * a));
@@ -121,14 +143,14 @@ namespace Fitamas.Physics
                     if (currentDistance <= 0.001f)
                     {
                         currentDistance = 0;
-                        hits[i].distance = 0;
+                        hits[i].Distance = 0;
                     }
                     else
                     {
-                        hits[i].distance = currentDistance;
+                        hits[i].Distance = currentDistance;
                         
                     }
-                    hits[i].normal = (origin + direction * currentDistance - point).NormalizeF();
+                    hits[i].Normal = (origin + direction * currentDistance - point).NormalizeF();
                     if (minDistance > currentDistance)
                     {
                         minDistance = currentDistance;
@@ -138,7 +160,7 @@ namespace Fitamas.Physics
                 distance = minDistance;
                 depth++;
             }
-            var sortedValues = hits.OrderBy(x => x.distance).ToArray();
+            var sortedValues = hits.OrderBy(x => x.Distance).ToArray();
 
             return sortedValues;
         }
@@ -205,10 +227,10 @@ namespace Fitamas.Physics
                         }
 
                         RayCastHit hit = new RayCastHit();
-                        hit.point = point;
-                        hit.distance = minDistance;
-                        hit.normal = normal;
-                        hit.body = fixture.Body;
+                        hit.Point = point;
+                        hit.Distance = minDistance;
+                        hit.Normal = normal;
+                        hit.Body = fixture.Body;
                         hits.Add(hit);
                     }
                 }
@@ -248,7 +270,7 @@ namespace Fitamas.Physics
             hits.AddRange(CircleCast(up, direction, distance, radius, layers));
             hits.AddRange(CircleCast(down, direction, distance, radius, layers));
             hits.AddRange(BoxCast(position, direction, distance, width, hight, 0, layers));
-            return hits.OrderBy(x => x.distance).ToArray();
+            return hits.OrderBy(x => x.Distance).ToArray();
         }
 
         public static RayCastHit[] CapsuleCast(this Collider collider, Vector2 position, Vector2 direction, float distance, LayerMask layers = default)
@@ -258,13 +280,13 @@ namespace Fitamas.Physics
 
             foreach (var hit in castHits)
             {
-                if (hit.body != collider.Body)
+                if (hit.Body != collider.Body)
                 {
                     hits.Add(hit);
                 }
             }
 
-            return hits.OrderBy(x => x.distance).ToArray();
+            return hits.OrderBy(x => x.Distance).ToArray();
         }
 
         public static bool ClosestPoint(Vector2 position, out Vector2 point, out Vector2 normal) //TODO

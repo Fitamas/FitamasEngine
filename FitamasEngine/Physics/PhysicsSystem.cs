@@ -19,7 +19,7 @@ namespace Fitamas.Physics
             Vector2 gravity = new Vector2(0, -9.8f);
 
             World = new World(gravity);
-            Physics2D.World = World;
+            Physics2D.System = this;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -102,13 +102,13 @@ namespace Fitamas.Physics
             }
         }
 
-        public bool TryGetEntity(Body body, out Entity entity)
+        internal bool TryGet(Body body, out Entity entity, out Collider collider)
         {
             foreach (var box in ActiveEntities)
             {
-                Collider boxCollider = colliderMapper.Get(box);
+                collider = colliderMapper.Get(box);
 
-                if (body == boxCollider.Body)
+                if (body == collider.Body)
                 {
                     entity = GetEntity(box);
                     return true;
@@ -116,6 +116,7 @@ namespace Fitamas.Physics
             }
 
             entity = null;
+            collider = null;
             return false;
         }
     }

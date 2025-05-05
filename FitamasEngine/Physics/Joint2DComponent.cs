@@ -124,6 +124,10 @@ namespace Fitamas.Physics
                 }
 
                 joint.CollideConnected = collideConnected;
+                joint.Broke += (j, v) =>
+                {
+
+                };
             }
         }
 
@@ -150,7 +154,7 @@ namespace Fitamas.Physics
 
         public List<Joint2D> Joints => joints;
 
-        public bool IsReady
+        public bool IsReady //TODO
         {
             get
             {

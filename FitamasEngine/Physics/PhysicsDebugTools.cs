@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using nkast.Aether.Physics2D.Dynamics;
 using nkast.Aether.Physics2D.Dynamics.Joints;
 using System;
-using System.Runtime.CompilerServices;
 
 namespace Fitamas.Physics
 {
@@ -66,56 +65,74 @@ namespace Fitamas.Physics
 
         private static  Entity entityA;
         private static Vector2 positionA;
-        private static bool isFirstConnection = true;
 
-        public static void CreateRopeConnection(EntityManager entityManager, string ropeId, Entity connectionEntity, Vector2 worldPosition)
+        public static void CreateRopeJoint(Vector2 position)
         {
-            if (isFirstConnection)
-            {
-                entityA = connectionEntity;
-                positionA = worldPosition;
-                isFirstConnection = false;
-            }
-            else
-            {
-                Vector2 localA = entityA.Get<Transform>().ToLocalPosition(positionA);
-                Vector2 localB = connectionEntity.Get<Transform>().ToLocalPosition(worldPosition);
-                float distance = Vector2.Distance(worldPosition, positionA);
+            RayCastHit hit = Physics2D.TestPoint(position);
 
-                Joint2DHelper.CreateRope(entityManager, ropeId, entityA, localA, connectionEntity, localB, distance);
+            if (hit.Entity != null)
+            {
+                if (entityA == null)
+                {
+                    entityA = hit.Entity;
+                    positionA = position;
+                }
+                else if (entityA != hit.Entity)
+                {
+                    Vector2 localA = entityA.Get<Transform>().ToLocalPosition(positionA);
+                    Vector2 localB = hit.Entity.Get<Transform>().ToLocalPosition(position);
 
-                isFirstConnection = true;
+                    Joint2DHelper.CreateRope(entityA, localA, hit.Entity, localB, Vector2.Distance(positionA, position));
+
+                    entityA = null;
+                }
             }
         }
 
-        public static void CreateRevoltConnection(Entity connectionEntity, Vector2 worldPosition)
+        public static void CreateRevoltJoint(Vector2 position)
         {
-            if (isFirstConnection)
-            {
-                entityA = connectionEntity;
-                positionA = worldPosition;
-                isFirstConnection = false;
-            }
-            else
-            {
-                Vector2 localA = entityA.Get<Transform>().ToLocalPosition(positionA);
-                Vector2 localB = connectionEntity.Get<Transform>().ToLocalPosition(worldPosition);
-                float distance = Vector2.Distance(worldPosition, positionA);
+            RayCastHit hit = Physics2D.TestPoint(position);
 
-                Joint2DHelper.CreateRevolt(entityA, localA, connectionEntity, localB);
+            if (hit.Entity != null)
+            {
+                if (entityA == null)
+                {
+                    entityA = hit.Entity;
+                    positionA = position;
+                }
+                else if (entityA != hit.Entity)
+                {
+                    Vector2 localA = entityA.Get<Transform>().ToLocalPosition(positionA);
+                    Vector2 localB = hit.Entity.Get<Transform>().ToLocalPosition(position);
 
-                isFirstConnection = true;
+                    Joint2DHelper.CreateRevolt(entityA, localA, hit.Entity, localB);
+
+                    entityA = null;
+                }
             }
         }
 
-        public static void CreateWheelConnection(EntityManager entityManager, string entityId, Entity body, Vector2 worldAnchor, Vector2 axis)
+        public static void CreateWheelJoint(Vector2 position)
         {
-            Vector2 anchor = body.Get<Transform>().ToLocalPosition(worldAnchor);
-            Entity wheel = entityManager.Create(/*entityId*/);
+            RayCastHit hit = Physics2D.TestPoint(position);
 
-            wheel.Get<Collider>().BodyPosition = worldAnchor;
+            if (hit.Entity != null)
+            {
+                if (entityA == null)
+                {
+                    entityA = hit.Entity;
+                    positionA = position;
+                }
+                else if (entityA != hit.Entity)
+                {
+                    Vector2 localA = entityA.Get<Transform>().ToLocalPosition(positionA);
+                    Vector2 localB = hit.Entity.Get<Transform>().ToLocalPosition(position);
 
-            Joint2DHelper.CreateWheel(wheel, body, anchor, axis);
+                    Joint2DHelper.CreateWheel(entityA, localA, hit.Entity, localB);
+
+                    entityA = null;
+                }
+            }
         }
     }
 }
