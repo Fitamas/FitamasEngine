@@ -8,15 +8,19 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>WDL.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Icon.ico" />
-    <None Remove="Icon.bmp" />
+    <None Remove="WDL.ico" />
+    <None Remove="WDL.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Icon.ico" />
-    <EmbeddedResource Include="Icon.bmp" />
+	<EmbeddedResource Include="WDL.ico">
+		<LogicalName>Icon.ico</LogicalName>
+	</EmbeddedResource>
+	  <EmbeddedResource Include="WDL.bmp">
+		  <LogicalName>Icon.bmp</LogicalName>
+	  </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
