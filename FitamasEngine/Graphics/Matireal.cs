@@ -6,7 +6,7 @@ namespace Fitamas.Graphics
 {
     public class Matireal : MonoObject
     {
-        [SerializableField] private Texture2D texture;
+        [SerializeField] private Texture2D texture;
 
         public Texture2D Texture => texture;
 

@@ -1,24 +1,24 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Graphics;
 using Microsoft.Xna.Framework;
-using Fitamas.Serialization;
 using Fitamas.Container;
 using Fitamas.Animation;
-using Fitamas.DebugTools;
 using Fitamas.Input;
 using Fitamas.Physics;
-using Fitamas.Physics.Characters;
 using Fitamas.Scene;
-using Fitamas.Scripting;
 using Fitamas.UserInterface;
-using Fitamas.UserInterface.ViewModel;
-using System.ComponentModel;
+using Fitamas.Graphics.ViewportAdapters;
 
 namespace Fitamas.Core
 {
     public class GameEngine : Game
     {
         private GameWorld world;
+        private LoadContentExecutor loadContentExecutor;
+        private FixedUpdateExecutor fixedUpdateExecutor;
+        private UpdateExecutor updateExecutor;
+        private DrawExecutor drawExecutor;
+        private DrawGizmosExecutor drawGizmosExecutor;
         private float accamulatorTime;
 
         public const float FixedTimeStep = 0.02f;
@@ -26,16 +26,18 @@ namespace Fitamas.Core
         public GameWorld World => world;
 
         public static GameEngine Instance { get; private set; }
-        public DIContainer Container { get; }
+        public DIContainer MainContainer { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
+        public WindowViewportAdapter WindowViewportAdapter { get; }
 
         public GameEngine()
         {
             Content.RootDirectory = "Content";
             Instance = this;
 
-            Container = new DIContainer();
+            MainContainer = new DIContainer();
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDevice);
         }
 
         protected override void Initialize()
@@ -45,10 +47,14 @@ namespace Fitamas.Core
             PlayerPrefs.Load();
 
             IsMouseVisible = true;
+            //TODO
             GraphicsDeviceManager.PreferredBackBufferWidth = 1800;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1080;
             GraphicsDeviceManager.ApplyChanges();
             Window.AllowUserResizing = true;
+
+            InputManager manager = new InputManager(this);
+            MainContainer.RegisterInstance(manager);
 
             Debug.Log("Load game content");
 
@@ -60,48 +66,33 @@ namespace Fitamas.Core
 
             Debug.Log("Load systems content");
 
-            world.LoadContent(Content);
+            loadContentExecutor.LoadContent(Content);
         }
 
         protected virtual WorldBuilder CreateWorldBuilder()
         {
             return new WorldBuilder(this)
+                //Executors
+                .AddExecutor(loadContentExecutor = new LoadContentExecutor())
+                .AddExecutor(fixedUpdateExecutor = new FixedUpdateExecutor())
+                .AddExecutor(updateExecutor = new UpdateExecutor())
+                .AddExecutor(drawExecutor = new DrawExecutor())
+                .AddExecutor(drawGizmosExecutor = new DrawGizmosExecutor())
+
                 //Load content
                 .AddSystem(new SceneSystem())
-
-                //Input
-                .AddSystem(new InputSystem())
-                //.AddSystem(new PlayerSystem())
-
-                //Phisics
-                .AddSystem(new PhysicsSystem())
-                .AddSystem(new CharacterController())
 
                 //Animation
                 .AddSystem(new AnimationSystem())
 
                 //Render
                 .AddSystem(new CameraSystem(this))
-                .AddSystem(new RenderSystem(GraphicsDevice))
-                .AddSystem(new DebugRenderSystem(GraphicsDevice))
-                
-                //User interface
-                .AddSystem(CreateGUISystem());
-        }
+                .AddSystem(new SpriteRenderSystem(GraphicsDevice))
+                .AddSystem(new MeshRenderSystem(GraphicsDevice))
+                .AddSystem(new GUISystem(this))
 
-        protected virtual GUISystem CreateGUISystem()
-        {
-            GUISystem system = new GUISystem(GraphicsDevice);
-            Container.RegisterInstance(ApplicationKey.GUISystem, system);
-
-            GUIRootBinder rootBinder = new GUIRootBinder(system);
-            Container.RegisterInstance(ApplicationKey.GUIRootBinder, rootBinder);
-
-            GUIRootViewModel rootViewModel = new GUIRootViewModel();
-            rootBinder.Bind(rootViewModel);
-            Container.RegisterInstance(ApplicationKey.GUIRootViewModel, rootViewModel);
-
-            return system;
+                //Phisics
+                .AddSystemAndRegister(new PhysicsWorldSystem(), MainContainer);
         }
 
         protected override void Update(GameTime gameTime)
@@ -113,7 +104,7 @@ namespace Fitamas.Core
             {
                 accamulatorTime -= FixedTimeStep;
 
-                world.FixedUpdate(FixedTimeStep);
+                fixedUpdateExecutor.FixedUpdate(FixedTimeStep);
             }
 
             if (!IsActive)
@@ -121,7 +112,7 @@ namespace Fitamas.Core
                 return;
             }
 
-            world.Update(gameTime);
+            updateExecutor.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -129,8 +120,14 @@ namespace Fitamas.Core
             base.Draw(gameTime);
 
             Camera.Current = Camera.Main;
+            if (Camera.Current != null)
+            {
+                GraphicsDevice.Clear(Camera.Current.Color);
+            }
 
-            world.Draw(gameTime);
+            drawExecutor.Draw(gameTime);
+            
+            drawGizmosExecutor.DrawGizmos();
         }
 
         protected override void Dispose(bool disposing)

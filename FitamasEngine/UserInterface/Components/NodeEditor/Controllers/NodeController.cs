@@ -1,4 +1,4 @@
-﻿using Fitamas.Input;
+﻿using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;

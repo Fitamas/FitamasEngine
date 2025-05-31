@@ -2,8 +2,8 @@
 using System;
 using Fitamas.Input.InputListeners;
 using ObservableCollections;
-using Fitamas.Input;
 using Fitamas.UserInterface.Input;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -23,7 +23,7 @@ namespace Fitamas.UserInterface.Components
 
         public ObservableList<string> Items { get; }
         public GUIPopup Popup { get; set; }
-        public GUIEvent<GUIComboBox, ComboBoxEventArgs> OnSelectItem { get; }
+        public MonoEvent<GUIComboBox, ComboBoxEventArgs> OnSelectItem { get; }
 
         public int SelectedItem 
         { 
@@ -77,7 +77,7 @@ namespace Fitamas.UserInterface.Components
             SelectedItem = args.Index;
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
 
         }
@@ -105,7 +105,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }

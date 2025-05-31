@@ -45,7 +45,7 @@ namespace Fitamas.UserInterface.Components
 
         private List<GUIContextItem> items;
 
-        public GUIEvent<GUIContextMenu, GUISelectContextItemEventArgs> OnSelectItem { get; }
+        public MonoEvent<GUIContextMenu, GUISelectContextItemEventArgs> OnSelectItem { get; }
 
         public GUIGroup Group { get; set; }
         public GUIComponent Target { get; set; }

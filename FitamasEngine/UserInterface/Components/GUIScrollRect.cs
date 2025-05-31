@@ -1,4 +1,5 @@
-﻿using Fitamas.Input.InputListeners;
+﻿using Fitamas.Events;
+using Fitamas.Input.InputListeners;
 using Fitamas.Math2D;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
@@ -18,7 +19,7 @@ namespace Fitamas.UserInterface.Components
         public GUISlider VerticalSlider { get; set; }
         public float Sensitivity { get; set; }
 
-        public GUIEvent<GUIScrollRect, Vector2> OnValueChanged { get; }
+        public MonoEvent<GUIScrollRect, Vector2> OnValueChanged { get; }
 
         public Vector2 Value
         {
@@ -156,7 +157,7 @@ namespace Fitamas.UserInterface.Components
             Content.Pivot = (Vector2.One - viewportSize / contentSize) * Value;
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
 
         }
@@ -171,7 +172,7 @@ namespace Fitamas.UserInterface.Components
 
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
             if (IsMouseOver)
             {

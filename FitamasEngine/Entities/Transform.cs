@@ -7,11 +7,11 @@ namespace Fitamas.Entities
 {
     public class Transform : Component
     {
-        [SerializableField] private Vector2 localPosition = Vector2.Zero;
-        [SerializableField] private Vector2 localScale = Vector2.One;
-        [SerializableField] private float localRotation = 0;
-        [SerializableField] private Transform parent;
-        [SerializableField] private List<Transform> children = new List<Transform>();
+        [SerializeField] private Vector2 localPosition = Vector2.Zero;
+        [SerializeField] private Vector2 localScale = Vector2.One;
+        [SerializeField] private float localRotation = 0;
+        [SerializeField] private Transform parent;
+        [SerializeField] private List<Transform> children = new List<Transform>();
 
         private bool isAbsoluteDirty = true;
         private bool isLocalDirty = true;

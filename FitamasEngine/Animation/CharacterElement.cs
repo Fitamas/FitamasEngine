@@ -6,10 +6,10 @@ namespace Fitamas.Animation
 {
     public class CharacterElement
     {
-        [SerializableField] private bool isRoot;
-        [SerializableField] private string name = "element";
-        [SerializableField] private string parentElement = "element";
-        [SerializableField] private Vector2 connectPosition;
+        [SerializeField] private bool isRoot;
+        [SerializeField] private string name = "element";
+        [SerializeField] private string parentElement = "element";
+        [SerializeField] private Vector2 connectPosition;
 
         public bool IsRoot => isRoot;
         public string Name => name;

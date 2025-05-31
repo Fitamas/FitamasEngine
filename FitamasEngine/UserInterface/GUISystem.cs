@@ -1,7 +1,12 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.Core;
+using Fitamas.Entities;
 using Fitamas.Extended.Entities;
+using Fitamas.Graphics;
+using Fitamas.Input;
+using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Input;
+using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -27,20 +32,36 @@ namespace Fitamas.UserInterface
         public GUICanvas Canvas => canvas;
         public GUIRoot Root => root;
 
-        public GUISystem(GraphicsDevice graphicsDevice)
+        public GUISystem(GameEngine game)
         {
-            debug = new GUIDebug(graphicsDevice);
+            debug = new GUIDebug(game.GraphicsDevice);
 
-            graphics = graphicsDevice;
-            render = new GUIRenderBatch(graphicsDevice);
+            graphics = game.GraphicsDevice;
+            render = new GUIRenderBatch(game.GraphicsDevice);
 
             canvas = new GUICanvas();
             root = new GUIRoot();
             root.SetAlignment(GUIAlignment.Stretch);
             canvas.AddChild(root);
 
-            Mouse = new GUIMouse();
-            Keyboard = new GUIKeyboard();
+            game.MainContainer.RegisterInstance(ApplicationKey.GUISystem, this);
+
+            GUIRootBinder rootBinder = new GUIRootBinder(this);
+            game.MainContainer.RegisterInstance(ApplicationKey.GUIRootBinder, rootBinder);
+
+            GUIRootViewModel rootViewModel = new GUIRootViewModel();
+            rootBinder.Bind(rootViewModel);
+            game.MainContainer.RegisterInstance(ApplicationKey.GUIRootViewModel, rootViewModel);
+
+            KeyboardListenerSettings settings = new KeyboardListenerSettings();
+            KeyboardListener keyboard = new KeyboardListener(settings);
+            MouseListener mouse = new MouseListener(Camera.Main.ViewportAdapter);
+
+            InputListenerComponent component = new InputListenerComponent(game, mouse, keyboard);
+            game.Components.Add(component);
+
+            Mouse = new GUIMouse(mouse);
+            Keyboard = new GUIKeyboard(keyboard);
         }
 
         public void Initialize(GameWorld world)
@@ -55,9 +76,6 @@ namespace Fitamas.UserInterface
 
         public void Update(GameTime gameTime)
         {
-            Mouse.Update(gameTime);
-            Keyboard.Update(gameTime);
-
             onMouse.Clear();
             Point mousePosition = Mouse.Position;
             RaycastAll(mousePosition, onMouse);

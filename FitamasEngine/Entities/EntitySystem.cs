@@ -31,11 +31,9 @@ namespace Fitamas.Entities
 {
     public abstract class EntitySystem : ISystem
     {
-        private readonly AspectBuilder _aspectBuilder;
+        private AspectBuilder _aspectBuilder;
         private EntitySubscription _subscription;
         private GameWorld _world;
-
-        public GameWorld GameWorld => _world;
 
         public Bag<int> ActiveEntities => _subscription.ActiveEntities;
 
@@ -72,8 +70,29 @@ namespace Fitamas.Entities
 
         public abstract void Initialize(IComponentMapperService mapperService);
 
-        protected void DestroyEntity(int entityId) => _world.DestroyEntity(entityId);
-        protected Entity CreateEntity() => _world.CreateEntity();
-        protected Entity GetEntity(int entityId) => _world.GetEntity(entityId);
+        protected void DestroyEntity(int entityId)
+        {
+            _world.DestroyEntity(entityId);
+        }
+
+        protected void DestroyEntity(Entity entity)
+        {
+            _world.DestroyEntity(entity);
+        }
+
+        protected Entity CreateEntity()
+        {
+            return _world.CreateEntity();
+        }
+
+        protected Entity GetEntity(int entityId)
+        {
+            return _world.GetEntity(entityId);
+        }
+
+        protected bool Contains(Entity entity)
+        {
+            return _world.Contains(entity);
+        }
     }
 }

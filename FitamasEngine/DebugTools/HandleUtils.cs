@@ -21,27 +21,27 @@ namespace Fitamas.Editor
 
         public static Handle Handle => handle;
 
-        //public static Vector2 PositionHandle(Vector2 position, float rotation, Vector2 mousePosition)
-        //{
-        //    Handle handle = GetHandle(position, rotation, mousePosition, out Vector2 localMousePosition);
+        public static Vector2 PositionHandle(Vector2 position, float rotation, Vector2 mousePosition, bool isClicked, bool isDragging)
+        {
+            Handle handle = GetHandle(position, rotation, mousePosition, out Vector2 localMousePosition);
 
-        //    if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
-        //    {
-        //        HandleUtils.handle = handle;
-        //        offset = localMousePosition;
-        //    }
-        //    if (ImGui.IsMouseDragging(ImGuiMouseButton.Left))
-        //    {
-        //        DebugGizmo.DrawAnchor(position, rotation, HandleUtils.handle);
-        //        return PlaneHandle(position, rotation, mousePosition, offset, HandleUtils.handle);
-        //    }
-        //    else
-        //    {
-        //        DebugGizmo.DrawAnchor(position, rotation, handle);
-        //    }
+            if (isClicked)
+            {
+                HandleUtils.handle = handle;
+                offset = localMousePosition;
+            }
+            if (isDragging)
+            {
+                Gizmos.DrawAnchor(position, rotation, handle);
+                return PlaneHandle(position, rotation, mousePosition, offset, handle);
+            }
+            else
+            {
+                Gizmos.DrawAnchor(position, rotation, handle);
+            }
 
-        //    return position;
-        //}
+            return position;
+        }
 
         public static Handle GetHandle(Vector2 position, float rotation, Vector2 mousePosition, out Vector2 localMousePosition)
         {
@@ -56,8 +56,8 @@ namespace Fitamas.Editor
 
         public static Handle GetHandle(Vector2 localMousePosition)
         {
-            Vector2 size = DebugGizmo.AnchorSize;
-            Vector2 handleSize = DebugGizmo.HandleSize;
+            Vector2 size = Gizmos.AnchorSize;
+            Vector2 handleSize = Gizmos.HandleSize;
             RectangleF rectangleXY = new RectangleF(new Vector2(), handleSize);
             RectangleF rectangleX = new RectangleF(new Vector2(0, -size.Y / 2), new Vector2(size.X, size.Y * 2));
             RectangleF rectangleY = new RectangleF(new Vector2(-size.Y / 2, 0), new Vector2(size.Y * 2, size.X));

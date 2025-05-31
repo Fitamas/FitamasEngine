@@ -1,4 +1,5 @@
 ﻿using Fitamas;
+using Fitamas.Events;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Input;
@@ -17,11 +18,11 @@ namespace Physics.View
 
             ResourceDictionary dictionary = ResourceDictionary.DefaultResources;
 
-            GUIEventManager.Register(GUIMouse.MouseEnterGUIEvent, new GUIEvent<GUIComponent, GUIEventArgs>((c, a) =>
+            GUIEventManager.Register(GUIMouse.MouseEnterGUIEvent, new MonoEvent<GUIComponent, GUIEventArgs>((c, a) =>
             {
                 viewModel.CanUse = false;
             }));
-            GUIEventManager.Register(GUIMouse.MouseExitGUIEvent, new GUIEvent<GUIComponent, GUIEventArgs>((c, a) =>
+            GUIEventManager.Register(GUIMouse.MouseExitGUIEvent, new MonoEvent<GUIComponent, GUIEventArgs>((c, a) =>
             {
                 viewModel.CanUse = true;
             }));

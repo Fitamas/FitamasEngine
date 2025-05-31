@@ -26,15 +26,17 @@
 */
 
 using System;
+using Fitamas.Input.Actions;
 using Microsoft.Xna.Framework.Input;
 
 namespace Fitamas.Input.InputListeners
 {
     public class KeyboardEventArgs : EventArgs
     {
-        public KeyboardEventArgs(Keys key, KeyboardState keyboardState)
+        public KeyboardEventArgs(KeyboardState keyboardState, Keys key, KeyState state)
         {
             Key = key;
+            State = state;
             PressedKeys = keyboardState.GetPressedKeys();
             CurrentState = keyboardState;
 
@@ -51,6 +53,7 @@ namespace Fitamas.Input.InputListeners
         }
 
         public Keys Key { get; }
+        public KeyState State { get; }
         public Keys[] PressedKeys { get; }
         public KeyboardModifiers Modifiers { get; }
         public KeyboardState CurrentState { get; }

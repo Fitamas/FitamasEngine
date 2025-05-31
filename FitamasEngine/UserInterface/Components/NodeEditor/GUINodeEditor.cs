@@ -1,9 +1,10 @@
-﻿using Fitamas.Input;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using Fitamas.UserInterface.Components.NodeEditor.Controllers;
 using Fitamas.UserInterface.Input;
+using Fitamas.Input.InputListeners;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Components.NodeEditor
 {
@@ -79,18 +80,18 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public GUIComponent Content { get; }
         public GUIComponent SelectRegion { get; set; }
 
-        public GUIEvent<GUINodeEventArgs> OnNodeEvent = new GUIEvent<GUINodeEventArgs>();
+        public MonoEvent<GUINodeEventArgs> OnNodeEvent = new MonoEvent<GUINodeEventArgs>();
 
-        public GUIEvent<GUIWire> OnCreateWire = new GUIEvent<GUIWire>();
-        public GUIEvent<GUIWire> OnDestroyWire = new GUIEvent<GUIWire>();
+        public MonoEvent<GUIWire> OnCreateWire = new MonoEvent<GUIWire>();
+        public MonoEvent<GUIWire> OnDestroyWire = new MonoEvent<GUIWire>();
 
-        public GUIEvent<GUICreateConnectionEventArgs> OnCreateConnection = new GUIEvent<GUICreateConnectionEventArgs>();
+        public MonoEvent<GUICreateConnectionEventArgs> OnCreateConnection = new MonoEvent<GUICreateConnectionEventArgs>();
 
-        public GUIEvent<GUIKeyboardEventArgs> OnKeybordEvent = new GUIEvent<GUIKeyboardEventArgs>();
-        public GUIEvent<GUINodeEditorEventArgs> OnMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
-        public GUIEvent<GUINodeEditorEventArgs> OnPinInteractMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
-        public GUIEvent<GUINodeEditorEventArgs> OnNodeInteractMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
-        public GUIEvent<GUINodeEditorEventArgs> OnWireInteractMouseEvent = new GUIEvent<GUINodeEditorEventArgs>();
+        public MonoEvent<GUIKeyboardEventArgs> OnKeybordEvent = new MonoEvent<GUIKeyboardEventArgs>();
+        public MonoEvent<GUINodeEditorEventArgs> OnMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
+        public MonoEvent<GUINodeEditorEventArgs> OnPinInteractMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
+        public MonoEvent<GUINodeEditorEventArgs> OnNodeInteractMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
+        public MonoEvent<GUINodeEditorEventArgs> OnWireInteractMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
 
         public List<GUINode> Nodes => nodes;
         public List<GUIWire> Wires => wires;
@@ -217,17 +218,14 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             return false;
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
             if (!IsFocused)
             {
                 return;
             }
 
-            Point mousePosition = InputSystem.mouse.MousePosition;
-            Point delta = InputSystem.mouseDelta;
-
-            GUINodeEditorEventArgs args0 = new GUINodeEditorEventArgs(mousePosition, delta, mouse.Button, GUINodeEditorEventType.Moved, this);
+            GUINodeEditorEventArgs args0 = new GUINodeEditorEventArgs(mouse.Position, mouse.Delta, MouseButton.None, GUINodeEditorEventType.Moved, this);
             OnMouseEvent.Invoke(args0);
         }
 
@@ -246,7 +244,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }
@@ -288,7 +286,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
                 return;
             }
 
-            Point delta = mouse.DistanceMoved;
+            Point delta = mouse.Delta;
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mouse.Position, delta, mouse.Button, eventType, this);
             OnMouseEvent.Invoke(args);
         }

@@ -26,35 +26,41 @@
 */
 
 using Fitamas.Collections;
-using Fitamas.Container;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Fitamas.Entities
 {
     public class WorldBuilder
     {
-        private Bag<ISystem> _systems = new Bag<ISystem>();
+        private Bag<IExecutor> executors = new Bag<IExecutor>();
+        private Bag<ISystem> systems = new Bag<ISystem>();
         private Game game;
 
         public WorldBuilder(Game game)
         {
+            executors = new Bag<IExecutor>();
+            systems = new Bag<ISystem>();
             this.game = game;         
         }
 
         public WorldBuilder AddSystem(ISystem system)
         {
-            _systems.Add(system);
+            systems.Add(system);
+            return this;
+        }
+
+        public WorldBuilder AddExecutor(IExecutor executor)
+        {
+            executors.Add(executor);
             return this;
         }
 
         public GameWorld Build()
         {
-            var world = new GameWorld(game);
+            var world = new GameWorld(executors);
 
-            foreach (var system in _systems)
+            foreach (var system in systems)
                 world.RegisterSystem(system);
 
             return world;

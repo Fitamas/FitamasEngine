@@ -1,4 +1,6 @@
-﻿using Fitamas.UserInterface.Components;
+﻿using Fitamas.Events;
+using Fitamas.Input.InputListeners;
+using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Input;
 using System;
 
@@ -14,8 +16,8 @@ namespace Fitamas.UserInterface
 
         static GUIContextMenuManager()
         {
-            GUIEventManager.Register(ContextMenuOpeningEvent, new GUIEvent<GUIComponent, GUIContextMenuEventArgs>(OnOpenContextMenu));
-            GUIEventManager.Register(ContextMenuClosingEvent, new GUIEvent<GUIComponent, GUIContextMenuEventArgs>(OnCloseContextMenu));
+            GUIEventManager.Register(ContextMenuOpeningEvent, new MonoEvent<GUIComponent, GUIContextMenuEventArgs>(OnOpenContextMenu));
+            GUIEventManager.Register(ContextMenuClosingEvent, new MonoEvent<GUIComponent, GUIContextMenuEventArgs>(OnCloseContextMenu));
 
             GUIEventManager.GetEvent(GUIMouse.MouseUpEvent).AddDelegate(OpenContextMenu);
         }
@@ -64,7 +66,7 @@ namespace Fitamas.UserInterface
 
         private static void OpenContextMenu(GUIComponent component, GUIMouseEventArgs args)
         {
-            if (args.Button != Fitamas.Input.MouseButton.Right || !component.IsMouseOver)
+            if (args.Button != MouseButton.Right || !component.IsMouseOver)
             {
                 return;
             }

@@ -1,4 +1,5 @@
-﻿using Fitamas.Input;
+﻿using Fitamas.Events;
+using Fitamas.Input;
 using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -19,9 +20,9 @@ namespace Fitamas.UserInterface.Input
 
         public GUIComponent Focused { get; set; }
 
-        public GUIKeyboard()
+        public GUIKeyboard(KeyboardListener listener)
         {
-            listener = new KeyboardListener();
+            this.listener = listener;
 
             listener.KeyTyped += (s, a) =>
             {
@@ -37,11 +38,6 @@ namespace Fitamas.UserInterface.Input
             };
         }
 
-        public void Update(GameTime gameTime)
-        {
-            listener.Update(gameTime);
-        }
-
         private void InvokeEvent(GUIKeyboardEventArgs args)
         {
             Focused?.RaiseEvent(args);
@@ -49,9 +45,9 @@ namespace Fitamas.UserInterface.Input
 
         static GUIKeyboard()
         {
-            GUIEventManager.Register(KeyDownEvent, new GUIEvent<GUIComponent, GUIKeyboardEventArgs>(OnKeyDown));
-            GUIEventManager.Register(KeyEvent, new GUIEvent<GUIComponent, GUIKeyboardEventArgs>(OnKey));
-            GUIEventManager.Register(KeyUpEvent, new GUIEvent<GUIComponent, GUIKeyboardEventArgs>(OnKeyUp));
+            GUIEventManager.Register(KeyDownEvent, new MonoEvent<GUIComponent, GUIKeyboardEventArgs>(OnKeyDown));
+            GUIEventManager.Register(KeyEvent, new MonoEvent<GUIComponent, GUIKeyboardEventArgs>(OnKey));
+            GUIEventManager.Register(KeyUpEvent, new MonoEvent<GUIComponent, GUIKeyboardEventArgs>(OnKeyUp));
         }
 
         private static void OnKeyDown(GUIComponent sender, GUIKeyboardEventArgs args)

@@ -5,9 +5,9 @@ namespace Fitamas.UserInterface.Input
 {
     public interface IMouseEvent
     {
-        void OnMovedMouse(GUIMouseEventArgs mouse);
+        void OnMovedMouse(GUIMousePositionEventArgs mouse);
         void OnClickedMouse(GUIMouseEventArgs mouse);
         void OnReleaseMouse(GUIMouseEventArgs mouse);
-        void OnScrollMouse(GUIMouseEventArgs mouse);
+        void OnScrollMouse(GUIMouseWheelEventArgs mouse);
     }
 }

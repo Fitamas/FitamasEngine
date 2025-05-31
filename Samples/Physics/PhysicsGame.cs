@@ -6,6 +6,8 @@ using Physics.View;
 using Fitamas.UserInterface.ViewModel;
 using Physics.Gameplay;
 using Microsoft.Xna.Framework;
+using Fitamas.Input;
+using Physics.Settings;
 
 namespace Physics
 {
@@ -15,19 +17,23 @@ namespace Physics
         {
             base.Initialize();
 
-            GameplayViewModel viewModel = new GameplayViewModel(World);
-            Container.RegisterInstance(viewModel);
+            GameplayViewModel viewModel = new GameplayViewModel(this);
+            MainContainer.RegisterInstance(viewModel);
 
             GameplayScreenViewModel screen = new GameplayScreenViewModel(viewModel);
-            Container.RegisterInstance(screen);
-            GUIRootViewModel root = Container.Resolve<GUIRootViewModel>(ApplicationKey.GUIRootViewModel);
+            MainContainer.RegisterInstance(screen);
+            GUIRootViewModel root = MainContainer.Resolve<GUIRootViewModel>(ApplicationKey.GUIRootViewModel);
             root.OpenScreen(screen);
 
-            GameplayInputBinder binder = new GameplayInputBinder();
+            InputManager manager = MainContainer.Resolve<InputManager>();
+            ActionMap map = new ActionMap();
+            manager.AddActionMap(map.InputActionMap);
+            GameplayInputBinder binder = new GameplayInputBinder(map);
             binder.Bind(viewModel);
 
             EntityHelper.CreatePumpkin(World, Vector2.Zero);
             EntityHelper.CreateRock(World, new Vector2(0, -15));
+
         }
 
         protected override void LoadContent()

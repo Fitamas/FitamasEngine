@@ -1,5 +1,4 @@
-﻿using Fitamas.Input;
-using Fitamas.Input.InputListeners;
+﻿using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using System;
@@ -64,8 +63,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         protected override void OnMouseEntered()
         {
-            Point mousePosition = InputSystem.mouse.MousePosition;
-            Point delta = InputSystem.mouseDelta;
+            Point mousePosition = System.Mouse.Position;
+            Point delta = System.Mouse.Delta;
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
                            MouseButton.None, GUINodeEditorEventType.Entered, this);
             NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
@@ -73,8 +72,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         protected override void OnMouseExitted()
         {
-            Point mousePosition = InputSystem.mouse.MousePosition;
-            Point delta = InputSystem.mouseDelta;
+            Point mousePosition = System.Mouse.Position;
+            Point delta = System.Mouse.Delta;
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
                                       MouseButton.None, GUINodeEditorEventType.Exitted, this);
             NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
@@ -87,7 +86,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             return nodeItem;
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
 
         }
@@ -102,7 +101,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }
@@ -129,7 +128,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
                 return;
             }
 
-            Point delta = mouse.DistanceMoved;
+            Point delta = mouse.Delta;
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mouse.Position, delta, mouse.Button, eventType, this);
             NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
         }

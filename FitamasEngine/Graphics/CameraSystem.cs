@@ -1,13 +1,17 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.Core;
+using Fitamas.Entities;
 using Fitamas.Input;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Fitamas.Graphics
 {
     public class CameraSystem : EntitySystem, IUpdateSystem
     {
+        private GraphicsDevice graphics;
+
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<CameraFollow> followMapper;
 
@@ -22,9 +26,10 @@ namespace Fitamas.Graphics
 
         private float debugCameraSpeed = 15;
 
-        public CameraSystem(Game game) : base(Aspect.All(typeof(Transform), typeof(CameraFollow)))
+        public CameraSystem(GameEngine game) : base(Aspect.All(typeof(Transform), typeof(CameraFollow)))
         {
             camera = new Camera(game);
+            graphics = game.GraphicsDevice;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -45,18 +50,18 @@ namespace Fitamas.Graphics
                         int id = ActiveEntities[0];
                         Transform transform = transformMapper.Get(id);
 
-                        Vector2 targetPosition = transform.Position;
-                        Vector2 cameraTarget = Vector2.Lerp(targetPosition, InputSystem.mousePositionInWorld, attachment) - targetPosition;
-                        if (cameraTarget.LengthSquared() > maxDistance * maxDistance)
-                        {
-                            localPosition = cameraTarget.NormalizeF() * maxDistance;
-                        }
-                        else
-                        {
-                            localPosition = Vector2.Lerp(localPosition, cameraTarget, timeDelta * cameraSpeed);
-                        }
+                        //Vector2 targetPosition = transform.Position;
+                        //Vector2 cameraTarget = Vector2.Lerp(targetPosition, InputSystem.mousePositionInWorld, attachment) - targetPosition;
+                        //if (cameraTarget.LengthSquared() > maxDistance * maxDistance)
+                        //{
+                        //    localPosition = cameraTarget.NormalizeF() * maxDistance;
+                        //}
+                        //else
+                        //{
+                        //    localPosition = Vector2.Lerp(localPosition, cameraTarget, timeDelta * cameraSpeed);
+                        //}
 
-                        camera.Position = localPosition + targetPosition;
+                        //camera.Position = localPosition + targetPosition;
                     }
                     break;
                 case CameraType.Follow:
@@ -69,10 +74,10 @@ namespace Fitamas.Graphics
                     }
                     break;
                 case CameraType.Debug:
-                    Vector2 direction = InputSystem.actionMaps.Direction.Value;
-                    float zoom = InputSystem.actionMaps.Scroll.Value * 4;
-                    camera.MoveCamera(direction * debugCameraSpeed * timeDelta);
-                    camera.AdjustZoom(zoom);
+                    //Vector2 direction = InputSystem.actionMaps.Direction.Value;
+                    //float zoom = InputSystem.actionMaps.Scroll.Value * 4;
+                    //camera.MoveCamera(direction * debugCameraSpeed * timeDelta);
+                    //camera.AdjustZoom(zoom);
                     break;
             }
         }

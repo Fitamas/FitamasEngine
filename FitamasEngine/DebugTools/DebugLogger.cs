@@ -26,9 +26,7 @@ namespace Fitamas.DebugTools
 
         public void LogRaw(MessageType type, DateTime time, string message)
         {
-            string typeStr = "[" + type.ToString() + "] ";
-            string date = "[" + time.ToLongTimeString() + "] ";
-            LogRaw(typeStr + date + message);
+            LogRaw($"[{type}] [{time.ToLongTimeString()}] {message}");
 
             OnLogMessage?.Invoke(type, time, message);
         }

@@ -53,7 +53,7 @@ namespace Fitamas.Core
             foreach (FieldInfo field in fields)
             {
                 if ((field.IsPublic && field.GetCustomAttribute(typeof(NonSerializedAttribute)) == null)
-                || (!field.IsPublic && field.GetCustomAttribute(typeof(SerializableFieldAttribute)) != null))
+                || (!field.IsPublic && field.GetCustomAttribute(typeof(SerializeFieldAttribute)) != null))
                 {
                     result.Add(field);
                 }

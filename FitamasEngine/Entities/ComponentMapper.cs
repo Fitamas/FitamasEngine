@@ -1,9 +1,6 @@
 ﻿using Fitamas.Collections;
-using nkast.Aether.Physics2D.Dynamics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 /*
     The MIT License (MIT)
 
@@ -31,42 +28,57 @@ using System.Text;
     SOFTWARE.
 */
 
-using System.Threading.Tasks;
-
 namespace Fitamas.Entities
 {
-    public class ComponentMapper
+    public abstract class ComponentMapper
     {
         public Action<int> OnPut;
         public Action<int> OnDelete;
         public Action<int> OnCompositionChanged;
 
-        public Bag<object> Components { get; }
 
         public ComponentMapper(int id, Type componentType, Action<int> onCompositionChanged)
         {
             OnCompositionChanged = onCompositionChanged;
             Id = id;
             ComponentType = componentType;
-            Components = new Bag<object>();
         }
 
         public int Id { get; }
         public Type ComponentType { get; }
 
-        public object GetObject(int id)
+        public abstract void Put(int entityId, object component);
+
+        public abstract bool Has(int entityId);
+
+        public abstract object GetObject(int entityId);
+
+        public abstract void Delete(int entityId);
+    }
+
+    public class ComponentMapper<T> : ComponentMapper where T : class
+    {
+        protected Bag<T> Components { get; }
+
+        public ComponentMapper(int id, Action<int> onCompositionChanged) 
+            : base(id, typeof(T), onCompositionChanged)
         {
-            return Components[id];
+            Components = new Bag<T>();
         }
 
-        public void Put(int entityId, object component)
+        public override void Put(int entityId, object component)
+        {
+            Put(entityId, (T)component);
+        }
+
+        public void Put(int entityId, T component)
         {
             Components[entityId] = component;
             OnCompositionChanged?.Invoke(entityId);
             OnPut?.Invoke(entityId);
         }
 
-        public bool Has(int entityId)
+        public override bool Has(int entityId)
         {
             if (entityId >= Components.Count)
                 return false;
@@ -74,20 +86,9 @@ namespace Fitamas.Entities
             return Components[entityId] != null;
         }
 
-        public void Delete(int entityId)
+        public override object GetObject(int entityId)
         {
-            Components[entityId] = null;
-            OnCompositionChanged?.Invoke(entityId);
-            OnDelete?.Invoke(entityId);
-        }
-    }
-
-    public class ComponentMapper<T> : ComponentMapper where T : class
-    {
-        public ComponentMapper(int id, Action<int> onCompositionChanged) 
-            : base(id, typeof(T), onCompositionChanged)
-        {
-
+            return Components[entityId];
         }
 
         public T Get(Entity entity)
@@ -97,14 +98,14 @@ namespace Fitamas.Entities
 
         public T Get(int entityId)
         {
-            return (T)Components[entityId];
+            return Components[entityId];
         }
 
         public bool TryGet(int entityId, out T output)
         {
             if (entityId < Components.Count && Components[entityId] != null)
             {
-                output = (T)Components[entityId];
+                output = Components[entityId];
                 return true;
             }
             else
@@ -112,6 +113,13 @@ namespace Fitamas.Entities
                 output = null;
                 return false;
             }
+        }
+
+        public override void Delete(int entityId)
+        {
+            Components[entityId] = null;
+            OnCompositionChanged?.Invoke(entityId);
+            OnDelete?.Invoke(entityId);
         }
     }
 }

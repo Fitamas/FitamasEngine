@@ -10,18 +10,20 @@ namespace Fitamas.Physics.Characters
     {
         private const int bounces = 10;
 
+        private PhysicsWorldSystem physicsWorld;
+
         private ComponentMapper<Character> characterMapper;
-        private ComponentMapper<Collider> colliderMapper;
+        private ComponentMapper<PhysicsCollider> colliderMapper;
 
-        public CharacterController() : base(Aspect.All(typeof(Collider), typeof(Character)))
+        public CharacterController(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(PhysicsCollider), typeof(Character)))
         {
-
+            this.physicsWorld = physicsWorld;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
             characterMapper = mapperService.GetMapper<Character>();
-            colliderMapper = mapperService.GetMapper<Collider>();
+            colliderMapper = mapperService.GetMapper<PhysicsCollider>();
         }
 
         public override void FixedUpdate(float deltaTime)
@@ -30,7 +32,7 @@ namespace Fitamas.Physics.Characters
             {
                 if (characterMapper.Has(id))
                 {
-                    Collider collider = colliderMapper.Get(id);
+                    PhysicsCollider collider = colliderMapper.Get(id);
                     Character character = characterMapper.Get(id);
 
                     if (!character.canMove)
@@ -38,95 +40,95 @@ namespace Fitamas.Physics.Characters
                         return;
                     }
 
-                    Update(character, collider, deltaTime);
+                    //Update(character, collider, deltaTime);
                 }
             }
         }
 
-        private void Update(Character character, Collider collider, float deltaTime)
-        {
-            //collider.Body.LinearVelocity = character.velocity;
+        //private void Update(Character character, Collider collider, float deltaTime)
+        //{
+        //    //collider.Body.LinearVelocity = character.velocity;
 
-            GroundCheck(character, collider, collider.Position);
-            RoofCheck(character, collider, collider.Position);
+        //    GroundCheck(character, collider, collider.Position);
+        //    RoofCheck(character, collider, collider.Position);
 
-            //Debug.Log(character.isGrounded);
+        //    //Debug.Log(character.isGrounded);
 
-            if (character.isGrounded && character.isRoofed)
-            {
-                character.isSlide = false;
-            }
+        //    if (character.isGrounded && character.isRoofed)
+        //    {
+        //        character.isSlide = false;
+        //    }
 
-            if (!character.isGrounded)
-            {
-                character.velocity += character.gravity;
-            }
-            else if (character.isSlide)
-            {
-                character.velocity += character.gravity * character.slideMult;
-            }
-            else if (character.isRoofed && character.velocity.Y > 0)
-            {
-                character.velocity.Y = 0;
-            }
-            else if (character.isGrounded && character.velocity.Y < 0)
-            {
-                character.velocity.Y = 0;
-            }
-
-
-            Vector2 delta = SlideRigidBody(character, collider, collider.Position, character.velocity * deltaTime);
-
-            if (delta.Length() < character.minMoveDistance)
-            {
-                delta = Vector2.Zero;
-            }
-            if (delta.Length() > character.maxMoveDistance)
-            {
-                delta = delta.NormalizeF() * character.maxMoveDistance;
-            }
-            character.currentVelocity = delta;
-
-            collider.BodyPosition += delta;
+        //    if (!character.isGrounded)
+        //    {
+        //        character.velocity += character.gravity;
+        //    }
+        //    else if (character.isSlide)
+        //    {
+        //        character.velocity += character.gravity * character.slideMult;
+        //    }
+        //    else if (character.isRoofed && character.velocity.Y > 0)
+        //    {
+        //        character.velocity.Y = 0;
+        //    }
+        //    else if (character.isGrounded && character.velocity.Y < 0)
+        //    {
+        //        character.velocity.Y = 0;
+        //    }
 
 
-            //RaycastHit2D[] hits = CapsuleCastAll(position, Vector2.zero, 0, capsuleCollider.size + new Vector2(ContactOffset, contactOffset) * 2, capsuleCollider.offset);
+        //    Vector2 delta = SlideRigidBody(character, collider, collider.Position, character.velocity * deltaTime);
 
-            //List<IColliding> collid = new List<IColliding>();
+        //    if (delta.Length() < character.minMoveDistance)
+        //    {
+        //        delta = Vector2.Zero;
+        //    }
+        //    if (delta.Length() > character.maxMoveDistance)
+        //    {
+        //        delta = delta.NormalizeF() * character.maxMoveDistance;
+        //    }
+        //    character.currentVelocity = delta;
 
-            //foreach (RaycastHit2D _hit in hits)
-            //{
-            //    if (_hit.collider != null)
-            //    {
-            //        IColliding colliding = _hit.collider.GetComponent<IColliding>();
+        //    collider.BodyPosition += delta;
 
-            //        if (colliding != null)
-            //        {
-            //            if (!collidings.Contains(colliding))
-            //            {
-            //                colliding.ColliderEnter(_hit, this);
-            //            }
-            //            collid.Add(colliding);
-            //        }
-            //    }
-            //}
 
-            //foreach (var col in collidings)
-            //{
-            //    if (!collid.Contains(col))
-            //    {
-            //        col.ColliderExit(this);
-            //    }
-            //}
-            //collidings = collid;
+        //    //RaycastHit2D[] hits = CapsuleCastAll(position, Vector2.zero, 0, capsuleCollider.size + new Vector2(ContactOffset, contactOffset) * 2, capsuleCollider.offset);
 
-            //foreach (var col in collidings)
-            //{
-            //    col.ColliderStay(this);
-            //}
-        }
+        //    //List<IColliding> collid = new List<IColliding>();
 
-        private Vector2 SlideRigidBody(Character character, Collider collider, Vector2 origin, Vector2 initVelocity)
+        //    //foreach (RaycastHit2D _hit in hits)
+        //    //{
+        //    //    if (_hit.collider != null)
+        //    //    {
+        //    //        IColliding colliding = _hit.collider.GetComponent<IColliding>();
+
+        //    //        if (colliding != null)
+        //    //        {
+        //    //            if (!collidings.Contains(colliding))
+        //    //            {
+        //    //                colliding.ColliderEnter(_hit, this);
+        //    //            }
+        //    //            collid.Add(colliding);
+        //    //        }
+        //    //    }
+        //    //}
+
+        //    //foreach (var col in collidings)
+        //    //{
+        //    //    if (!collid.Contains(col))
+        //    //    {
+        //    //        col.ColliderExit(this);
+        //    //    }
+        //    //}
+        //    //collidings = collid;
+
+        //    //foreach (var col in collidings)
+        //    //{
+        //    //    col.ColliderStay(this);
+        //    //}
+        //}
+
+        private Vector2 SlideRigidBody(Character character, PhysicsCollider collider, Vector2 origin, Vector2 initVelocity)
         {
             Vector2 position = origin;
             Vector2 velocity = initVelocity;
@@ -136,7 +138,7 @@ namespace Fitamas.Physics.Characters
                 float distance = velocity.Length() + character.skinSize;
                 bool isHit = false;
                 RayCastHit hit = new RayCastHit();
-                RayCastHit[] hits = collider.CapsuleCast(position, velocity, distance, character.layerMask);
+                RayCastHit[] hits = physicsWorld.CapsuleCast(position, velocity, distance, collider.Size, character.layerMask);
 
                 if (hits.Length > 0)
                 {
@@ -244,11 +246,11 @@ namespace Fitamas.Physics.Characters
 
 
 
-        private Vector2 DownStairs(Character character, Collider collider, Vector2 position)
+        private Vector2 DownStairs(Character character, PhysicsCollider collider, Vector2 position)
         {
             float distance = character.maxHightStair + character.skinSize;
             //RaycastHit2D hit = CapsuleCast(position, Vector2.down, distance);
-            RayCastHit[] hits = collider.CapsuleCast(position, new Vector2(0, -1), distance, character.layerMask);
+            RayCastHit[] hits = physicsWorld.CapsuleCast(position, new Vector2(0, -1), distance, collider.Size, character.layerMask);
 
             if (hits.Length > 0)
             {
@@ -276,7 +278,7 @@ namespace Fitamas.Physics.Characters
             return Vector2.Zero;
         }
 
-        private void GroundCheck(Character character, Collider collider, Vector2 position)
+        private void GroundCheck(Character character, PhysicsCollider collider, Vector2 position)
         {
             bool grounded = false;
             bool slide = false;
@@ -284,7 +286,7 @@ namespace Fitamas.Physics.Characters
             character.groundNormal = Vector2.Zero;
 
             //RaycastHit2D hit = CapsuleCast(position, Vector3.down, 2 * contactOffset);
-            RayCastHit[] hits = collider.CapsuleCast(position, new Vector2(0, -1), character.skinSize * 2, character.layerMask);
+            RayCastHit[] hits = physicsWorld.CapsuleCast(position, new Vector2(0, -1), character.skinSize * 2, collider.Size, character.layerMask);
 
             foreach (RayCastHit hit in hits)
             {
@@ -328,14 +330,14 @@ namespace Fitamas.Physics.Characters
             }
         }
 
-        private void RoofCheck(Character character, Collider collider, Vector2 position)
+        private void RoofCheck(Character character, PhysicsCollider collider, Vector2 position)
         {
             bool roofed = false;
 
             character.roofNormal = Vector2.Zero;
 
             //RaycastHit2D hit = CapsuleCast(position, Vector3.up, 2 * contactOffset);
-            RayCastHit[] hits = collider.CapsuleCast(position, new Vector2(0, 1), character.skinSize * 2, character.layerMask); //CapsuleCastAll(position, Vector2.down, 2 * contactOffset);
+            RayCastHit[] hits = physicsWorld.CapsuleCast(position, new Vector2(0, 1), character.skinSize * 2, collider.Size, character.layerMask); //CapsuleCastAll(position, Vector2.down, 2 * contactOffset);
 
             foreach (var hit in hits)
             {

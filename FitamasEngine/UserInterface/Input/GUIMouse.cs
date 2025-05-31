@@ -1,4 +1,5 @@
-﻿using Fitamas.Input;
+﻿using Fitamas.Events;
+using Fitamas.Input;
 using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -30,9 +31,10 @@ namespace Fitamas.UserInterface.Input
         private MouseListener listener;
         private GUIComponent mouseOver;
 
-        public Point Position => listener.MousePosition;
+        public Point Position => listener.Position;
         public bool MouseOnGUI => mouseOver != null;
 
+        public Point Delta => listener.Delta;
         public GUIComponent MouseCapture { get; set; }
 
         public GUIComponent MouseOver 
@@ -69,13 +71,13 @@ namespace Fitamas.UserInterface.Input
             }
         }
 
-        public GUIMouse()
+        public GUIMouse(MouseListener listener)
         {
-            listener = new MouseListener();
+            this.listener = listener;
 
             listener.MouseMoved += (s, a) =>
             {
-                InvokeEvent(new GUIMouseEventArgs(a, MouseMovedEvent, MouseOver));
+                InvokeEvent(new GUIMousePositionEventArgs(a, MouseMovedEvent, MouseOver));
             };
             listener.MouseDown += (s, a) =>
             {
@@ -87,7 +89,7 @@ namespace Fitamas.UserInterface.Input
             };
             listener.MouseWheelMoved += (s, a) =>
             {
-                InvokeEvent(new GUIMouseEventArgs(a, MouseWheelMovedEvent, MouseOver));
+                InvokeEvent(new GUIMouseWheelEventArgs(a, MouseWheelMovedEvent, MouseOver));
             };
             listener.MouseDragStart += (s, a) =>
             {
@@ -103,11 +105,6 @@ namespace Fitamas.UserInterface.Input
             };
         }
 
-        public void Update(GameTime gameTime)
-        {
-            listener.Update(gameTime);
-        }
-
         private void InvokeEvent(GUIEventArgs args)
         {
             if (MouseCapture != MouseOver)
@@ -120,16 +117,16 @@ namespace Fitamas.UserInterface.Input
 
         static GUIMouse()
         {
-            GUIEventManager.Register(MouseMovedEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseMoved));
-            GUIEventManager.Register(MouseDownEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDown));
-            GUIEventManager.Register(MouseUpEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseUp));
-            GUIEventManager.Register(MouseWheelMovedEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseWheelMoved));
-            GUIEventManager.Register(MouseDragStartEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDragStart));
-            GUIEventManager.Register(MouseDragEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDrag));
-            GUIEventManager.Register(MouseDragEndEvent, new GUIEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDragEnd));
+            GUIEventManager.Register(MouseMovedEvent, new MonoEvent<GUIComponent, GUIMousePositionEventArgs>(OnMouseMoved));
+            GUIEventManager.Register(MouseDownEvent, new MonoEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDown));
+            GUIEventManager.Register(MouseUpEvent, new MonoEvent<GUIComponent, GUIMouseEventArgs>(OnMouseUp));
+            GUIEventManager.Register(MouseWheelMovedEvent, new MonoEvent<GUIComponent, GUIMouseWheelEventArgs>(OnMouseWheelMoved));
+            GUIEventManager.Register(MouseDragStartEvent, new MonoEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDragStart));
+            GUIEventManager.Register(MouseDragEvent, new MonoEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDrag));
+            GUIEventManager.Register(MouseDragEndEvent, new MonoEvent<GUIComponent, GUIMouseEventArgs>(OnMouseDragEnd));
         }
 
-        private static void OnMouseMoved(GUIComponent sender, GUIMouseEventArgs args)
+        private static void OnMouseMoved(GUIComponent sender, GUIMousePositionEventArgs args)
         {
             if (sender is IMouseEvent mouseEvent)
             {
@@ -153,7 +150,7 @@ namespace Fitamas.UserInterface.Input
             }
         }
 
-        private static void OnMouseWheelMoved(GUIComponent sender, GUIMouseEventArgs args)
+        private static void OnMouseWheelMoved(GUIComponent sender, GUIMouseWheelEventArgs args)
         {
             if (sender is IMouseEvent mouseEvent)
             {

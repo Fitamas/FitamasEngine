@@ -11,7 +11,7 @@ namespace Fitamas.Physics
         public Vector2 Normal {  get; set; }
         public float Distance { get; set; }
         public Entity Entity { get; set; }
-        public Collider Collider { get; set; }
+        public PhysicsCollider Collider { get; set; }
 
         internal Body Body { get; set; }
     }

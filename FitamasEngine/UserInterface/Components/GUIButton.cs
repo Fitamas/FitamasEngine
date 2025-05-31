@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Fitamas.Input;
 using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Input;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -11,7 +11,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly RoutedEvent OnClickedEvent = new RoutedEvent();
 
-        public GUIEvent<GUIButton> OnClicked { get; }
+        public MonoEvent<GUIButton> OnClicked { get; }
 
         public bool IsPressed
         {
@@ -36,7 +36,7 @@ namespace Fitamas.UserInterface.Components
             IsPressed = false;
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
 
         }
@@ -66,7 +66,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }

@@ -1,4 +1,5 @@
 ﻿using Fitamas;
+using Fitamas.Core;
 using Fitamas.Entities;
 using Fitamas.Graphics;
 using Fitamas.MVVM;
@@ -25,19 +26,25 @@ namespace Physics.View
     public class GameplayViewModel : IViewModel
     {
         private GameWorld world;
+        private PhysicsWorldSystem physicsWorld;
         private Tool tool;
         private bool use;
 
+        private Entity entityA;
+        private Vector2 positionA;
+
         public bool CanUse;
 
-        public GameplayViewModel(GameWorld world)
+        public GameplayViewModel(GameEngine game)
         {
-            this.world = world;
+            world = game.World;
+            physicsWorld = game.MainContainer.Resolve<PhysicsWorldSystem>();
         }
 
         public void SelectTool(Tool tool)
         {
             this.tool = tool;
+            entityA = null;
         }
 
         public void BeginUseTool(Point point)
@@ -69,8 +76,7 @@ namespace Physics.View
                         EntityHelper.CreateWheel(world, position);
                         break;
                     case Tool.Destroy:
-
-                        RayCastHit hit = Physics2D.TestPoint(position);
+                        RayCastHit hit = physicsWorld.TestPoint(position);
 
                         if (hit.Entity != null)
                         {
@@ -78,13 +84,13 @@ namespace Physics.View
                         }
                         break;
                     case Tool.RopeJoint:
-                        PhysicsDebugTools.CreateRopeJoint(position);
+                        CreateRopeJoint(position);
                         break;
                     case Tool.RevoltJoint:
-                        PhysicsDebugTools.CreateRevoltJoint(position);
+                        CreateRevoltJoint(position);
                         break;
                     case Tool.WheelJoint:
-                        PhysicsDebugTools.CreateWheelJoint(position);
+                        CreateWheelJoint(position);
                         break;
                 }
             }
@@ -128,6 +134,64 @@ namespace Physics.View
                 }
             }
             use = false;
+        }
+
+
+
+        public void CreateRopeJoint(Vector2 position)
+        {
+            RayCastHit hit = physicsWorld.TestPoint(position);
+
+            if (hit.Entity != null)
+            {
+                if (entityA == null)
+                {
+                    entityA = hit.Entity;
+                    positionA = position;
+                }
+                else if (entityA != hit.Entity)
+                {
+                    Entity entity = world.CreateEntity();
+
+                    entity.Attach(PhysicsJoint.CreateRope(entityA, positionA, hit.Entity, position, Vector2.Distance(positionA, position), true));
+
+                    entityA = null;
+                }
+            }
+        }
+
+        public void CreateRevoltJoint(Vector2 position)
+        {
+            RayCastHit hit = physicsWorld.TestPoint(position);
+
+            if (hit.Entity != null)
+            {
+                if (entityA == null)
+                {
+                    entityA = hit.Entity;
+                    positionA = position;
+                }
+                else if (entityA != hit.Entity)
+                {
+                    Entity entity = world.CreateEntity();
+
+                    entity.Attach(PhysicsJoint.CreateRevolt(entityA, positionA, hit.Entity, position, true));
+
+                    entityA = null;
+                }
+            }
+        }
+
+        public void CreateWheelJoint(Vector2 position)
+        {
+            RayCastHit hit = physicsWorld.TestPoint(position);
+
+            if (hit.Entity != null)
+            {
+                Entity entity = world.CreateEntity();
+
+                entity.Attach(PhysicsJoint.CreateWheel(hit.Entity, Vector2.Zero, EntityHelper.CreateWheel(world, position), new Vector2(0, 1)));
+            }
         }
     }
 }

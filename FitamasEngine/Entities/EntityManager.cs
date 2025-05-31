@@ -146,6 +146,11 @@ namespace Fitamas.Entities
             return entityBag[entityId];
         }
 
+        public bool Contains(Entity entity)
+        {
+            return entityBag.Contains(entity);
+        }
+
         public void Destroy(int entityId)
         {
             if (!removedEntities.Contains(entityId))

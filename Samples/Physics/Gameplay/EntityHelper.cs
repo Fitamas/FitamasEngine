@@ -16,15 +16,16 @@ namespace Physics.Gameplay
             Entity entity = world.CreateEntity();
             entity.Attach(new SpriteRender()
             {
-                sprite = Sprite.Create("Pumpkin"),
+                Sprite = Sprite.Create("Pumpkin"),
             });
             entity.Attach(new Transform()
             {
                 Position = position
             });
-            entity.Attach(new Collider(0.5f, Vector2.Zero)
+            entity.Attach(PhysicsCollider.CreateCircle(0.5f));
+            entity.Attach(new PhysicsRigidBody()
             {
-                  
+                MotionType = MotionType.Dynamic,
             });
         }
 
@@ -33,15 +34,16 @@ namespace Physics.Gameplay
             Entity entity = world.CreateEntity();
             entity.Attach(new SpriteRender()
             {
-                sprite = Sprite.Create("Log"),
+                Sprite = Sprite.Create("Log"),
             });
             entity.Attach(new Transform()
             {
                 Position = position
             });
-            entity.Attach(new Collider(ColliderType.Box, new Vector2(3, 0.6f), Vector2.Zero)
+            entity.Attach(PhysicsCollider.CreateBox(new Vector2(3, 0.6f)));
+            entity.Attach(new PhysicsRigidBody()
             {
-
+                MotionType = MotionType.Dynamic,
             });
         }
 
@@ -67,7 +69,7 @@ namespace Physics.Gameplay
             {
                 Position = position
             });
-            entity.Attach(new Collider(mesh, bodyType: nkast.Aether.Physics2D.Dynamics.BodyType.Static));
+            entity.Attach(PhysicsCollider.CreatePolygon(mesh));
         }
 
         public static void CreateTestBox(GameWorld world, Vector2 position)
@@ -75,33 +77,41 @@ namespace Physics.Gameplay
             Entity entity = world.CreateEntity();
             entity.Attach(new SpriteRender()
             {
-                sprite = Sprite.Create("TestBox"),
+                Sprite = Sprite.Create("TestBox"),
             });
             entity.Attach(new Transform()
             {
                 Position = position
             });
-            entity.Attach(new Collider(ColliderType.Box, new Vector2(1.3f, 1.3f), Vector2.Zero)
+            entity.Attach(PhysicsCollider.CreateBox(new Vector2(1.3f, 1.3f)));
+            entity.Attach(new PhysicsRigidBody()
             {
-
+                MotionType = MotionType.Dynamic,
             });
         }
 
-        public static void CreateWheel(GameWorld world, Vector2 position)
+        public static Entity CreateWheel(GameWorld world, Vector2 position)
         {
             Entity entity = world.CreateEntity();
             entity.Attach(new SpriteRender()
             {
-                sprite = Sprite.Create("Wheel"),
+                Sprite = Sprite.Create("Wheel"),
             });
             entity.Attach(new Transform()
             {
                 Position = position
             });
-            entity.Attach(new Collider(0.5f, Vector2.Zero)
+            entity.Attach(PhysicsCollider.CreateCircle(0.5f));
+            entity.Attach(new PhysicsRigidBody()
             {
-
+                MotionType = MotionType.Dynamic,
             });
+            entity.Attach(new PhysicsCollisionFilter()
+            {
+                Filter = new CollisionFilter(1 << 5, 1)
+            });
+
+            return entity;
         }
     }
 }

@@ -48,29 +48,29 @@ namespace Fitamas.Animation
         private TwoBoneRig leftArm;
 
         //head
-        [SerializableField] private Vector2 headVectorUp = new Vector2(0, 1);
-        [SerializableField] private Vector2 headVectorRight = new Vector2(1, 0);
+        [SerializeField] private Vector2 headVectorUp = new Vector2(0, 1);
+        [SerializeField] private Vector2 headVectorRight = new Vector2(1, 0);
 
         //body
-        [SerializableField] private Vector2 bodyPosition = new Vector2(0, 0.5f);
-        [SerializableField] private float bodyIdleAmplitude = 0.04f;
-        [SerializableField] private float bodyIdleSpeed = 1f;
+        [SerializeField] private Vector2 bodyPosition = new Vector2(0, 0.5f);
+        [SerializeField] private float bodyIdleAmplitude = 0.04f;
+        [SerializeField] private float bodyIdleSpeed = 1f;
 
         //arm
-        [SerializableField] private Vector2 armPosition = new Vector2(0, -0.5f);
+        [SerializeField] private Vector2 armPosition = new Vector2(0, -0.5f);
 
         //walp
-        [SerializableField] private float bodyWalkAmplitude = 0.1f;
-        [SerializableField] private float bodyWalkSpeed = 2f;
-        [SerializableField] private float bodyWalkAngle = 0.2f;
+        [SerializeField] private float bodyWalkAmplitude = 0.1f;
+        [SerializeField] private float bodyWalkSpeed = 2f;
+        [SerializeField] private float bodyWalkAngle = 0.2f;
 
-        [SerializableField] private float armWalkAmlitude = 0.35f;
-        [SerializableField] private float armWalkSpeed = 2f;
+        [SerializeField] private float armWalkAmlitude = 0.35f;
+        [SerializeField] private float armWalkSpeed = 2f;
 
-        [SerializableField] private float lenghtStep = 0.6f;
-        [SerializableField] private float height = 0.4f;
-        [SerializableField] private float speed = 2.8f;
-        [SerializableField] private Vector2 legPosition = new Vector2(-0.2f, -1.7f);
+        [SerializeField] private float lenghtStep = 0.6f;
+        [SerializeField] private float height = 0.4f;
+        [SerializeField] private float speed = 2.8f;
+        [SerializeField] private Vector2 legPosition = new Vector2(-0.2f, -1.7f);
 
         private bool lookAtRight;
         private bool isFlip;
@@ -107,13 +107,12 @@ namespace Fitamas.Animation
         protected override void OnUpdate(GameTime gameTime)
         {
             Character character = root.Get<Character>();    
-            InputRequest inputRequest = root.Get<InputRequest>();
             Transform transform = root.Get<Transform>();
 
 
             //Flip sprite
-            float lookDirection = MathV.Sign(inputRequest.Target.X - transform.Position.X);
-            bool lookAtRight = inputRequest.Target.X > transform.Position.X;
+            float lookDirection = 0;// MathV.Sign(inputRequest.Target.X - transform.Position.X);
+            bool lookAtRight = false;// inputRequest.Target.X > transform.Position.X;
 
             if (this.lookAtRight != lookAtRight)
             {
@@ -130,17 +129,17 @@ namespace Fitamas.Animation
                 {
                     if (entity.TryGet(out SpriteRender sprite))
                     {
-                        sprite.flipHorizontally = !this.lookAtRight;
+                        //sprite.FlipHorizontally = !this.lookAtRight;
                     }
                 }
             }
 
             //Head rig
-            head.Target = inputRequest.Target;
+            //head.Target = inputRequest.Target;
 
             //Leg rig
             float time = (float)gameTime.TotalGameTime.TotalSeconds * speed;
-            float direction = MathV.Sign(inputRequest.MoveDirection.X);
+            float direction = 0;// MathV.Sign(inputRequest.MoveDirection.X);
 
             Vector2 leftArmPosition = armPosition;
             Vector2 rightArmPosition = armPosition;

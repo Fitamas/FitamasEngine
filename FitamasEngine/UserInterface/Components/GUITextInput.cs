@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Fitamas.UserInterface.Input;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -40,10 +41,10 @@ namespace Fitamas.UserInterface.Components
 
         public GUITextBlock TextBlock { get; set; }
 
-        public GUIEvent<GUITextInput> OnSelect { get; }
-        public GUIEvent<GUITextInput> OnDeselect { get; }
-        public GUIEvent<GUITextInput, string> OnValueChanged { get; }
-        public GUIEvent<GUITextInput, string> OnEndEdit { get; }
+        public MonoEvent<GUITextInput> OnSelect { get; }
+        public MonoEvent<GUITextInput> OnDeselect { get; }
+        public MonoEvent<GUITextInput, string> OnValueChanged { get; }
+        public MonoEvent<GUITextInput, string> OnEndEdit { get; }
 
         public bool OneLine
         {
@@ -304,7 +305,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
 
         }
@@ -328,7 +329,7 @@ namespace Fitamas.UserInterface.Components
 
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }

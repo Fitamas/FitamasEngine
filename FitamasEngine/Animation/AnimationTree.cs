@@ -5,9 +5,9 @@ namespace Fitamas.Animation
 {
     public class AnimationTree : MonoObject
     {
-        [SerializableField] private Dictionary<string, AnimationClip> animations = new Dictionary<string, AnimationClip>();
-        [SerializableField] private List<IPlayable> playables = new List<IPlayable>();
-        [SerializableField] private List<ConnectionPlayable> connections = new List<ConnectionPlayable>();
+        [SerializeField] private Dictionary<string, AnimationClip> animations = new Dictionary<string, AnimationClip>();
+        [SerializeField] private List<IPlayable> playables = new List<IPlayable>();
+        [SerializeField] private List<ConnectionPlayable> connections = new List<ConnectionPlayable>();
         public AnimationTree(string id, AnimationClip[] animations)
         {
             foreach (AnimationClip clip in animations)

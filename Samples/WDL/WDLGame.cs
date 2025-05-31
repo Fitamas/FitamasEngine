@@ -14,10 +14,12 @@ namespace WDL
         {
             base.Initialize();
 
-            GUIGameblayManager manager = new GUIGameblayManager(Container);
-            Container.RegisterInstance(manager);
+            GameplayViewModel gameplayViewModel = new GameplayViewModel(MainContainer.Resolve<LogicSystem>());
+            MainContainer.RegisterInstance(gameplayViewModel);
+            GUIGameblayManager manager = new GUIGameblayManager(MainContainer);
+            MainContainer.RegisterInstance(manager);
             GameplayScreenViewModel viewModel = manager.OpenGameplayScreen();
-            Container.RegisterInstance(viewModel);
+            MainContainer.RegisterInstance(viewModel);
 
             viewModel.CreateSimulation();
             viewModel.OpenComponents();
@@ -38,12 +40,8 @@ namespace WDL
 
         protected override WorldBuilder CreateWorldBuilder()
         {
-            LogicSystem logicSystem = new LogicSystem();
-            GameplayViewModel viewModel = new GameplayViewModel(logicSystem);
-            Container.RegisterInstance(viewModel);
-
             return base.CreateWorldBuilder()
-                    .AddSystem(logicSystem);
+                .AddSystemAndRegister(new LogicSystem(), MainContainer);
         }
     }
 }

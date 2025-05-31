@@ -1,4 +1,5 @@
-﻿using Fitamas.UserInterface.Input;
+﻿using Fitamas.Events;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -46,7 +47,7 @@ namespace Fitamas.UserInterface.Components
 
         private GUIComponent content;
 
-        public GUIEvent<GUIWindow> OnClose { get; }
+        public MonoEvent<GUIWindow> OnClose { get; }
 
         public Thickness Padding
         {
@@ -163,7 +164,7 @@ namespace Fitamas.UserInterface.Components
 
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
 
         }
@@ -181,7 +182,7 @@ namespace Fitamas.UserInterface.Components
 
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }

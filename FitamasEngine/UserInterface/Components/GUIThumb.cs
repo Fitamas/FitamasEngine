@@ -1,4 +1,5 @@
-﻿using Fitamas.Input.InputListeners;
+﻿using Fitamas.Events;
+using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 
@@ -20,9 +21,9 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly RoutedEvent DragEndEvent = new RoutedEvent();
 
-        public GUIEvent<GUIThumb, DragEventArgs> DragStart { get; }
-        public GUIEvent<GUIThumb, DragEventArgs> DragDelta { get; }
-        public GUIEvent<GUIThumb, DragEventArgs> DragEnd { get; }
+        public MonoEvent<GUIThumb, DragEventArgs> DragStart { get; }
+        public MonoEvent<GUIThumb, DragEventArgs> DragDelta { get; }
+        public MonoEvent<GUIThumb, DragEventArgs> DragEnd { get; }
 
         public Point StartDragOffset { get; private set; }
 
@@ -62,7 +63,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsDrag)
             {
-                DragDelta.Invoke(this, new DragEventArgs() { Position = mouse.Position, Delta = mouse.DistanceMoved });
+                DragDelta.Invoke(this, new DragEventArgs() { Position = mouse.Position, Delta = mouse.Delta });
             }
         }
 

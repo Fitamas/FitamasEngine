@@ -3,6 +3,7 @@ using Fitamas.Math2D;
 using Fitamas.Graphics.ViewportAdapters;
 using Microsoft.Xna.Framework;
 using System;
+using Fitamas.Core;
 
 namespace Fitamas.Graphics
 {
@@ -103,9 +104,9 @@ namespace Fitamas.Graphics
             }
         }
 
-        public Camera(Game game, Vector2 position, float angle, float zoom)
+        public Camera(GameEngine game, Vector2 position, float angle, float zoom)
         {
-            viewportAdapter = new WindowViewportAdapter(game.Window, game.GraphicsDevice);
+            viewportAdapter = game.WindowViewportAdapter;
 
             Color = Color.CornflowerBlue;
 
@@ -117,7 +118,7 @@ namespace Fitamas.Graphics
             transform.LocalRotation = angle;
         }
 
-        public Camera(Game game) : this(game, Vector2.Zero, 0, 100)
+        public Camera(GameEngine game) : this(game, Vector2.Zero, 0, 100)
         {
 
         }

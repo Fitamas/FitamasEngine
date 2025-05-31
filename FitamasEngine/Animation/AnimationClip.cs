@@ -7,8 +7,8 @@ namespace Fitamas.Animation
 {
     public class AnimationClip : MonoObject
     {
-        [SerializableField] private float time;
-        [SerializableField] public ITimeLine[] timeLines;
+        [SerializeField] private float time;
+        [SerializeField] public ITimeLine[] timeLines;
 
         public string Name;
 
@@ -52,7 +52,7 @@ namespace Fitamas.Animation
         {
             if (frameData.entity.TryGet(out SpriteRender spriteRender))
             {
-                spriteRender.selectRegion = currentFrame.value;
+                //spriteRender.selectRegion = currentFrame.value;
             }
         }
     }

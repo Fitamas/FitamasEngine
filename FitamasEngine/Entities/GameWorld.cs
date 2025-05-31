@@ -26,35 +26,22 @@
 */
 
 using Fitamas.Collections;
-using Fitamas.Extended.Entities;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using System;
-using System.Collections.Generic;
 
 namespace Fitamas.Entities
 {
     public class GameWorld : IDisposable
     {
-        private readonly Bag<IFixedUpdateSystem> _fixedUpdateSystems;
-        private readonly Bag<IUpdateSystem> _updateSystems;
-        private readonly Bag<IDrawSystem> _drawSystems;
-        private readonly Bag<ILoadContentSystem> _loadSystem;
+        private Bag<IExecutor> executors;
 
         public EntityManager EntityManager { get; }
         public ComponentManager ComponentManager { get; }
-        public Game Game { get; }
 
         public int EntityCount => EntityManager.ActiveCount;
 
-        internal GameWorld(Game game)
+        internal GameWorld(Bag<IExecutor> executors)
         {
-            Game = game;
-
-            _fixedUpdateSystems = new Bag<IFixedUpdateSystem>();
-            _updateSystems = new Bag<IUpdateSystem>();
-            _drawSystems = new Bag<IDrawSystem>();
-            _loadSystem = new Bag<ILoadContentSystem>();
+            this.executors = executors;
 
             RegisterSystem(ComponentManager = new ComponentManager());
             RegisterSystem(EntityManager = new EntityManager(ComponentManager));
@@ -62,52 +49,19 @@ namespace Fitamas.Entities
 
         public void Dispose()
         {
-            foreach (var fixedUpdateSystem in _fixedUpdateSystems)
+            foreach (var executor in executors)
             {
-                fixedUpdateSystem.Dispose();
+                executor.Dispose();
             }
 
-            foreach (var updateSystem in _updateSystems)
-            {
-                updateSystem.Dispose();
-            }
-   
-            foreach (var drawSystem in _drawSystems)
-            {
-                drawSystem.Dispose();
-            }
-
-            foreach (var loadSystem in _loadSystem)
-            {
-                loadSystem.Dispose();
-            }
-
-            _fixedUpdateSystems.Clear();
-            _updateSystems.Clear();
-            _drawSystems.Clear();
-            _loadSystem.Clear();
+            executors.Clear();
         }
 
         internal void RegisterSystem(ISystem system)
         {
-            if (system is IFixedUpdateSystem fixedUpdateSystem)
+            foreach (var executor in executors)
             {
-                _fixedUpdateSystems.Add(fixedUpdateSystem);
-            }
-
-            if (system is IUpdateSystem updateSystem)
-            {
-                _updateSystems.Add(updateSystem);
-            }
-
-            if (system is IDrawSystem drawSystem)
-            {
-                _drawSystems.Add(drawSystem);
-            }
-
-            if (system is ILoadContentSystem loadSystem)
-            {
-                _loadSystem.Add(loadSystem);
+                executor.RegisterSystem(system);
             }
 
             system.Initialize(this);
@@ -116,6 +70,11 @@ namespace Fitamas.Entities
         public Entity GetEntity(int entityId)
         {
             return EntityManager.Get(entityId);
+        }
+
+        public bool Contains(Entity entity)
+        {
+            return EntityManager.Contains(entity);
         }
 
         public Entity CreateEntity()
@@ -131,38 +90,6 @@ namespace Fitamas.Entities
         public void DestroyEntity(Entity entity)
         {
             EntityManager.Destroy(entity);
-        }
-
-        public void LoadContent(ContentManager content)
-        {
-            foreach (var system in _loadSystem)
-            {
-                system.LoadContent(content);
-            }
-        }
-
-        public void FixedUpdate(float delta)
-        {
-            foreach (var system in _fixedUpdateSystems)
-            {
-                system.FixedUpdate(delta);
-            }
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            foreach (var system in _updateSystems)
-            {
-                system.Update(gameTime);
-            }  
-        }
-
-        public void Draw(GameTime gameTime)
-        {
-            foreach (var system in _drawSystems)
-            {
-                system.Draw(gameTime);
-            }
         }
     }
 }

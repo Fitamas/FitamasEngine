@@ -1,31 +1,40 @@
-﻿using Fitamas.Input;
+﻿using Fitamas;
+using Fitamas.Input;
+using Fitamas.Input.Actions;
 using Fitamas.MVVM;
+using Microsoft.Xna.Framework;
+using Physics.Settings;
 using System;
 
 namespace Physics.View
 {
     public class GameplayInputBinder : Binder<GameplayViewModel>
     {
+        private ActionMap map;
+
+        public GameplayInputBinder(ActionMap map)
+        {
+            this.map = map;
+        }
+
         protected override IDisposable OnBind(GameplayViewModel viewModel)
         {
-            InputSystem.mouse.MouseDown += (s, e) =>
+            map.UseTool.Started += (context) =>
             {
-                viewModel.BeginUseTool(e.Position);
+                viewModel.BeginUseTool(map.UseToolPosition.GetValue<Point>());
             };
 
-            InputSystem.mouse.MouseDragStart += (s, e) =>
+            map.UseTool.Canceled += (context) =>
             {
-                viewModel.BeginUseTool(e.Position);
+                viewModel.EndUseTool(map.UseToolPosition.GetValue<Point>());
             };
 
-            InputSystem.mouse.MouseDrag += (s, e) =>
+            map.UseToolPosition.Performed += (context) =>
             {
-                viewModel.UseTool(e.Position);
-            };
-
-            InputSystem.mouse.MouseUp += (s, e) =>
-            {
-                viewModel.EndUseTool(e.Position);
+                if (map.UseTool.GetValue<bool>())
+                {
+                    viewModel.UseTool(context.GetValue<Point>());
+                }
             };
 
             return null;

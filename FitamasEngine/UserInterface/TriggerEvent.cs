@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface
 {
@@ -36,27 +37,27 @@ namespace Fitamas.UserInterface
 
     public class EventHandlersStore
     {
-        private Dictionary<int, GUIEventBase> delegates = new Dictionary<int, GUIEventBase>();
+        private Dictionary<int, MonoEventBase> delegates = new Dictionary<int, MonoEventBase>();
 
         public int Count => delegates.Count;
 
-        public GUIEvent Create(RoutedEvent routedEvent)
+        public MonoEvent Create(RoutedEvent routedEvent)
         {
-            return AddEvent(routedEvent, new GUIEvent());
+            return AddEvent(routedEvent, new MonoEvent());
         }
 
-        public GUIEvent<T0> Create<T0>(RoutedEvent routedEvent)
+        public MonoEvent<T0> Create<T0>(RoutedEvent routedEvent)
         {
-            return AddEvent(routedEvent, new GUIEvent<T0>());
+            return AddEvent(routedEvent, new MonoEvent<T0>());
         }
 
 
-        public GUIEvent<T0, T1> Create<T0, T1>(RoutedEvent routedEvent)
+        public MonoEvent<T0, T1> Create<T0, T1>(RoutedEvent routedEvent)
         {
-            return AddEvent(routedEvent, new GUIEvent<T0, T1>());
+            return AddEvent(routedEvent, new MonoEvent<T0, T1>());
         }
 
-        private T AddEvent<T>(RoutedEvent routedEvent, T eventBase) where T : GUIEventBase
+        private T AddEvent<T>(RoutedEvent routedEvent, T eventBase) where T : MonoEventBase
         {
             delegates[routedEvent.Id] = eventBase;
             return eventBase;

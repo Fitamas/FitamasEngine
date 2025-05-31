@@ -1,4 +1,5 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.Events;
+using Fitamas.Math2D;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -22,7 +23,7 @@ namespace Fitamas.UserInterface.Components
         public bool IsHorizontal => Direction == GUISliderDirection.LeftToRight || Direction == GUISliderDirection.RightToLeft;
         public bool IsVertical => Direction == GUISliderDirection.BottomToTop || Direction == GUISliderDirection.TopToBottom;
 
-        public GUIEvent<GUITrack, float> OnValueChanged { get; set; }
+        public MonoEvent<GUITrack, float> OnValueChanged { get; set; }
 
         public float MinValue
         {

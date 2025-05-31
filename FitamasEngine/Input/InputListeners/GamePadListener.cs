@@ -26,6 +26,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -78,6 +79,8 @@ namespace Fitamas.Input.InputListeners
 
         private float _vibrationStrengthLeft;
         private float _vibrationStrengthRight;
+
+        public override string Name => "GamePad";
 
         public GamePadListener()
             : this(new GamePadListenerSettings())
@@ -269,8 +272,7 @@ namespace Fitamas.Input.InputListeners
         ///     This motor has a snappy, quick, high-pitched rumble.
         /// </param>
         /// <returns>Returns true if the operation succeeded.</returns>
-        public bool Vibrate(int durationMs, float leftStrength = float.NegativeInfinity,
-            float rightStrength = float.NegativeInfinity)
+        public bool Vibrate(int durationMs, float leftStrength = float.NegativeInfinity, float rightStrength = float.NegativeInfinity)
         {
             if (!VibrationEnabled)
                 return false;
@@ -495,7 +497,7 @@ namespace Fitamas.Input.InputListeners
                 Vibrate(0, rightStrength: 0);
         }
 
-        public override void Update(GameTime gameTime)
+        protected override void OnUpdate(GameTime gameTime)
         {
             _gameTime = gameTime;
             _currentState = GamePad.GetState(PlayerIndex);

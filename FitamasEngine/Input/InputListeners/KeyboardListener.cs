@@ -26,6 +26,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -42,9 +43,19 @@ namespace Fitamas.Input.InputListeners
         private Keys _previousKey;
         private KeyboardState _previousState;
 
-        public KeyboardListener()
-            : this(new KeyboardListenerSettings())
+        public bool RepeatPress { get; }
+        public int InitialDelay { get; }
+        public int RepeatDelay { get; }
+
+        public override string Name => "Keyboard";
+
+        public event EventHandler<KeyboardEventArgs> KeyTyped;
+        public event EventHandler<KeyboardEventArgs> KeyPressed;
+        public event EventHandler<KeyboardEventArgs> KeyReleased;
+
+        public KeyboardListener() : this(new KeyboardListenerSettings())
         {
+
         }
 
         public KeyboardListener(KeyboardListenerSettings settings)
@@ -54,15 +65,7 @@ namespace Fitamas.Input.InputListeners
             RepeatDelay = settings.RepeatDelayMilliseconds;
         }
 
-        public bool RepeatPress { get; }
-        public int InitialDelay { get; }
-        public int RepeatDelay { get; }
-
-        public event EventHandler<KeyboardEventArgs> KeyTyped;
-        public event EventHandler<KeyboardEventArgs> KeyPressed;
-        public event EventHandler<KeyboardEventArgs> KeyReleased;
-
-        public override void Update(GameTime gameTime)
+        protected override void OnUpdate(GameTime gameTime)
         {
             var currentState = Keyboard.GetState();
 
@@ -70,7 +73,9 @@ namespace Fitamas.Input.InputListeners
             RaiseReleasedEvents(currentState);
 
             if (RepeatPress)
+            {
                 RaiseRepeatEvents(gameTime, currentState);
+            }
 
             _previousState = currentState;
         }
@@ -85,14 +90,15 @@ namespace Fitamas.Input.InputListeners
 
                 foreach (var key in pressedKeys)
                 {
-                    var args = new KeyboardEventArgs(key, currentState);
-
-                    KeyPressed?.Invoke(this, args);
+                    var args = new KeyboardEventArgs(currentState, key, KeyState.Down);
 
                     if (!_previousState.IsKeyDown(key))
                     {
                         KeyTyped?.Invoke(this, args);
+                        AddEvent(key.ToString(), true);
                     }
+
+                    KeyPressed?.Invoke(this, args);
 
                     _previousKey = key;
                     _lastPressTime = gameTime.TotalGameTime;
@@ -108,7 +114,11 @@ namespace Fitamas.Input.InputListeners
                 .Where(key => currentState.IsKeyUp(key) && _previousState.IsKeyDown(key));
 
             foreach (var key in releasedKeys)
-                KeyReleased?.Invoke(this, new KeyboardEventArgs(key, currentState));
+            {
+                KeyboardEventArgs args = new KeyboardEventArgs(currentState, key, KeyState.Up);
+                KeyReleased?.Invoke(this, args);
+                AddEvent(key.ToString(), false);
+            }
         }
 
         private void RaiseRepeatEvents(GameTime gameTime, KeyboardState currentState)
@@ -118,7 +128,7 @@ namespace Fitamas.Input.InputListeners
             if (currentState.IsKeyDown(_previousKey) &&
                 (_isInitial && elapsedTime > InitialDelay || !_isInitial && elapsedTime > RepeatDelay))
             {
-                var args = new KeyboardEventArgs(_previousKey, currentState);
+                var args = new KeyboardEventArgs(currentState, _previousKey, KeyState.Down);
 
                 KeyPressed?.Invoke(this, args);
 

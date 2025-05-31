@@ -1,4 +1,5 @@
-﻿using Fitamas.Input.InputListeners;
+﻿using Fitamas.Events;
+using Fitamas.Input.InputListeners;
 using Fitamas.Math2D;
 
 namespace Fitamas.UserInterface.Components
@@ -9,7 +10,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly RoutedEvent OnValueChangedEvent = new RoutedEvent();
 
-        public GUIEvent<GUICheckBox, bool> OnValueChanged;
+        public MonoEvent<GUICheckBox, bool> OnValueChanged;
 
         public bool Value
         {

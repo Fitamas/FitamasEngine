@@ -24,8 +24,7 @@ namespace Fitamas.Physics.Characters
         public float minMoveDistance = 0.001f;
         public float maxMoveDistance = 2000;
         public float slideMult = 0.5f;
-        public Layer layer = Layer.Players;
-        public LayerMask layerMask;
+        public CollisionFilter layerMask;
 
         public Vector2 velocity;
         public Vector2 groundNormal;
@@ -38,7 +37,7 @@ namespace Fitamas.Physics.Characters
 
         public Character()
         {
-            layerMask = LayerManager.GetMask(layer);
+
         }
     }
 }

@@ -18,10 +18,10 @@ namespace Fitamas.Graphics
     [AssetMenu(fileName: "NewSprite.sprite", title: "Sprite")]
     public class Sprite : MonoObject
     {
-        [SerializableField] private string name;
-        [SerializableField] private Texture2D texture;
-        [SerializableField] private Rectangle bounds;
-        [SerializableField] private Rectangle border;
+        [SerializeField] private string name;
+        [SerializeField] private Texture2D texture;
+        [SerializeField] private Rectangle bounds;
+        [SerializeField] private Rectangle border;
 
         public int PixelInUnit = 32;
 

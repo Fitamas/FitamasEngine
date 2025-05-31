@@ -8,9 +8,9 @@ namespace Fitamas.UserInterface
 {
     public static class GUIEventManager
     {
-        private static Dictionary<RoutedEvent, GUIEventBase> eventMap = new Dictionary<RoutedEvent, GUIEventBase>();
+        private static Dictionary<RoutedEvent, MonoEventBase> eventMap = new Dictionary<RoutedEvent, MonoEventBase>();
 
-        public static void Register(RoutedEvent routedEvent, GUIEventBase handler)
+        public static void Register(RoutedEvent routedEvent, MonoEventBase handler)
         {
             if (!eventMap.ContainsKey(routedEvent))
             {
@@ -18,9 +18,9 @@ namespace Fitamas.UserInterface
             }
         }
 
-        public static GUIEventBase GetEvent(RoutedEvent routedEvent)
+        public static MonoEventBase GetEvent(RoutedEvent routedEvent)
         {
-            if (eventMap.TryGetValue(routedEvent, out GUIEventBase eventBase))
+            if (eventMap.TryGetValue(routedEvent, out MonoEventBase eventBase))
             {
                 return eventBase;
             }

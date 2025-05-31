@@ -1,4 +1,5 @@
-﻿using Fitamas.Input.InputListeners;
+﻿using Fitamas.Events;
+using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Input;
 using ObservableCollections;
 using System;
@@ -27,8 +28,8 @@ namespace Fitamas.UserInterface.Components
 
         private GUIWindow window;
 
-        public GUIEvent<GUIPopup> OnOpen { get; }
-        public GUIEvent<GUIPopup> OnClose { get; }
+        public MonoEvent<GUIPopup> OnOpen { get; }
+        public MonoEvent<GUIPopup> OnClose { get; }
 
         public GUIPlacementMode PlacementMode
         {
@@ -90,7 +91,7 @@ namespace Fitamas.UserInterface.Components
             //TODO
         }
 
-        public void OnMovedMouse(GUIMouseEventArgs mouse)
+        public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
             UpdatePosition();
         }
@@ -111,7 +112,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void OnScrollMouse(GUIMouseEventArgs mouse)
+        public void OnScrollMouse(GUIMouseWheelEventArgs mouse)
         {
 
         }

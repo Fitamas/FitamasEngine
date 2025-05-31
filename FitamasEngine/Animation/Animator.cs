@@ -7,8 +7,8 @@ namespace Fitamas.Animation
 {
     public class Animator
     {
-        [SerializableField] private AnimationTree animationTree;
-        [SerializableField] private AnimationController animationController;
+        [SerializeField] private AnimationTree animationTree;
+        [SerializeField] private AnimationController animationController;
 
         private RigController rigController;
         private RuntimeAnimatorController controller;

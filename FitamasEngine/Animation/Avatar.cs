@@ -8,7 +8,7 @@ namespace Fitamas.Animation
 {
     public abstract class Avatar
     {
-        [SerializableField] protected Dictionary<string, float> weights = new Dictionary<string, float>();
+        [SerializeField] protected Dictionary<string, float> weights = new Dictionary<string, float>();
 
         public void SetWeights(float weight)
         {
@@ -37,7 +37,7 @@ namespace Fitamas.Animation
 
     public class DefoultAvatar : Avatar
     {
-        [SerializableField] private Entity entity;
+        [SerializeField] private Entity entity;
 
         public DefoultAvatar(Entity entity)
         {

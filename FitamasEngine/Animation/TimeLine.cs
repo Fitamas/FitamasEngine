@@ -6,8 +6,8 @@ namespace Fitamas.Animation
 {
     public class TimeLine<O, V> : ITimeLine where O : struct, IJob<V>
     {
-        [SerializableField] private string entityName;
-        [SerializableField] private KeyFrame<V>[] keys;
+        [SerializeField] private string entityName;
+        [SerializeField] private KeyFrame<V>[] keys;
 
         public TimeLine(string entityName, KeyFrame<V>[] keys)
         {

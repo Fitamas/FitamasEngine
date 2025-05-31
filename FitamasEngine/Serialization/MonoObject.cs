@@ -6,7 +6,7 @@ namespace Fitamas.Serialization
 {
     public abstract class MonoObject
     {
-        [SerializableField] private Guid guid = Guid.NewGuid();
+        [SerializeField] private Guid guid = Guid.NewGuid();
 
         public Guid Guid => guid;
 

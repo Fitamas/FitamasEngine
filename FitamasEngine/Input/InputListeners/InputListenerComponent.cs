@@ -25,29 +25,28 @@
     SOFTWARE.
 */
 
+using System;
 using System.Collections.Generic;
 using Fitamas.Core;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Input.InputListeners
 {
-    public class InputListenerComponent : GameComponent, IUpdate
+    public class InputListenerComponent : GameComponent
     {
-        private readonly List<InputListener> _listeners;
+        private readonly List<InputListener> listeners;
 
-        public InputListenerComponent(Game game)
-            : base(game)
+        public IList<InputListener> Listeners => listeners;
+
+        public InputListenerComponent(Game game) : base(game)
         {
-            _listeners = new List<InputListener>();
+            listeners = new List<InputListener>();
         }
 
-        public InputListenerComponent(Game game, params InputListener[] listeners)
-            : base(game)
+        public InputListenerComponent(Game game, params InputListener[] listeners) : base(game)
         {
-            _listeners = new List<InputListener>(listeners);
+            this.listeners = new List<InputListener>(listeners);
         }
-
-        public IList<InputListener> Listeners => _listeners;
 
         public override void Update(GameTime gameTime)
         {
@@ -55,8 +54,10 @@ namespace Fitamas.Input.InputListeners
 
             if (Game.IsActive)
             {
-                foreach (var listener in _listeners)
+                foreach (var listener in listeners)
+                {
                     listener.Update(gameTime);
+                }
             }
 
             GamePadListener.CheckConnections();

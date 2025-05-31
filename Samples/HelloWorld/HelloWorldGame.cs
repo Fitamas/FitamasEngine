@@ -23,7 +23,7 @@ namespace Fitamas.Samples.HelloWorld
         {
             base.Initialize();
 
-            GUISystem system = Container.Resolve<GUISystem>(ApplicationKey.GUISystem);
+            GUISystem system = MainContainer.Resolve<GUISystem>(ApplicationKey.GUISystem);
 
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
@@ -138,7 +138,7 @@ namespace Fitamas.Samples.HelloWorld
             {
                 if (a.Index == 0)
                 {
-                    CreateWindow().LocalPosition = InputSystem.mouse.MousePosition;
+                    CreateWindow().LocalPosition = m.System.Mouse.Position;
                 }
                 else if (a.Index == 1)
                 {

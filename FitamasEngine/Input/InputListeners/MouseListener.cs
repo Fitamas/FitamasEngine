@@ -29,6 +29,8 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Fitamas.Graphics.ViewportAdapters;
+using System.Collections.Generic;
+using Fitamas.Input.Actions;
 
 namespace Fitamas.Input.InputListeners
 {
@@ -42,17 +44,67 @@ namespace Fitamas.Input.InputListeners
     /// </remarks>
     public class MouseListener : InputListener
     {
-        private MouseState _currentState;
         private bool _dragging;
         private GameTime _gameTime;
         private bool _hasDoubleClicked;
-        private MouseEventArgs _mouseDownArgs;
-        private MouseEventArgs _previousClickArgs;
-        private MouseState _previousState;
+        private MouseButtonEventArgs _mouseDownArgs;
+        private MouseButtonEventArgs _previousClickArgs;
+        private MouseState currentState;
+        private MouseState previousState;
 
-        public MouseListener()
-            : this(new MouseListenerSettings())
+        public event EventHandler<MouseButtonEventArgs> MouseDown;
+        public event EventHandler<MouseButtonEventArgs> MouseUp;
+        public event EventHandler<MouseButtonEventArgs> MouseClicked;
+        public event EventHandler<MouseButtonEventArgs> MouseDoubleClicked;
+        public event EventHandler<MousePositionEventArgs> MouseMoved;
+        public event EventHandler<MouseWheelEventArgs> MouseWheelMoved;
+        public event EventHandler<MouseButtonEventArgs> MouseDragStart;
+        public event EventHandler<MouseButtonEventArgs> MouseDrag;
+        public event EventHandler<MouseButtonEventArgs> MouseDragEnd;
+
+        public ViewportAdapter ViewportAdapter { get; set; }
+        public int DoubleClickMilliseconds { get; }
+        public int DragThreshold { get; }
+
+        public override string Name => "Mouse";
+
+        public bool HasMouseMoved { get; private set; }
+        public bool HasMouseWheelMoved { get; private set; }
+
+        public Point Position
         {
+            get
+            {
+                Point position = currentState.Position;
+
+                if (ViewportAdapter != null)
+                {
+                    return ViewportAdapter.PointToScreen(position);
+                }
+
+                return position;
+            }
+        }
+
+        public Point Delta
+        {
+            get
+            {
+                return currentState.Position - previousState.Position;
+            }
+        }
+
+        public int WheelDelta
+        {
+            get
+            {
+                return currentState.ScrollWheelValue - previousState.ScrollWheelValue;
+            }
+        }
+
+        public MouseListener() : this(new MouseListenerSettings())
+        {
+
         }
 
         public MouseListener(ViewportAdapter viewportAdapter) : this(new MouseListenerSettings())
@@ -67,51 +119,17 @@ namespace Fitamas.Input.InputListeners
             DragThreshold = settings.DragThreshold;
         }
 
-        public ViewportAdapter ViewportAdapter { get; set; }
-
-        public int DoubleClickMilliseconds { get; }
-        public int DragThreshold { get; }
-
-        /// <summary>
-        ///     Returns true if the mouse has moved between the current and previous frames.
-        /// </summary>
-        /// <value><c>true</c> if the mouse has moved; otherwise, <c>false</c>.</value>
-        public bool HasMouseMoved => _previousState.X != _currentState.X || _previousState.Y != _currentState.Y;
-
-        public Point MousePosition
-        {
-            get
-            {
-                Point position = _currentState.Position;
-
-                if (ViewportAdapter != null)
-                {
-                    return ViewportAdapter.PointToScreen(position);
-                }
-
-                return position;
-            }
-        }
-
-        public event EventHandler<MouseEventArgs> MouseDown;
-        public event EventHandler<MouseEventArgs> MouseUp;
-        public event EventHandler<MouseEventArgs> MouseClicked;
-        public event EventHandler<MouseEventArgs> MouseDoubleClicked;
-        public event EventHandler<MouseEventArgs> MouseMoved;
-        public event EventHandler<MouseEventArgs> MouseWheelMoved;
-        public event EventHandler<MouseEventArgs> MouseDragStart;
-        public event EventHandler<MouseEventArgs> MouseDrag;
-        public event EventHandler<MouseEventArgs> MouseDragEnd;
-
         private void CheckButtonPressed(Func<MouseState, ButtonState> getButtonState, MouseButton button)
         {
-            if (getButtonState(_currentState) == ButtonState.Pressed &&
-                getButtonState(_previousState) == ButtonState.Released)
+            if (getButtonState(currentState) == ButtonState.Pressed &&
+                getButtonState(previousState) == ButtonState.Released)
             {
-                var args = new MouseEventArgs(ViewportAdapter, _gameTime.TotalGameTime, _previousState, _currentState, button);
+                var args = new MouseButtonEventArgs(ViewportAdapter, _gameTime.TotalGameTime, previousState, currentState, button, ButtonState.Pressed);
 
                 MouseDown?.Invoke(this, args);
                 _mouseDownArgs = args;
+
+                AddEvent(button.ToString(), true);
 
                 if (_previousClickArgs != null)
                 {
@@ -131,10 +149,10 @@ namespace Fitamas.Input.InputListeners
 
         private void CheckButtonReleased(Func<MouseState, ButtonState> getButtonState, MouseButton button)
         {
-            if (getButtonState(_currentState) == ButtonState.Released &&
-                getButtonState(_previousState) == ButtonState.Pressed)
+            if (getButtonState(currentState) == ButtonState.Released &&
+                getButtonState(previousState) == ButtonState.Pressed)
             {
-                var args = new MouseEventArgs(ViewportAdapter, _gameTime.TotalGameTime, _previousState, _currentState, button);
+                var args = new MouseButtonEventArgs(ViewportAdapter, _gameTime.TotalGameTime, previousState, currentState, button, ButtonState.Released);
 
                 if (_mouseDownArgs.Button == args.Button)
                 {
@@ -144,7 +162,9 @@ namespace Fitamas.Input.InputListeners
                     if (clickMovement < DragThreshold)
                     {
                         if (!_hasDoubleClicked)
+                        {
                             MouseClicked?.Invoke(this, args);
+                        }
                     }
                     else // If the mouse has moved between mouse down and mouse up
                     {
@@ -154,6 +174,7 @@ namespace Fitamas.Input.InputListeners
                 }
 
                 MouseUp?.Invoke(this, args);
+                AddEvent(button.ToString(), false);
 
                 _hasDoubleClicked = false;
                 _previousClickArgs = args;
@@ -162,15 +183,17 @@ namespace Fitamas.Input.InputListeners
 
         private void CheckMouseDragged(Func<MouseState, ButtonState> getButtonState, MouseButton button)
         {
-            if (getButtonState(_currentState) == ButtonState.Pressed &&
-                getButtonState(_previousState) == ButtonState.Pressed)
+            if (getButtonState(currentState) == ButtonState.Pressed &&
+                getButtonState(previousState) == ButtonState.Pressed)
             {
-                var args = new MouseEventArgs(ViewportAdapter, _gameTime.TotalGameTime, _previousState, _currentState, button);
+                var args = new MouseButtonEventArgs(ViewportAdapter, _gameTime.TotalGameTime, previousState, currentState, button, ButtonState.Pressed);
 
                 if (_mouseDownArgs.Button == args.Button)
                 {
                     if (_dragging)
+                    {
                         MouseDrag?.Invoke(this, args);
+                    }
                     else
                     {
                         // Only start to drag based on DragThreshold
@@ -186,10 +209,10 @@ namespace Fitamas.Input.InputListeners
             }
         }
 
-        public override void Update(GameTime gameTime)
+        protected override void OnUpdate(GameTime gameTime)
         {
             _gameTime = gameTime;
-            _currentState = Mouse.GetState();
+            currentState = Mouse.GetState();
 
             CheckButtonPressed(s => s.LeftButton, MouseButton.Left);
             CheckButtonPressed(s => s.MiddleButton, MouseButton.Middle);
@@ -203,11 +226,11 @@ namespace Fitamas.Input.InputListeners
             CheckButtonReleased(s => s.XButton1, MouseButton.XButton1);
             CheckButtonReleased(s => s.XButton2, MouseButton.XButton2);
 
-            // Check for any sort of mouse movement.
+            HasMouseMoved = (currentState.Position - previousState.Position) != Point.Zero;
+            MousePositionEventArgs args0 = new MousePositionEventArgs(Position, Delta);
             if (HasMouseMoved)
             {
-                MouseMoved?.Invoke(this,
-                    new MouseEventArgs(ViewportAdapter, gameTime.TotalGameTime, _previousState, _currentState));
+                MouseMoved?.Invoke(this, args0);   
 
                 CheckMouseDragged(s => s.LeftButton, MouseButton.Left);
                 CheckMouseDragged(s => s.MiddleButton, MouseButton.Middle);
@@ -215,15 +238,18 @@ namespace Fitamas.Input.InputListeners
                 CheckMouseDragged(s => s.XButton1, MouseButton.XButton1);
                 CheckMouseDragged(s => s.XButton2, MouseButton.XButton2);
             }
+            AddEvent("Delta", Delta);
+            AddEvent("Position", Position);
 
-            // Handle mouse wheel events.
-            if (_previousState.ScrollWheelValue != _currentState.ScrollWheelValue)
+            HasMouseWheelMoved = (currentState.ScrollWheelValue - previousState.ScrollWheelValue) != 0;
+            MouseWheelEventArgs args1 = new MouseWheelEventArgs(currentState.ScrollWheelValue, WheelDelta);
+            if (HasMouseWheelMoved)
             {
-                MouseWheelMoved?.Invoke(this,
-                    new MouseEventArgs(ViewportAdapter, gameTime.TotalGameTime, _previousState, _currentState));
+                MouseWheelMoved?.Invoke(this, args1);
             }
+            AddEvent("WheelDelta", WheelDelta);
 
-            _previousState = _currentState;
+            previousState = currentState;
         }
 
         private static int DistanceBetween(Point a, Point b)

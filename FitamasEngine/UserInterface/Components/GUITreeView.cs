@@ -1,4 +1,5 @@
-﻿using Fitamas.Graphics;
+﻿using Fitamas.Events;
+using Fitamas.Graphics;
 using Fitamas.Input;
 using Fitamas.Input.InputListeners;
 using Microsoft.Xna.Framework;
@@ -18,7 +19,7 @@ namespace Fitamas.UserInterface.Components
         public static readonly RoutedEvent OnSelectTreeNodeEvent = new RoutedEvent();
 
         public GUIComponent Container { get; set; }
-        public GUIEvent<SelectNodeArgs> OnSelectTreeNode { get; }
+        public MonoEvent<SelectNodeArgs> OnSelectTreeNode { get; }
 
         public GUITreeView()
         {

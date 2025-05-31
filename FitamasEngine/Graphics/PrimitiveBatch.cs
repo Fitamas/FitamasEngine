@@ -135,7 +135,7 @@ namespace Fitamas.Graphics
                 if (_triangleVertsCount >= _triangleVertices.Length)
                     FlushTriangles();
 
-                _triangleVertices[_triangleVertsCount].Position = new Vector3(vertex, 0);
+                _triangleVertices[_triangleVertsCount].Position = new Vector3(vertex, 1f);
                 _triangleVertices[_triangleVertsCount].Color = color;
                 _triangleVertsCount++;
             }
@@ -145,7 +145,7 @@ namespace Fitamas.Graphics
                 if (_lineVertsCount >= _lineVertices.Length)
                     FlushLines();
 
-                _lineVertices[_lineVertsCount].Position = new Vector3(vertex, 0f);
+                _lineVertices[_lineVertsCount].Position = new Vector3(vertex, 1f);
                 _lineVertices[_lineVertsCount].Color = color;
                 _lineVertsCount++;
             }

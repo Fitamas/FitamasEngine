@@ -1,10 +1,10 @@
 ﻿using Fitamas.Math2D;
-using Fitamas.UserInterface;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using System;
 using System.Linq;
+using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -513,7 +513,7 @@ namespace Fitamas.UserInterface.Components
 
         public void RaiseEvent(GUIEventArgs args)
         {
-            GUIEventBase eventBase = GUIEventManager.GetEvent(args.RoutedEvent);
+            MonoEventBase eventBase = GUIEventManager.GetEvent(args.RoutedEvent);
 
             if (eventBase != null)
             {
@@ -521,7 +521,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        private void RaiseEvent(GUIEventBase eventBase, GUIEventArgs args)
+        private void RaiseEvent(MonoEventBase eventBase, GUIEventArgs args)
         {
             eventBase.InvokeEvent(this, args);
 
