@@ -73,6 +73,13 @@
 /processorParam:TextureFormat=Color
 /build:Folder.png
 
+#begin Font/Pixel_20.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Font/Pixel_20.spritefont
+
 #begin OpenTreeNode.png
 /importer:TextureImporter
 /processor:TextureProcessor
