@@ -10,7 +10,7 @@ namespace Fitamas.Animation
             float normolizeTime = normolizeDelta;
             for (int i = 0; i < count; i++) 
             {
-                result[i] = new KeyFrame<int>() { normolizeTime = normolizeTime, value = i };
+                result[i] = new KeyFrame<int>(normolizeTime, i);
                 normolizeTime += normolizeDelta;
             }
             return result;

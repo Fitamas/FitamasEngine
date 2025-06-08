@@ -33,8 +33,6 @@ namespace Physics.View
         private Entity entityA;
         private Vector2 positionA;
 
-        public bool CanUse;
-
         public GameplayViewModel(GameEngine game)
         {
             world = game.World;
@@ -49,11 +47,6 @@ namespace Physics.View
 
         public void BeginUseTool(Point point)
         {
-            if (!CanUse)
-            {
-                return;
-            }
-
             if (!use)
             {
                 Vector2 position = Camera.Main.ScreenToWorld(point);
@@ -99,11 +92,6 @@ namespace Physics.View
 
         public void UseTool(Point point)
         {
-            if (!CanUse)
-            {
-                return;
-            }
-
             if (use)
             {
                 Vector2 position = Camera.Main.ScreenToWorld(point);
@@ -119,11 +107,6 @@ namespace Physics.View
 
         public void EndUseTool(Point position)
         {
-            if (!CanUse)
-            {
-                return;
-            }
-
             if (use)
             {
                 switch (tool)

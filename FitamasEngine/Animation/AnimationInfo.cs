@@ -3,33 +3,44 @@ using System;
 
 namespace Fitamas.Animation
 {
-    public struct AnimationInfo
+    public enum AnimationPhase
     {
-        public float startTime { get; set; }
-        public float animationLenght { get; set; }
-        public float allTime { get; set; }
-        public float time { get; set; }
-        public float normolizeTime { get; set; }
-        public float normolizedDeltaTime { get; set; }
+        None,
+        Play,
+        Pause,
+        Resume,
+        Stop, 
     }
 
-    public struct FrameData
+    public struct AnimationInfo
     {
-        public Entity entity { get; set; }
-        public int frameId { get; set; }
-        public float normolizedDeltaTime { get; set; }
-        public float normolizeTime { get; set; }
+        public bool IsPlaying { get; set; }
+        public AnimationClip Clip { get; set; }
+        public float Weight { get; set; }
+        public double StartTime { get; set; }
+        public double AllTime { get; set; }
+        public double ClipLenght => Clip.Lenght;
+        public double Time => AllTime % ClipLenght;
+        public double NormolizeTime => Time / ClipLenght;
+        public double NormolizedDeltaTime => Time / ClipLenght;
+    }
+
+    public struct FrameData<TComponent>
+    {
+        public Entity Entity { get; set; }
+        public TComponent Component { get; set; }
+        public int FrameId { get; set; }
     }
 
     public struct KeyFrame<T>
     {
-        public T value;
-        public float normolizeTime;
-    }
+        public double NormolizeTime { get; }
+        public T Value { get; }
 
-    public struct TimeData
-    {
-        public float allTime { get; set; }
-        public float deltaTime { get; set; }
+        public KeyFrame(double normolizeTime, T value)
+        {
+            NormolizeTime = normolizeTime;
+            Value = value;
+        }
     }
 }

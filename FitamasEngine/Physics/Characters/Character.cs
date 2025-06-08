@@ -1,20 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace Fitamas.Physics.Characters
 {
-    public enum CharacterState
-    {
-        idle,
-        walk,
-        run,
-        crouch,
-        fly,
-    }
-
     public class Character
     {
-        public CharacterState characterState = CharacterState.idle;
-
         public Vector2 gravity = new Vector2(0, -9.8f);
         public float moveSpeed = 4;
         public float maxSlopeAngle = 45;

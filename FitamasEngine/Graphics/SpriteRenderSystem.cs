@@ -57,15 +57,19 @@ namespace Fitamas.Graphics
                 return;
             }
 
+            Sprite sprite = spriteRender.Sprite;
             Vector2 position = transform.ToAbsolutePosition(spriteRender.SpriteOffset);
             float angle = transform.Rotation + MathF.PI;
             Vector2 scale = transform.Scale / spriteRender.Sprite.PixelInUnit;
             float layer = (float)spriteRender.Layer / Settings.LayersCount;
+            Rectangle sourceRectangle = spriteRender.RectangleIndex >= 0 && 
+                                           spriteRender.RectangleIndex < sprite.Rectangles.Length ?
+                                           sprite.Rectangles[spriteRender.RectangleIndex] : sprite.Bounds;
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointWrap,
                   DepthStencilState.Default, RasterizerState.CullNone, effect, Camera.Current.TranslationVirtualMatrix);
 
-            spriteBatch.Draw(spriteRender.Sprite, position, spriteRender.Color, angle,
+            spriteBatch.Draw(sprite, position, sourceRectangle, spriteRender.Color, angle, 
                              spriteRender.Origin, scale, spriteRender.SpriteEffect, layer);
 
             spriteBatch.End();

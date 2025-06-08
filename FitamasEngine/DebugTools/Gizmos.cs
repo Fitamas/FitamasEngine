@@ -16,7 +16,7 @@ namespace Fitamas.DebugTools
         public static Vector2 AnchorSize = new Vector2(1, 0.05f);
         public static Vector2 HandleSize = new Vector2(0.3f, 0.3f);
 
-        private static void Begin()
+        internal static void Begin()
         {
             if (primitiveBatch == null)
             {
@@ -35,7 +35,7 @@ namespace Fitamas.DebugTools
             primitiveBatch.Begin(ref projection, ref view);
         }
 
-        private static void End()
+        internal static void End()
         {
             if (Camera.Current == null)
             {
@@ -50,13 +50,9 @@ namespace Fitamas.DebugTools
             Color x = Color.Green;
             Color y = Color.Red;
 
-            Begin();
-
             primitiveDrawing.DrawSegment(position, position + MathV.Rotate(new Vector2(0, AnchorSize.X), rotation), y);
 
             primitiveDrawing.DrawSegment(position, position + MathV.Rotate(new Vector2(AnchorSize.X, 0), rotation), x);
-
-            End();
         }
 
         public static void DrawAnchor(Vector2 position, float rotation, Handle handle = Handle.none)
@@ -82,16 +78,12 @@ namespace Fitamas.DebugTools
                     break;
             }
 
-            Begin();
-
             primitiveDrawing.DrawLine(position + MathV.Rotate(new Vector2(0, HandleSize.Y / 2), rotation), 
                                       position + MathV.Rotate(new Vector2(HandleSize.X, HandleSize.Y / 2), rotation), xy, HandleSize.Y);
 
             primitiveDrawing.DrawLine(position, position + MathV.Rotate(new Vector2(0, AnchorSize.X), rotation), y, AnchorSize.Y);
 
             primitiveDrawing.DrawLine(position, position + MathV.Rotate(new Vector2(AnchorSize.X, 0), rotation), x, AnchorSize.Y);
-
-            End();
         }
 
         public static void DrawRectangle(Vector2 position, float rotation, Vector2 size, Color color)
@@ -100,28 +92,23 @@ namespace Fitamas.DebugTools
             Vector2 vector2 = MathV.Rotate(new Vector2(-size.X / 2, size.Y / 2), rotation);
             Vector2[] points = [vector1, vector2, -vector1, -vector2];
 
-            Begin();
-
             primitiveDrawing.DrawPolygon(position, points, color);
-
-            End();
         }
 
         public static void DrawCircle(Vector2 position, float radius, Color color)
         {
-            Begin();
-
             primitiveDrawing.DrawCircle(position, radius, color);
+        }
 
-            End();
+        public static void DrawLine(Vector2 start, Vector2 end, Color color)
+        {
+            primitiveDrawing.DrawPolygon(Vector2.Zero, [start, end], color);
         }
 
         public static void DrawPolygon(Vector2 position, float rotation, Mesh mesh, Color color)
         {
             Matrix matrix = Matrix.CreateRotationZ(rotation) * 
                             Matrix.CreateTranslation(position.X, position.Y, 0);
-
-            Begin();
 
             for (int i = 0; i < mesh.TriangleCount; i++)
             {
@@ -135,8 +122,6 @@ namespace Fitamas.DebugTools
                 }
                 primitiveDrawing.DrawPolygon(Vector2.Zero, points, color);
             }
-
-            End();
         }
 
         public static void DrawPolygon(Vector2 position, float rotation, Vector2[] points, Color color)
@@ -144,16 +129,12 @@ namespace Fitamas.DebugTools
             Matrix matrix = Matrix.CreateRotationZ(rotation) *
                 Matrix.CreateTranslation(position.X, position.Y, 0);
 
-            Begin();
-
             Vector2[] result = new Vector2[points.Length];
             for (var i = 0; i < points.Length; i++)
             {
                 result[i] = Vector2.Transform(points[i], matrix);
             }
             primitiveDrawing.DrawPolygon(Vector2.Zero, result, color);
-
-            End();
         }
     }
 }

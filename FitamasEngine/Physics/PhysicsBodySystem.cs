@@ -1,35 +1,45 @@
-﻿using Fitamas.DebugTools;
+﻿using Fitamas.Collections;
 using Fitamas.Entities;
 using Fitamas.Extended.Entities;
-using Fitamas.Math2D;
-using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Dynamics;
+using System.Linq;
 
 namespace Fitamas.Physics
 {
-    public class PhysicsBodySystem : EntityFixedUpdateSystem, IDrawGizmosSystem
+    public class PhysicsBodySystem : EntityFixedUpdateSystem
     {
         private PhysicsWorldSystem physicsWorld;
 
+        private Bag<Body> bodies;
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<PhysicsRigidBody> rigidBodyMapper;
-        private ComponentMapper<PhysicsCollider> colliderMapper;
 
-
-        public PhysicsBodySystem(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(Transform)).One(typeof(PhysicsRigidBody), typeof(PhysicsCollider)))
+        public PhysicsBodySystem(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(Transform), typeof(PhysicsRigidBody)))
         {
             this.physicsWorld = physicsWorld;
+
+            bodies = new Bag<Body>();
+
+            physicsWorld.World.BodyRemoved += (s, b) =>
+            {
+                int index = bodies.IndexOf(b);
+
+                if (index != -1)
+                {
+                    bodies[index] = null;
+                    rigidBodyMapper.Delete(index);
+                }
+            };
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
             transformMapper = mapperService.GetMapper<Transform>();
+            transformMapper.OnPut += PutBody;
+            transformMapper.OnDelete += DeleteBody;
             rigidBodyMapper = mapperService.GetMapper<PhysicsRigidBody>();
             rigidBodyMapper.OnPut += PutBody;
             rigidBodyMapper.OnDelete += DeleteBody;
-            colliderMapper = mapperService.GetMapper<PhysicsCollider>();
-            colliderMapper.OnPut += PutCollider;
-            colliderMapper.OnDelete += DeleteCollider;
         }
 
         private void PutBody(int entityId)
@@ -38,37 +48,21 @@ namespace Fitamas.Physics
             {
                 Transform transform = transformMapper.Get(entityId);
                 PhysicsRigidBody rigidBody = rigidBodyMapper.Get(entityId);
-                physicsWorld.CreateRigidBody(entityId, transform, rigidBody);
+                
+                Body body = physicsWorld.World.CreateBody(transform.Position, transform.Rotation, (BodyType)rigidBody.MotionType);
+                body.BodyType = BodyType.Static;
+                body.FixedRotation = rigidBody.FixedRotation;
+                bodies[entityId] = body;
+
+                rigidBody.Body = body;
             }
         }
 
         private void DeleteBody(int entityId)
         {
-            if (!colliderMapper.Has(entityId))
+            if (rigidBodyMapper.TryGet(entityId, out PhysicsRigidBody rigidBody))
             {
-                physicsWorld.RemoveBody(entityId);
-            }
-        }
-
-        private void PutCollider(int entityId)
-        {
-            if (ActiveEntities.Contains(entityId))
-            {
-                Transform transform = transformMapper.Get(entityId);
-                PhysicsCollider collider = colliderMapper.Get(entityId);
-                physicsWorld.CreateCollider(entityId, transform, collider);
-            }
-        }
-
-        private void DeleteCollider(int entityId)
-        {
-            if (rigidBodyMapper.Has(entityId))
-            {
-                physicsWorld.RemoveCollider(entityId);
-            }
-            else
-            {
-                physicsWorld.RemoveBody(entityId);
+                physicsWorld.World.Remove(rigidBody.Body);
             }
         }
 
@@ -80,11 +74,11 @@ namespace Fitamas.Physics
                 Body body = physicsWorld.GetBody(entityId);
                 PhysicsRigidBody rigidBody = rigidBodyMapper.Get(entityId);
 
-                if (rigidBody != null && rigidBody.MotionType != MotionType.Static)
-                {
-                    body.BodyType = (BodyType)rigidBody.MotionType;
-                    body.FixedRotation = rigidBody.FixedRotation;
+                body.BodyType = (BodyType)rigidBody.MotionType;
+                body.FixedRotation = rigidBody.FixedRotation;
 
+                if (rigidBody.MotionType != MotionType.Static)
+                {
                     transform.Position = body.Position;
                     transform.Rotation = body.Rotation;
                 }
@@ -96,49 +90,15 @@ namespace Fitamas.Physics
             }
         }
 
-        public void DrawGizmos()
+        internal Body GetBody(int entityId)
         {
-            foreach (var entityId in ActiveEntities)
-            {
-                Transform transform = transformMapper.Get(entityId);
+            return bodies[entityId];
+        }
 
-                if (colliderMapper.TryGet(entityId, out PhysicsCollider collider))
-                {
-                    Color color = Color.GreenYellow;
-                    Body body = physicsWorld.GetBody(entityId);
-                    float rotation = body.Rotation;
-                    Vector2 position = body.Position + MathV.Rotate(collider.Offset, rotation);
-
-                    switch (collider.ColliderType)
-                    {
-                        case ColliderType.Box:
-                            Gizmos.DrawRectangle(position, rotation, collider.Size, color);
-                            break;
-                        case ColliderType.Circle:
-                            Gizmos.DrawCircle(position, collider.Radius, color);
-                            break;
-                        case ColliderType.Polygon:
-                            if (collider.ColliderShapes != null)
-                            {
-                                foreach (var polygon in collider.ColliderShapes)
-                                {
-                                    Gizmos.DrawPolygon(position, rotation, polygon, color);
-                                }
-                            }
-                            break;
-                        case ColliderType.Capsule:
-                            Vector2 scale = collider.Size;
-                            Gizmos.DrawRectangle(position, rotation, new Vector2(scale.X * 2, scale.Y), color);
-
-                            Vector2 posUp = transform.ToAbsolutePosition(new Vector2(0, scale.Y / 2) - collider.Offset);
-                            Vector2 posDown = transform.ToAbsolutePosition(new Vector2(0, -scale.Y / 2) - collider.Offset);
-
-                            Gizmos.DrawCircle(posUp, scale.X, color);
-                            Gizmos.DrawCircle(posDown, scale.X, color);
-                            break;
-                    }
-                }
-            }
+        internal Entity GetEntity(Body body)
+        {
+            int entityId = bodies.IndexOf(body);
+            return GetEntity(entityId);
         }
     }
 }

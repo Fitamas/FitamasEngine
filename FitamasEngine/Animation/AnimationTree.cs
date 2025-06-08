@@ -1,108 +1,77 @@
-﻿using Fitamas.Serialization;
+﻿using Fitamas.Entities;
+using Fitamas.Serialization;
+using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Fitamas.Animation
 {
     public class AnimationTree : MonoObject
     {
-        [SerializeField] private Dictionary<string, AnimationClip> animations = new Dictionary<string, AnimationClip>();
-        [SerializeField] private List<IPlayable> playables = new List<IPlayable>();
-        [SerializeField] private List<ConnectionPlayable> connections = new List<ConnectionPlayable>();
-        public AnimationTree(string id, AnimationClip[] animations)
+        public string Name;
+        public List<AnimationLayerInfo> Layers;
+
+        public AnimationTree(string name)
         {
-            foreach (AnimationClip clip in animations)
+            if (string.IsNullOrEmpty(name))
             {
-                this.animations[clip.Name] = clip;
-            }
-        }
-
-        public AnimationTree()
-        {
-
-        }
-
-        public void AddPlayable(IPlayable playable)
-        {
-            playables.Add(playable);
-        }
-
-        public void AddConnection(int A, int B)
-        {
-            connections.Add(new ConnectionPlayable(A, B));
-        }
-
-        public AnimationNode[] CreateNodes()
-        {
-            AnimationNode[] nodes = new AnimationNode[playables.Count];
-            for (int i = 0; i < playables.Count; i++)
-            {
-                nodes[i] = playables[i].Create(this);
+                throw new ArgumentNullException(nameof(name));
             }
 
-            foreach (var connection in connections) 
-            {
-                nodes[connection.IdA].AddNode(nodes[connection.IdB]);
-            }
-
-            return nodes;
-        }
-
-        public AnimationClip GetAnimation(string id)
-        {
-            if (animations.ContainsKey(id))
-            {
-                return animations[id];
-            }
-            else
-            {
-                return null;
-            }
+            Name = name;
+            Layers = new List<AnimationLayerInfo>();
         }
     }
 
-    public interface IPlayable
+    public enum AnimationBlendType
     {
-        AnimationNode Create(AnimationTree tree);
+        Blend1D = 0,
+        Blend2D = 1,
+        BlendDirect = 2,
     }
 
-    public struct ConnectionPlayable
+    public class AnimationLayerInfo
     {
-        public int IdA;
-        public int IdB;
+        public string Name;
+        public AnimationSkeletonMask Mask;
+        public List<AnimationBlendInfo> Blends;
+        public List<AnimationClipInfo> Clips;
 
-        public ConnectionPlayable(int A, int B)
+        public AnimationLayerInfo()
         {
-            IdA = A;
-            IdB = B;
+            Clips = new List<AnimationClipInfo>();
+            Blends = new List<AnimationBlendInfo>();
         }
     }
 
-    public struct PlayableMixer : IPlayable
+    public class AnimationClipInfo
     {
-        public AnimationNode Create(AnimationTree tree)
+        public string Name;
+        public AnimationClip Clip;
+        public float TimeScale;
+        public bool IsMirror;
+        public bool Loop;
+    }
+
+    public class AnimationBlendInfo
+    {
+        public string Name;
+        public AnimationBlendType BlendType;
+        public List<Motion> Motions;
+
+        public AnimationBlendInfo()
         {
-            throw new System.NotImplementedException();
+            Motions = new List<Motion>();
         }
     }
 
-    public struct PlayableClip : IPlayable
+    public class Motion
     {
-        public float weight;
-        public float speed;
-        public string animationName;
-        public string name;
-
-        public AnimationNode Create(AnimationTree tree)
-        {
-            if (name == "")
-            {
-                name = "node";
-            }
-
-            AnimationClip clip = tree.GetAnimation(animationName);
-            AnimationClipNode clipNode = new AnimationClipNode(name, clip);
-
-            return clipNode;
-        }
+        public AnimationClip Clip;
+        public float Value1;
+        public float Value2;
+        public float TimeScale;
+        public bool IsMirror;
+        public bool Loop;
     }
 }

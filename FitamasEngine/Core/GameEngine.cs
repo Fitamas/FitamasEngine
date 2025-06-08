@@ -8,6 +8,7 @@ using Fitamas.Physics;
 using Fitamas.Scene;
 using Fitamas.UserInterface;
 using Fitamas.Graphics.ViewportAdapters;
+using Fitamas.DebugTools;
 
 namespace Fitamas.Core
 {
@@ -28,7 +29,7 @@ namespace Fitamas.Core
         public static GameEngine Instance { get; private set; }
         public DIContainer MainContainer { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
-        public WindowViewportAdapter WindowViewportAdapter { get; }
+        public WindowViewportAdapter WindowViewportAdapter { get; private set; }
 
         public GameEngine()
         {
@@ -37,7 +38,10 @@ namespace Fitamas.Core
 
             MainContainer = new DIContainer();
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
-            WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDevice);
+            GraphicsDeviceManager.DeviceCreated += (s, a) =>
+            {
+                WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDeviceManager.GraphicsDevice);
+            };
         }
 
         protected override void Initialize()
@@ -126,8 +130,10 @@ namespace Fitamas.Core
             }
 
             drawExecutor.Draw(gameTime);
-            
+
+            Gizmos.Begin();
             drawGizmosExecutor.DrawGizmos();
+            Gizmos.End();
         }
 
         protected override void Dispose(bool disposing)

@@ -43,6 +43,7 @@ namespace Fitamas.Input.InputListeners
         protected InputListener()
         {
             InputEvents = new List<InputEventPtr>();
+            Enable = true;
         }
 
         public void Update(GameTime gameTime)

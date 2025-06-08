@@ -359,7 +359,6 @@ namespace Fitamas.Math2D
             return result;
         }
 
-        //TODO: Document this.
         public void Inflate(float horizontalAmount, float verticalAmount)
         {
             X -= horizontalAmount;
@@ -368,14 +367,12 @@ namespace Fitamas.Math2D
             Height += verticalAmount * 2;
         }
 
-        //TODO: Document this.
         public void Offset(float offsetX, float offsetY)
         {
             X += offsetX;
             Y += offsetY;
         }
 
-        //TODO: Document this.
         public void Offset(Vector2 amount)
         {
             X += amount.X;

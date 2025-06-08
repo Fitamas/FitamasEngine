@@ -102,6 +102,8 @@ namespace Fitamas.Collections
             return false;
         }
 
+        public int IndexOf(T item) => Array.IndexOf(_items, item, 0, Count);
+
         public T RemoveAt(int index)
         {
             var result = _items[index];

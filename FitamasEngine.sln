@@ -5,13 +5,15 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitamas", "FitamasEngine\Fitamas.csproj", "{E8BC477F-333E-4767-A130-92BB402CC654}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "Samples\HelloWorld\HelloWorld.csproj", "{C3E028AC-B4FB-442B-8F5B-E8DEF19DBCB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.HelloWorld", "Samples\HelloWorld\Sample.HelloWorld.csproj", "{C3E028AC-B4FB-442B-8F5B-E8DEF19DBCB3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WDL", "Samples\WDL\WDL.csproj", "{84F2AC2A-9DCF-4308-BB7C-57707F23DC08}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Physics", "Samples\Physics\Physics.csproj", "{FA08639C-57D0-4DF6-A1AF-22ABF3ED12CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Physics", "Samples\Physics\Sample.Physics.csproj", "{FA08639C-57D0-4DF6-A1AF-22ABF3ED12CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitamas.Content.Pipeline", "Fitamas.Content.Pipeline\Fitamas.Content.Pipeline.csproj", "{9346759E-4D20-4AAB-B11E-E60D24C4FCF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitamas.Content.Pipeline", "Fitamas.Content.Pipeline\Fitamas.Content.Pipeline.csproj", "{9346759E-4D20-4AAB-B11E-E60D24C4FCF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Animation", "Samples\Animation\Sample.Animation.csproj", "{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{9346759E-4D20-4AAB-B11E-E60D24C4FCF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9346759E-4D20-4AAB-B11E-E60D24C4FCF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9346759E-4D20-4AAB-B11E-E60D24C4FCF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

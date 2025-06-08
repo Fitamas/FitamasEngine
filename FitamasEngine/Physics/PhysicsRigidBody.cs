@@ -1,5 +1,6 @@
 ﻿using Fitamas.Math2D;
 using Fitamas.Serialization;
+using nkast.Aether.Physics2D.Dynamics;
 using System;
 
 namespace Fitamas.Physics
@@ -15,5 +16,7 @@ namespace Fitamas.Physics
     {
         public MotionType MotionType;
         public bool FixedRotation;
+
+        internal Body Body { get; set; }
     }
 }

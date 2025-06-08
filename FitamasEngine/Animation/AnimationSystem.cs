@@ -1,68 +1,51 @@
-﻿using Fitamas.Entities;
-using Fitamas.Physics.Characters;
+﻿using Fitamas.Animation.Rigging;
+using Fitamas.Collections;
+using Fitamas.Entities;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace Fitamas.Animation
 {
     public class AnimationSystem : EntityUpdateSystem
     {
         private ComponentMapper<Animator> animatorMapper;
+        private ComponentMapper<AnimationRequest> requestMapper;
 
-        public AnimationSystem() : base(Aspect.All(typeof(Animator)))
+        public AnimationSystem() : base(Aspect.All(typeof(Animator), typeof(AnimationRequest)))
         {
 
+        }
+
+        public override void Initialize(GameWorld world)
+        {
+            world.RegisterSystem(new AnimationBoneSystem());
+            world.RegisterSystem(new RiggingSystem());
+
+            base.Initialize(world);
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
             animatorMapper = mapperService.GetMapper<Animator>();
+            animatorMapper.OnPut += PutAnimator;
+            requestMapper = mapperService.GetMapper<AnimationRequest>();
         }
 
-        protected override void OnEntityAdded(int entityId)
+        private void PutAnimator(int entityId)
         {
-            InitAnimator(entityId);
-        }
-
-        protected override void OnEntityChanged(int entityId)
-        {
-            InitAnimator(entityId);
-        }
-
-        private void InitAnimator(int entityId)
-        {
-            if (ActiveEntities.Contains(entityId))
-            {
-                Entity entity = GetEntity(entityId);
-                Animator animator = animatorMapper.Get(entityId);
-
-                animator.Init(entity);
-
-                if (entity.TryGet(out Character character))
-                {
-                    //animator.SetAvatar(character.Avatar);
-                }
-            }
-        }
-
-        protected override void OnEntityRemoved(int entityId)
-        {
-            if (ActiveEntities.Contains(entityId))
-            {
-                Animator animator = animatorMapper.Get(entityId);
-
-                animator.Destroy();
-            }
+            Animator animator = animatorMapper.Get(entityId);
+            animator.Init();
         }
 
         public override void Update(GameTime gameTime)
         {
-            foreach (var id in ActiveEntities)
+            foreach (var entityId in ActiveEntities)
             {
-                Animator animator = animatorMapper.Get(id);
+                Animator animator = animatorMapper.Get(entityId);
+                AnimationRequest request = requestMapper.Get(entityId);
 
-                animator.Update(gameTime);
+                animator.Play(request.Animation);
+
+                requestMapper.Delete(entityId);
             }
         }
     }

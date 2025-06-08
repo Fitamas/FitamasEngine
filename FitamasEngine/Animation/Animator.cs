@@ -1,100 +1,81 @@
-﻿using Fitamas.Entities;
+﻿using Assimp;
+using Fitamas.Collections;
+using Fitamas.Entities;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace Fitamas.Animation
 {
-    public class Animator
+    public class Animator : Component
     {
-        [SerializeField] private AnimationTree animationTree;
-        [SerializeField] private AnimationController animationController;
+        public static readonly AnimationTree DefaultTree = new AnimationTree(nameof(DefaultTree));
 
-        private RigController rigController;
-        private RuntimeAnimatorController controller;
-        private Avatar avatar;
-        private bool isInit = false;
+        [SerializeField] private AnimationTree animationTree;
+
+        private Dictionary<string, float> properies;
+        private List<AnimationLayerState> layers;
 
         public AnimationTree AnimationTree => animationTree;
-        public AnimationController AnimationController => animationController;
-        public RigController RigController => rigController;
-        public RuntimeAnimatorController Controller => controller;
-        public Avatar Avatar => avatar;
 
-        public Animator()
+        public Animator(AnimationTree animationTree)
         {
-
-        }
-
-        public Animator(AnimationTree animationTree, AnimationController animationController = null) 
-        { 
+            properies = new Dictionary<string, float>();
+            layers = new List<AnimationLayerState>();
             this.animationTree = animationTree;
-            this.animationController = animationController;
         }
 
-        public void SetAvatar(Avatar avatar)
+        private Animator() : this(DefaultTree)
         {
-            if (avatar != null && this.avatar != avatar)
+
+        }
+
+        internal void Init()
+        {
+            layers.Clear();
+            foreach (var layer in AnimationTree.Layers)
             {
-                this.avatar = avatar;
-                
-                if (controller != null)
-                {
-                    controller.Avatar = avatar;
-                }
-
-                animationController.SetAvatar(avatar);
-
-                rigController.SetAvatar(avatar);
+                layers.Add(new AnimationLayerState(this, layer));
             }
         }
 
-        public void Init(Entity entity)
+        internal void Step(GameTime gameTime, Entity entity, AnimationBone bone)
         {
-            if (!isInit)
+            foreach (var layer in layers)
             {
-                avatar = new DefoultAvatar(entity);
-
-                if (controller == null && animationTree != null)
-                {
-                    controller = new RuntimeAnimatorController(animationTree, avatar);
-                    controller.Init();
-                }
-
-                rigController = new RigController();
-                rigController.SetAvatar(avatar);
-
-                animationController?.Init(entity, this);
-
-                isInit = true;
+                layer.Step(gameTime, entity, bone);
             }
         }
 
-        public void Update(GameTime gameTime)
+        public float GetValue(string name)
         {
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            animationController?.Update(gameTime);
-
-            controller?.Step(deltaTime);
-
-            rigController?.Update(deltaTime);
-        }
-
-        public AnimationClip GetAnimation(string animation)
-        {
-            return animationTree.GetAnimation(animation);
-        }
-
-        public void Destroy()
-        {
-            if (isInit)
+            if (properies.TryGetValue(name, out float value))
             {
-                controller = null;
-                rigController = null;
-                avatar = null;
+                return value;
+            }
 
-                isInit = false;
+            return default;
+        }
+
+        public void SetValue(string name, float value)
+        {
+            properies[name] = value;
+        }
+
+        public void Play(string name)
+        {
+            foreach (var layer in layers)
+            {
+                layer.Play(name);
+            }
+        }
+
+        public void Play(string name, float fade)
+        {
+            foreach (var layer in layers)
+            {
+                layer.Play(name, fade);
             }
         }
     }

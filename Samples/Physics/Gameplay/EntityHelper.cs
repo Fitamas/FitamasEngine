@@ -70,6 +70,10 @@ namespace Physics.Gameplay
                 Position = position
             });
             entity.Attach(PhysicsCollider.CreatePolygon(mesh));
+            entity.Attach(new PhysicsRigidBody()
+            {
+                MotionType = MotionType.Static,
+            });
         }
 
         public static void CreateTestBox(GameWorld world, Vector2 position)

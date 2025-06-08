@@ -1,6 +1,7 @@
 ﻿using Fitamas.Entities;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
+using nkast.Aether.Physics2D.Dynamics.Joints;
 using System;
 
 namespace Fitamas.Physics
@@ -25,6 +26,8 @@ namespace Fitamas.Physics
         [SerializeField] private bool collideConnected = false;
         [SerializeField] private float motorFrequency = 8;
         [SerializeField] private float distance;
+
+        internal Joint Joint { get; set; }
 
         public PhysicsJointType JointType => jointType;
         public Entity EntityA => entityA;

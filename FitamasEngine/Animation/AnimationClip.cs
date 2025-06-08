@@ -1,64 +1,23 @@
-﻿using Fitamas.Entities;
-using Fitamas.Graphics;
-using Fitamas.Serialization;
+﻿using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Animation
 {
     public class AnimationClip : MonoObject
     {
+        [SerializeField] private string name;
         [SerializeField] private float time;
-        [SerializeField] public ITimeLine[] timeLines;
+        [SerializeField] private ITimeLine[] timeLines;
 
-        public string Name;
-
+        public string Name => name;
+        public float Lenght => time;
         public ITimeLine[] TimeLines => timeLines;
-        public float Time => time;
 
-        public AnimationClip(ITimeLine[] timeLines, float time, string name)
+        public AnimationClip(string name, float time, ITimeLine[] timeLines)
         {
-            this.timeLines = timeLines;
+            this.name = name;
             this.time = time;
-            Name = name;
+            this.timeLines = timeLines;
         }
-    }
-
-    public struct TransformPositionJob : IJob<Vector2>
-    {
-        public void Step(FrameData frameData, KeyFrame<Vector2> lastFrame, KeyFrame<Vector2> currentFrame)
-        {
-            if (frameData.frameId == 0)
-            {
-                return;
-            }
-
-            Transform transform = frameData.entity.Get<Transform>();
-
-            float normolizeTime = (frameData.normolizeTime - lastFrame.normolizeTime) 
-                / (currentFrame.normolizeTime - lastFrame.normolizeTime);
-
-            if (normolizeTime < 0)
-            {
-                return;
-            }
-            Vector2 result = Vector2.Lerp(lastFrame.value, currentFrame.value, normolizeTime);
-            transform.LocalPosition = result;
-        }
-    }
-
-    public struct SpriteJob : IJob<int>
-    {
-        public void Step(FrameData frameData, KeyFrame<int> lastFrame, KeyFrame<int> currentFrame)
-        {
-            if (frameData.entity.TryGet(out SpriteRender spriteRender))
-            {
-                //spriteRender.selectRegion = currentFrame.value;
-            }
-        }
-    }
-
-    public interface IJob<V>
-    {
-        void Step(FrameData frameData, KeyFrame<V> lastFrame, KeyFrame<V> currentFrame);
     }
 }

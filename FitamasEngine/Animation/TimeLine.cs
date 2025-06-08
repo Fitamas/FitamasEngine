@@ -1,44 +1,104 @@
 ﻿using Fitamas.Entities;
+using Fitamas.Graphics;
+using Fitamas.Math2D;
 using Fitamas.Serialization;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace Fitamas.Animation
 {
-    public class TimeLine<O, V> : ITimeLine where O : struct, IJob<V>
+    public abstract class TimeLine<TComponent, TValue> : ITimeLine where TComponent : class
     {
-        [SerializeField] private string entityName;
-        [SerializeField] private KeyFrame<V>[] keys;
+        [SerializeField] private string boneName;
+        [SerializeField] private KeyFrame<TValue>[] keys;
 
-        public TimeLine(string entityName, KeyFrame<V>[] keys)
+        public KeyFrame<TValue>[] Keys => keys;
+        public string BoneName => boneName;
+
+        public TimeLine(string boneName, KeyFrame<TValue>[] keys)
         {
             this.keys = keys;
-            this.entityName = entityName;
+            this.boneName = boneName;
         }
 
-        public KeyFrame<V>[] Keys => keys;
-        public string EntityName => entityName;
-
-        public IJobController CreateJob()
-        {
-            return new JobController<O, V>(this);
-        }
-
-        public int GetFrame(float time)
+        public int GetFrame(double time)
         {
             for (int i = 0; i < keys.Length; i++)
             {
-                if (keys[i].normolizeTime > time)
+                if (keys[i].NormolizeTime >= time)
                 {
-                    return i;
+                    return i - 1;
                 }
             }
 
-            return -1;
+            return keys.Length - 1;
         }
+
+        public void Step(Entity entity, AnimationInfo info)
+        {
+            if (!entity.Has<TComponent>())
+            {
+                return;
+            }
+
+            FrameData<TComponent> frameData;
+            frameData = new FrameData<TComponent>();
+            frameData.Entity = entity;
+            frameData.Component = entity.Get<TComponent>();
+            frameData.FrameId = GetFrame(info.NormolizeTime);
+
+            if (frameData.FrameId < 0)
+            {
+                return;
+            }
+
+            KeyFrame<TValue> currentFrame = Keys[frameData.FrameId];
+            KeyFrame<TValue> nextFrame = frameData.FrameId + 1 < Keys.Length ? Keys[frameData.FrameId + 1] : Keys[frameData.FrameId];
+
+            Step(info, frameData, currentFrame, nextFrame);
+        }
+
+        protected abstract void Step(AnimationInfo info, FrameData<TComponent> frameData, KeyFrame<TValue> currentFrame, KeyFrame<TValue> nextFrame);
     }
 
     public interface ITimeLine
     {
-        IJobController CreateJob();
+        string BoneName { get; }
+        void Step(Entity entity, AnimationInfo info);
+    }
+
+    public class TransformPositionTimeLine : TimeLine<Transform, Vector2>
+    {
+        public TransformPositionTimeLine(string boneName, KeyFrame<Vector2>[] keys) : base(boneName, keys)
+        {
+
+        }
+
+        protected override void Step(AnimationInfo info, FrameData<Transform> frameData, KeyFrame<Vector2> currentFrame, KeyFrame<Vector2> nextFrame)
+        {
+            double normolizeTime = (info.NormolizeTime - currentFrame.NormolizeTime)
+                / (nextFrame.NormolizeTime - currentFrame.NormolizeTime);
+
+            if (normolizeTime < 0)
+            {
+                return;
+            }
+
+            Vector2 result = Vector2.Lerp(currentFrame.Value, nextFrame.Value, (float)normolizeTime * info.Weight);
+            frameData.Component.LocalPosition = result;
+        }
+    }
+
+    public class SpriteTimeLine : TimeLine<SpriteRender, int>
+    {
+        public SpriteTimeLine(string boneName, KeyFrame<int>[] keys) : base(boneName, keys)
+        {
+
+        }
+
+        protected override void Step(AnimationInfo info, FrameData<SpriteRender> frameData, KeyFrame<int> currentFrame, KeyFrame<int> nextFrame)
+        {
+            frameData.Component.RectangleIndex = currentFrame.Value;
+        }
     }
 }

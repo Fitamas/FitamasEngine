@@ -15,6 +15,7 @@ namespace Fitamas.Graphics
         public Vector2 SpriteOffset;
         public int Layer;
         public SpriteEffects SpriteEffect;
+        public int RectangleIndex;
 
         public Vector2 Origin
         { 
@@ -36,6 +37,7 @@ namespace Fitamas.Graphics
         {
             Alpha = 1.0f;
             Color = Color.White;
+            RectangleIndex = -1;
         }
     }
 }
