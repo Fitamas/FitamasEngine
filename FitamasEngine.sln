@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Physics", "Samples\P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fitamas.Content.Pipeline", "Fitamas.Content.Pipeline\Fitamas.Content.Pipeline.csproj", "{9346759E-4D20-4AAB-B11E-E60D24C4FCF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Animation", "Samples\Animation\Sample.Animation.csproj", "{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Animation", "Samples\Animation\Sample.Animation.csproj", "{1AC09CBC-C243-4EEF-A997-1CA1E14E7BDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

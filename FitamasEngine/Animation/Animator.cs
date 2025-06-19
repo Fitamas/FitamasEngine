@@ -1,5 +1,4 @@
-﻿using Assimp;
-using Fitamas.Collections;
+﻿using Fitamas.Collections;
 using Fitamas.Entities;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;

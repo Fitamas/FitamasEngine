@@ -1,5 +1,4 @@
-﻿using Assimp;
-using Fitamas.Events;
+﻿using Fitamas.Events;
 using System;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;

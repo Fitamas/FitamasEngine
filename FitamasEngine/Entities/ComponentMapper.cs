@@ -36,7 +36,6 @@ namespace Fitamas.Entities
         public Action<int> OnDelete;
         public Action<int> OnCompositionChanged;
 
-
         public ComponentMapper(int id, Type componentType, Action<int> onCompositionChanged)
         {
             OnCompositionChanged = onCompositionChanged;
@@ -58,7 +57,7 @@ namespace Fitamas.Entities
 
     public class ComponentMapper<T> : ComponentMapper where T : class
     {
-        protected Bag<T> Components { get; }
+        public Bag<T> Components { get; }
 
         public ComponentMapper(int id, Action<int> onCompositionChanged) 
             : base(id, typeof(T), onCompositionChanged)

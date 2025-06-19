@@ -10,7 +10,6 @@
 
 #-------------------------------- References --------------------------------#
 
-/reference:..\..\..\Fitamas.Content.Pipeline\bin\Debug\net6.0\Fitamas.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -25,6 +24,684 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Board.png
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (1).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (1).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (1)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (10).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (10).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (10)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (11).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (11).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (11)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (12).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (12).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (12)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (13).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (13).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (13)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (14).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (14).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (14)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (15).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (15).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (15)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (16).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (16).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (16)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (17).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (17).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (17)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (18).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (18).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (18)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (19).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (19).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (19)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (2).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (2).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (2)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (20).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (20).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (20)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (21).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (21).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (21)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (22).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (22).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (22)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (23).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (23).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (23)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (24).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (24).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (24)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (25).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (25).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (25)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (26).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (26).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (26)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (27).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (27).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (27)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (28).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (28).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (28)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (29).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (29).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (29)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (3).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (3).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (3)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (30).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (30).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (30)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (31).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (31).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (31)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (32).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (32).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (32)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (33).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (33).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (33)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (34).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (34).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (34)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (35).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (35).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (35)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (36).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (36).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (36)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (37).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (37).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (37)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (38).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (38).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (38)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (39).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (39).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (39)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (4).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (4).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (4)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (40).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (40).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (40)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (41).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (41).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (41)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (42).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (42).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (42)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (43).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (43).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (43)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (44).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (44).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (44)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (45).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (45).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (45)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (46).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (46).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (46)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (47).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (47).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (47)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (48).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (48).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (48)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (49).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (49).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (49)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (5).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (5).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (5)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (50).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (50).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (50)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (51).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (51).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (51)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (52).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (52).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (52)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (53).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (53).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (53)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (54).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (54).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (54)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (55).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (55).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (55)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (56).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (56).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (56)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (57).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (57).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (57)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (58).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (58).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (58)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (59).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (59).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (59)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (6).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (6).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (6)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (60).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (60).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (60)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (61).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (61).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (61)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (7).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (7).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (7)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (8).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (8).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (8)
+
+#begin Fantasy UI SFX/Fantasy/Fantasy_UI (9).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Fantasy/Fantasy_UI (9).wav;Fantasy UI SFX/Fantasy/Fantasy_UI (9)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (1).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (1).wav;Fantasy UI SFX/Piano/Piano_Ui (1)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (2).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (2).wav;Fantasy UI SFX/Piano/Piano_Ui (2)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (3).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (3).wav;Fantasy UI SFX/Piano/Piano_Ui (3)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (4).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (4).wav;Fantasy UI SFX/Piano/Piano_Ui (4)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (5).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (5).wav;Fantasy UI SFX/Piano/Piano_Ui (5)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (6).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (6).wav;Fantasy UI SFX/Piano/Piano_Ui (6)
+
+#begin Fantasy UI SFX/Piano/Piano_Ui (7).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Piano/Piano_Ui (7).wav;Fantasy UI SFX/Piano/Piano_Ui (7)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (1).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (1).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (1)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (10).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (10).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (10)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (11).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (11).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (11)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (12).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (12).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (12)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (13).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (13).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (13)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (14).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (14).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (14)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (15).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (15).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (15)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (16).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (16).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (16)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (17).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (17).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (17)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (18).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (18).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (18)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (19).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (19).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (19)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (2).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (2).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (2)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (20).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (20).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (20)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (21).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (21).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (21)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (22).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (22).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (22)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (23).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (23).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (23)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (24).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (24).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (24)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (25).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (25).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (25)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (26).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (26).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (26)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (27).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (27).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (27)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (28).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (28).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (28)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (29).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (29).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (29)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (3).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (3).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (3)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (30).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (30).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (30)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (31).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (31).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (31)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (32).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (32).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (32)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (33).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (33).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (33)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (34).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (34).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (34)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (35).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (35).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (35)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (36).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (36).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (36)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (37).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (37).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (37)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (38).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (38).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (38)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (39).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (39).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (39)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (4).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (4).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (4)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (40).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (40).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (40)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (41).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (41).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (41)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (42).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (42).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (42)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (43).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (43).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (43)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (44).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (44).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (44)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (45).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (45).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (45)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (5).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (5).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (5)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (6).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (6).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (6)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (7).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (7).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (7)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (8).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (8).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (8)
+
+#begin Fantasy UI SFX/Skyward Hero/SkywardHero_UI (9).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy UI SFX/Skyward Hero/SkywardHero_UI (9).wav;Fantasy UI SFX/Skyward Hero/SkywardHero_UI (9)
 
 #begin Font/Pixel_20.spritefont
 /importer:FontDescriptionImporter

@@ -26,7 +26,12 @@ namespace Fitamas.UserInterface
 
         public void Render(GUIComponent component)
         {
-            Matrix view = Camera.Main.ViewportScaleMatrix;
+            if (Camera.Current == null)
+            {
+                return;
+            }
+
+            Matrix view = Camera.Current.ViewportScaleMatrix;
             Matrix projection = Camera.Current.GetProjectionMatrix();
 
             primitiveBatch.Begin(ref projection, ref view);

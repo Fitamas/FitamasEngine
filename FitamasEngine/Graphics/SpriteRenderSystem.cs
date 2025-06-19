@@ -1,5 +1,4 @@
-﻿using Assimp;
-using Fitamas.DebugTools;
+﻿using Fitamas.DebugTools;
 using Fitamas.Entities;
 using Fitamas.Math2D;
 using Microsoft.Xna.Framework;

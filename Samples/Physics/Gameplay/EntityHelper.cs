@@ -11,7 +11,7 @@ namespace Physics.Gameplay
 {
     public static class EntityHelper
     {
-        public static void CreatePumpkin(GameWorld world, Vector2 position)
+        public static Entity CreatePumpkin(GameWorld world, Vector2 position)
         {
             Entity entity = world.CreateEntity();
             entity.Attach(new SpriteRender()
@@ -27,6 +27,7 @@ namespace Physics.Gameplay
             {
                 MotionType = MotionType.Dynamic,
             });
+            return entity;
         }
 
         public static void CreateLog(GameWorld world, Vector2 position)

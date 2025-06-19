@@ -9,7 +9,7 @@ namespace Fitamas.Input.Actions
     {
         public List<InputActionMap> ActionMaps { get; }
 
-        public InputActionMapComponent(GameEngine game) : base(game)
+        public InputActionMapComponent(Game game) : base(game)
         {
             ActionMaps = new List<InputActionMap>();
         }

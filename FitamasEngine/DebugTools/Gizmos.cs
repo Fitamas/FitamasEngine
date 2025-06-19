@@ -24,11 +24,6 @@ namespace Fitamas.DebugTools
                 primitiveDrawing = new PrimitiveDrawing(primitiveBatch);
             }
 
-            if (Camera.Current == null)
-            {
-                return;
-            }
-
             Matrix view = Camera.Current.GetViewMatrix();
             Matrix projection = Camera.Current.GetProjectionMatrix();
             
@@ -37,11 +32,6 @@ namespace Fitamas.DebugTools
 
         internal static void End()
         {
-            if (Camera.Current == null)
-            {
-                return;
-            }
-
             primitiveBatch.End();
         }
 

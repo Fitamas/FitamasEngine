@@ -19,6 +19,11 @@ namespace Physics.View
 
         protected override IDisposable OnBind(GameplayViewModel viewModel)
         {
+            map.MoveCamera.Performed += (context) =>
+            {
+                viewModel.MoveCamera(context.GetValue<Vector2>());
+            };
+
             map.UseTool.Started += (context) =>
             {
                 viewModel.BeginUseTool(map.UseToolPosition.GetValue<Point>());

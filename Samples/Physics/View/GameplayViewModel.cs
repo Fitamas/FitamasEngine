@@ -1,10 +1,12 @@
 ﻿using Fitamas;
+using Fitamas.Audio;
 using Fitamas.Core;
 using Fitamas.Entities;
 using Fitamas.Graphics;
 using Fitamas.MVVM;
 using Fitamas.Physics;
 using Microsoft.Xna.Framework;
+using nkast.Aether.Physics2D.Dynamics;
 using Physics.Gameplay;
 using System;
 
@@ -30,6 +32,7 @@ namespace Physics.View
         private Tool tool;
         private bool use;
 
+        private Entity camera;
         private Entity entityA;
         private Vector2 positionA;
 
@@ -37,6 +40,16 @@ namespace Physics.View
         {
             world = game.World;
             physicsWorld = game.MainContainer.Resolve<PhysicsWorldSystem>();
+
+            camera = world.CreateEntity();
+            camera.Attach(new Transform());
+            camera.Attach(new Camera());
+            camera.Attach(new AudioListener());
+        }
+
+        public void MoveCamera(Vector2 direction)
+        {
+            camera.Get<Transform>().Position += direction;
         }
 
         public void SelectTool(Tool tool)

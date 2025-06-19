@@ -7,10 +7,5 @@ namespace Fitamas.Animation
         public string Animation;
         public float TimeScale = 1;
         public float Fade = 0;
-
-        public AnimationRequest()
-        {
-
-        }
     }
 }

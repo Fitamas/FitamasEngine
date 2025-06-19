@@ -7,46 +7,18 @@ using Fitamas.Core;
 
 namespace Fitamas.Graphics
 {
-    public class Camera : IDisposable
+    public class Camera : Component, IDisposable
     {
-        public static Camera Main => CameraSystem.MainCamera;
+        public static Camera Main { get; set; }
         public static Camera Current { get; set; }
 
-        private ViewportAdapter viewportAdapter;
-        private Transform transform;
         private float zoom;
 
-        public Transform Transform => transform;
-        public CameraType CameraType { get; set; }
-        public Color Color { get; set; }
+        public Vector2 Position;
+        public float Rotation;
+        public Color Color;
 
-        public ViewportAdapter ViewportAdapter
-        {
-            get
-            {
-                return viewportAdapter;
-            }
-            set
-            {
-                if (value != null && viewportAdapter != value)
-                {
-                    viewportAdapter?.Dispose();
-                    viewportAdapter = value;
-                }
-            }
-        }
-
-        public Vector2 Position
-        {
-            get
-            {
-                return transform.Position;
-            }
-            set
-            {
-                transform.Position = value;
-            }
-        }
+        public ViewportAdapter ViewportAdapter { get; set; }
 
         public float Zoom
         {
@@ -68,7 +40,7 @@ namespace Fitamas.Graphics
         {
             get
             {
-                return new Vector2(ViewportAdapter.ViewportWidth, viewportAdapter.ViewportHeight);
+                return new Vector2(ViewportAdapter.ViewportWidth, ViewportAdapter.ViewportHeight);
             }
         }
 
@@ -76,7 +48,7 @@ namespace Fitamas.Graphics
         {
             get
             {
-                return new Vector2(viewportAdapter.VirtualWidth, viewportAdapter.VirtualHeight);
+                return new Vector2(ViewportAdapter.VirtualWidth, ViewportAdapter.VirtualHeight);
             }
         }
 
@@ -100,39 +72,26 @@ namespace Fitamas.Graphics
         {
             get
             {
-                return viewportAdapter.GetScaleMatrix();
+                return ViewportAdapter.GetScaleMatrix();
             }
         }
 
-        public Camera(GameEngine game, Vector2 position, float angle, float zoom)
+        public Camera()
         {
-            viewportAdapter = game.WindowViewportAdapter;
-
             Color = Color.CornflowerBlue;
-
-            this.zoom = zoom;
-
-            transform = new Transform();
-
-            transform.LocalPosition = position;
-            transform.LocalRotation = angle;
-        }
-
-        public Camera(GameEngine game) : this(game, Vector2.Zero, 0, 100)
-        {
-
+            zoom = 100;
         }
 
         public void Dispose()
         {
-            viewportAdapter?.Dispose();
+            ViewportAdapter?.Dispose();
         }
 
         private Matrix GetVirtualViewMatrix()
         {
             return
-                Matrix.CreateTranslation(new Vector3(-transform.Position, 0.0f)) *
-                Matrix.CreateRotationZ(transform.Rotation) *
+                Matrix.CreateTranslation(new Vector3(-Position, 0.0f)) *
+                Matrix.CreateRotationZ(Rotation) *
                 Matrix.CreateScale(Zoom, -Zoom, 1) *
                 Matrix.CreateTranslation(new Vector3(Origin, 0.0f));
         }
@@ -166,12 +125,12 @@ namespace Fitamas.Graphics
 
         public void MoveCamera(Vector2 delta)
         {
-            transform.LocalPosition += delta;
+            Position += delta;
         }
 
         public void LookAt(Vector2 pos)
         {
-            transform.LocalPosition = pos;
+            Position = pos;
         }
 
         public Vector2 WorldToScreen(Vector2 worldPosition)

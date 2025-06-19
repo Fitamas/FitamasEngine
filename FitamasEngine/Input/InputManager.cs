@@ -1,11 +1,8 @@
 ﻿using Fitamas.Core;
-using Fitamas.Entities;
-using Fitamas.Events;
 using Fitamas.Input.Actions;
 using Fitamas.Input.InputListeners;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Fitamas.Input
 {

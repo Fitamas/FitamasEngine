@@ -10,6 +10,11 @@ namespace Fitamas.Math2D
             return new Vector2(v3.X, v3.Y);
         }
 
+        public static Vector3 ToXYZ(this Vector2 v2)
+        {
+            return new Vector3(v2.X, v2.Y, 0);
+        }
+
         public static Vector2 PerpendicularClockwise(this Vector2 value)
         {
             return new Vector2(value.Y, -value.X);

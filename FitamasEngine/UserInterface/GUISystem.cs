@@ -55,7 +55,7 @@ namespace Fitamas.UserInterface
 
             KeyboardListenerSettings settings = new KeyboardListenerSettings();
             KeyboardListener keyboard = new KeyboardListener(settings);
-            MouseListener mouse = new MouseListener(Camera.Main.ViewportAdapter);
+            MouseListener mouse = new MouseListener(game.WindowViewportAdapter);
 
             InputListenerComponent component = new InputListenerComponent(game, mouse, keyboard);
             game.Components.Add(component);

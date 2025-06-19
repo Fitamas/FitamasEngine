@@ -2,7 +2,6 @@
 using Fitamas.Math2D;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
-using SharpFont;
 using System;
 
 namespace Fitamas.UserInterface.Components.NodeEditor

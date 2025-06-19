@@ -13,17 +13,9 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Font/Pixel_12.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Font/Pixel_12.spritefont
-
-#begin Font/Pixel_20.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Font/Pixel_20.spritefont
+#begin Fantasy_UI (2).wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Fantasy_UI (2).wav
 

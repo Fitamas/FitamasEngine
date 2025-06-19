@@ -1,5 +1,4 @@
-﻿using Assimp;
-using Fitamas.Input;
+﻿using Fitamas.Input;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System;

@@ -8,6 +8,10 @@ using Physics.Gameplay;
 using Microsoft.Xna.Framework;
 using Fitamas.Input;
 using Physics.Settings;
+using Fitamas.Audio;
+using Fitamas.Entities;
+using Fitamas.Audio.Filters;
+using Fitamas.Graphics;
 
 namespace Physics
 {
@@ -17,9 +21,8 @@ namespace Physics
         {
             base.Initialize();
 
-            InputManager manager = MainContainer.Resolve<InputManager>();
             ActionMap map = new ActionMap();
-            manager.AddActionMap(map.InputActionMap);
+            InputManager.AddActionMap(map.InputActionMap);
 
             GameplayViewModel viewModel = new GameplayViewModel(this);
             MainContainer.RegisterInstance(viewModel);
@@ -32,8 +35,20 @@ namespace Physics
             GameplayInputBinder binder = new GameplayInputBinder(map);
             binder.Bind(viewModel);
 
-            EntityHelper.CreatePumpkin(World, Vector2.Zero);
+            Entity entity = EntityHelper.CreatePumpkin(World, Vector2.Zero);
             EntityHelper.CreateRock(World, new Vector2(0, -15));
+
+            AudioClip clip = new AudioClip("Content\\Piano_Ui (5).wav");
+
+            entity.Attach(new AudioSource() 
+            { 
+                Clip = clip, PlayOnAwake = true, Looping = true, Is3d = true, MaxDistance = 4, 
+                AttenuationModel = AudioAttenuationModel.LinearDistance, AttenuationRolloffFactor = 2,
+            });
+
+            entity = World.CreateEntity();
+            entity.Attach(new Transform() { Position = new Vector2(1, 0)});
+            entity.Attach(new AudioReverbZone() { MaxDistance = 3 });
         }
 
         protected override void LoadContent()

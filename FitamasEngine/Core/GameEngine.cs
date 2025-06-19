@@ -9,6 +9,7 @@ using Fitamas.Scene;
 using Fitamas.UserInterface;
 using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.DebugTools;
+using Fitamas.Audio;
 
 namespace Fitamas.Core
 {
@@ -28,6 +29,8 @@ namespace Fitamas.Core
 
         public static GameEngine Instance { get; private set; }
         public DIContainer MainContainer { get; }
+        public InputManager InputManager { get; }
+        public AudioManager AudioManager { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
         public WindowViewportAdapter WindowViewportAdapter { get; private set; }
 
@@ -42,6 +45,12 @@ namespace Fitamas.Core
             {
                 WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDeviceManager.GraphicsDevice);
             };
+
+            InputManager = new InputManager(this);
+            MainContainer.RegisterInstance(InputManager);
+
+            AudioManager = new AudioManager(this);
+            MainContainer.RegisterInstance(AudioManager);
         }
 
         protected override void Initialize()
@@ -56,9 +65,6 @@ namespace Fitamas.Core
             GraphicsDeviceManager.PreferredBackBufferHeight = 1080;
             GraphicsDeviceManager.ApplyChanges();
             Window.AllowUserResizing = true;
-
-            InputManager manager = new InputManager(this);
-            MainContainer.RegisterInstance(manager);
 
             Debug.Log("Load game content");
 
@@ -88,6 +94,9 @@ namespace Fitamas.Core
 
                 //Animation
                 .AddSystem(new AnimationSystem())
+
+                //Audio
+                .AddSystem(new AudioSystem(AudioManager))
 
                 //Render
                 .AddSystem(new CameraSystem(this))
@@ -128,6 +137,10 @@ namespace Fitamas.Core
             {
                 GraphicsDevice.Clear(Camera.Current.Color);
             }
+            else
+            {
+                return;
+            }
 
             drawExecutor.Draw(gameTime);
 
@@ -141,6 +154,7 @@ namespace Fitamas.Core
             base.Dispose(disposing);
 
             world.Dispose();
+            AudioManager.Dispose();
         }
     }
 }
