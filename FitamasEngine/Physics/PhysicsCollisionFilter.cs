@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Serialization;
 using System;
 using System.Collections.Generic;

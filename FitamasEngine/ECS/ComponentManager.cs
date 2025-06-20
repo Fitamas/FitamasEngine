@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using Fitamas.Collections;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public class ComponentManager : UpdateSystem, IComponentMapperService
     {
@@ -46,16 +46,6 @@ namespace Fitamas.Entities
 
         public Action<int> ComponentsChanged;
         public Bag<ComponentMapper> ComponentMappers => _componentMappers;
-
-        //private ComponentMapper CreateMapperForType(Type componentType, int componentTypeId)
-        //{
-        //    if (componentTypeId >= 32)
-        //        throw new InvalidOperationException("Component type limit exceeded. We currently only allow 32 component types for performance reasons.");
-
-        //    var mapper = new ComponentMapper(componentTypeId, componentType, ComponentsChanged);
-        //    _componentMappers[componentTypeId] = mapper;
-        //    return mapper;
-        //}
 
         private ComponentMapper<T> CreateMapperForType<T>(int componentTypeId) where T : class
         {
@@ -78,21 +68,22 @@ namespace Fitamas.Entities
             var componentTypeId = GetComponentTypeId(typeof(T));
 
             if (_componentMappers[componentTypeId] != null)
+            {
                 return _componentMappers[componentTypeId] as ComponentMapper<T>;
+            }
 
             return CreateMapperForType<T>(componentTypeId);
         }
 
         public ComponentMapper GetMapper(Type type)
         {
-            //var componentTypeId = GetComponentTypeId(type);
+            var componentTypeId = GetComponentTypeId(type);
+            if (_componentMappers[componentTypeId] != null)
+            {
+                return _componentMappers[componentTypeId];
+            }
 
-            //if (_componentMappers[componentTypeId] != null)
-            //    return _componentMappers[componentTypeId];
-
-            //return CreateMapperForType(type, componentTypeId);
-
-            throw new NotImplementedException();
+            throw new Exception($"There is no ComponentMapper with the type: {type}");
         }
 
         public int GetComponentTypeId(Type type)

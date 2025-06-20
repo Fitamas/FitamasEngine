@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public abstract class Executor<T> : IExecutor where T : ISystem
     {

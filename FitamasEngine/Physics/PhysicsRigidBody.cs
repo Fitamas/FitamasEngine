@@ -1,4 +1,5 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.ECS;
+using Fitamas.Math;
 using Fitamas.Serialization;
 using nkast.Aether.Physics2D.Dynamics;
 using System;
@@ -12,7 +13,7 @@ namespace Fitamas.Physics
         Dynamic
     }
 
-    public class PhysicsRigidBody
+    public class PhysicsRigidBody : Component
     {
         public MotionType MotionType;
         public bool FixedRotation;

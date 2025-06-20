@@ -28,7 +28,7 @@ using System;
     SOFTWARE.
 */
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public abstract class ComponentMapper
     {

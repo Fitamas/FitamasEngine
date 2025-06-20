@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public interface IDrawGizmosSystem : ISystem
     {

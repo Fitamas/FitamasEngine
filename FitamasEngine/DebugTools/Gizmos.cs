@@ -1,8 +1,8 @@
 ﻿using Fitamas.Core;
 using Fitamas.Editor;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Graphics;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Fitamas.Physics;
 using Microsoft.Xna.Framework;
 

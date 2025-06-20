@@ -1,4 +1,4 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.Math;
 using System;
 
 namespace Fitamas.Input.Processors

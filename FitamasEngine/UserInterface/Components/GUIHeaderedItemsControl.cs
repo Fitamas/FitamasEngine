@@ -70,7 +70,7 @@ namespace Fitamas.UserInterface.Components
                 size1 += new Point(thickness.Left + thickness.Right, thickness.Top + thickness.Bottom);
             }
 
-            LocalSize = new Point(Math.Max(size0.X, size1.X), size0.Y + size1.Y);
+            LocalSize = new Point(global::System.Math.Max(size0.X, size1.X), size0.Y + size1.Y);
         }
 
         private static void ContainerPaddingChangedCallback(DependencyObject dependencyObject, DependencyProperty<Thickness> property, Thickness oldValue, Thickness newValue)

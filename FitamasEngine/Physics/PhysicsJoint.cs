@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Dynamics.Joints;

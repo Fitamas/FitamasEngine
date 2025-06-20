@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Microsoft.Xna.Framework.Content;
 
 namespace Fitamas.Extended.Entities

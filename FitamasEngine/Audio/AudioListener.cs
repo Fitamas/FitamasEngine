@@ -1,13 +1,24 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fitamas.ECS;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace Fitamas.Audio
 {
-    public class AudioListener
+    public class AudioListener : Component
     {
-        public Vector3 Position = Vector3.Zero;
-        public Vector3 Forward = Vector3.Forward;
-        public Vector3 Up = Vector3.Up;
-        public Vector3 Velocity = Vector3.Zero;
+        public AudioListenerInstance Instance { get; set; }
+
+        public Vector3 Position { get; set; }
+        public Vector3 Forward { get; set; }
+        public Vector3 Up { get; set; }
+        public Vector3 Velocity { get; set; }
+
+        public AudioListener()
+        {
+            Position = Vector3.Zero;
+            Forward = Vector3.Forward;
+            Up = Vector3.Up;
+            Velocity = Vector3.Zero;
+        }
     }
 }

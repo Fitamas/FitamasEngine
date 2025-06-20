@@ -19,7 +19,7 @@ namespace WDL.DigitalLogic.Serialization
             Converters.Add(new ColorJsonConverter());
 
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-            ContractResolver = new MyContractResolver();
+            ContractResolver = new MonoContractResolver();
             NullValueHandling = NullValueHandling.Ignore;
             Formatting = Formatting.Indented;
             TypeNameHandling = TypeNameHandling.Auto;

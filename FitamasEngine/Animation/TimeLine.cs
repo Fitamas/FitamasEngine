@@ -1,6 +1,6 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Graphics;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using System;

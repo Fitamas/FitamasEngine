@@ -1,9 +1,9 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     public class Mesh : Component
     {

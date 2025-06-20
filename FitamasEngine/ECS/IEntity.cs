@@ -27,10 +27,13 @@
 
 using System;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
-    public interface ISystem : IDisposable
+    public interface IEntity
     {
-        void Initialize(GameWorld world);
+        void Attach<T>(T component) where T : class;
+        T Get<T>() where T : class;
+        bool TryGet<T>(out T output) where T : class;
+        bool Has<T>() where T : class;
     }
 }

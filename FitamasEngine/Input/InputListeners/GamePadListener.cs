@@ -375,7 +375,7 @@ namespace Fitamas.Input.InputListeners
             var prevstate = getButtonState(_lastTriggerState);
             if (curstate > TriggerDeltaTreshold)
             {
-                if (Math.Abs(prevstate - curstate) >= TriggerDeltaTreshold)
+                if (System.Math.Abs(prevstate - curstate) >= TriggerDeltaTreshold)
                 {
                     TriggerMoved?.Invoke(this, MakeArgs(button, curstate));
                     _lastTriggerState = _currentState;

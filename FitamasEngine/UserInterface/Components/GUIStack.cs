@@ -73,7 +73,7 @@ namespace Fitamas.UserInterface.Components
                 {
                     Point localSize = component.LocalSize;
                     size.X += localSize.X;
-                    size.Y = Math.Max(localSize.Y, size.Y);
+                    size.Y = global::System.Math.Max(localSize.Y, size.Y);
                 }
             }
             else
@@ -83,7 +83,7 @@ namespace Fitamas.UserInterface.Components
                 foreach (var component in components)
                 {
                     Point localSize = component.LocalSize;
-                    size.X = Math.Max(localSize.X, size.X);
+                    size.X = global::System.Math.Max(localSize.X, size.X);
                     size.Y += localSize.Y;
                 }
             }

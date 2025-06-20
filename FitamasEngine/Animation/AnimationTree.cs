@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using System;
@@ -6,19 +6,12 @@ using System.Collections.Generic;
 
 namespace Fitamas.Animation
 {
-    public class AnimationTree : MonoObject
+    public class AnimationTree : MonoContentObject
     {
-        public string Name;
         public List<AnimationLayerInfo> Layers;
 
-        public AnimationTree(string name)
+        public AnimationTree(string name) : base(name)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            Name = name;
             Layers = new List<AnimationLayerInfo>();
         }
     }

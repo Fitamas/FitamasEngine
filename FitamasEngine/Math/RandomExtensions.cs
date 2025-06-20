@@ -28,7 +28,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     public static class RandomExtensions
     {
@@ -65,7 +65,7 @@ namespace Fitamas.Math2D
         public static void NextUnitVector(this Random random, out Vector2 vector)
         {
             var angle = NextAngle(random);
-            vector = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+            vector = new Vector2((float)System.Math.Cos(angle), (float)System.Math.Sin(angle));
         }
     }
 }

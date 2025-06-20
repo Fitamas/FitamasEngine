@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 
 namespace Fitamas.Extended.Entities
 {

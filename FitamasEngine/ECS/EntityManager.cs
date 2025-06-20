@@ -33,7 +33,7 @@ using Microsoft.Xna.Framework;
 using Fitamas.Collections;
 using Fitamas.Serialization;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public class EntityManager : UpdateSystem
     {
@@ -130,10 +130,10 @@ namespace Fitamas.Entities
             return entity;
         }
 
-        public Entity Create()
+        public Entity Create(string name = "Entity")
         {
             var entity = entityPool.Obtain();
-            entity.Name = "Entity";
+            entity.Name = name;
             var id = entity.Id;
             entityBag[id] = entity;
             addedEntities.Add(id);

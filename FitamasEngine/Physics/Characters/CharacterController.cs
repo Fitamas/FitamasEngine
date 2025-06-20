@@ -1,7 +1,7 @@
 ﻿using Fitamas.Animation;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Physics.Characters

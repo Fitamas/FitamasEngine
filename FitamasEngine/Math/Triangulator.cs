@@ -1,10 +1,10 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using LibTessDotNet;
 using System;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     public enum CounterType
     {

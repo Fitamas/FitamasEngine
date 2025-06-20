@@ -16,7 +16,7 @@ namespace Fitamas.UserInterface.Components
             {
                 Point size0 = Header.LocalSize;
                 Point size1 = Content.LocalSize;
-                LocalSize = new Point(Math.Max(size0.X, size1.X), size0.Y + size1.Y);
+                LocalSize = new Point(global::System.Math.Max(size0.X, size1.X), size0.Y + size1.Y);
             }
         }
     }

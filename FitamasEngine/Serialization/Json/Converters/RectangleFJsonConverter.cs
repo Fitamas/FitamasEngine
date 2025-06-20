@@ -27,7 +27,7 @@
 
 using System;
 using System.Globalization;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Newtonsoft.Json;
 
 namespace Fitamas.Serialization.Json.Converters;

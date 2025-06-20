@@ -6,13 +6,11 @@ namespace Fitamas.Serialization
 {
     public abstract class MonoObject
     {
-        [SerializeField] private Guid guid = Guid.NewGuid();
-
-        public Guid Guid => guid;
+        internal Guid Guid { get; set; }
 
         public MonoObject()
         {
-
+            Guid = Guid.NewGuid();
         }
 
         public static MonoObject Instantiate(MonoObject original)
@@ -49,7 +47,7 @@ namespace Fitamas.Serialization
                 return false;
             }
 
-            return a.guid == b.guid;
+            return a.Guid == b.Guid;
         }
 
         public static bool operator ==(MonoObject a, MonoObject b)
@@ -74,7 +72,7 @@ namespace Fitamas.Serialization
 
         public override int GetHashCode()
         {
-            return guid.GetHashCode();
+            return Guid.GetHashCode();
         }
     }
 }

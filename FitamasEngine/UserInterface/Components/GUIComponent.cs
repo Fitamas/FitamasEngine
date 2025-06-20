@@ -1,4 +1,4 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.Math;
 using Fitamas.UserInterface.Themes;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;

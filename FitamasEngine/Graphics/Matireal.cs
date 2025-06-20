@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fitamas.Graphics
 {
-    public class Matireal : MonoObject
+    public class Matireal : MonoContentObject
     {
         [SerializeField] private Texture2D texture;
 

@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using Fitamas.Collections;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public class AspectBuilder
     {

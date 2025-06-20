@@ -1,5 +1,5 @@
 ﻿using Fitamas.Graphics;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using System;
 

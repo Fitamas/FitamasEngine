@@ -1,6 +1,6 @@
 ﻿using Fitamas.Serialization;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public abstract class Component : MonoObject
     {

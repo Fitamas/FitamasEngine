@@ -1,6 +1,6 @@
 ﻿using Fitamas.Core;
-using Fitamas.Entities;
-using Fitamas.Math2D;
+using Fitamas.ECS;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -28,7 +28,7 @@ namespace Fitamas.Audio
         private void PutListener(int entityId)
         {
             AudioListener listener = listenerMapper.Get(entityId);
-            manager.Listener = listener;
+            listener.Instance = new AudioListenerInstance(manager);
         }
 
         public override void Update(GameTime gameTime)
@@ -41,6 +41,11 @@ namespace Fitamas.Audio
 
                 listener.Velocity = position - listener.Position;
                 listener.Position = position;
+
+                listener.Instance.SetPosition(listener.Position);
+                listener.Instance.SetForward(listener.Forward);
+                listener.Instance.SetUp(listener.Up);
+                listener.Instance.SetVeclocity(listener.Velocity);
             }
         }
     }

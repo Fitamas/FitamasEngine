@@ -300,7 +300,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         {
             Point scale = SelectRegion.LocalPosition - mousePosition;
 
-            SelectRegion.LocalSize = new Point(Math.Abs(scale.X), Math.Abs(scale.Y));
+            SelectRegion.LocalSize = new Point(global::System.Math.Abs(scale.X), global::System.Math.Abs(scale.Y));
 
             SelectRegion.Pivot = new Vector2(scale.X < 0 ? 0 : 1, scale.Y < 0 ? 0 : 1);
         }

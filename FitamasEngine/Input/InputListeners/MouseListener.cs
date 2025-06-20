@@ -254,7 +254,7 @@ namespace Fitamas.Input.InputListeners
 
         private static int DistanceBetween(Point a, Point b)
         {
-            return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+            return System.Math.Abs(a.X - b.X) + System.Math.Abs(a.Y - b.Y);
         }
     }
 }

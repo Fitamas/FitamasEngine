@@ -28,7 +28,7 @@
 using System;
 using Microsoft.Xna.Framework;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     /// <summary>
     ///     A random number generator that uses a fast algorithm to generate random values.
@@ -148,7 +148,7 @@ namespace Fitamas.Math2D
         public void NextUnitVector(out Vector2 vector)
         {
             var angle = NextAngle();
-            vector = new Vector2((float) Math.Cos(angle), (float) Math.Sin(angle));
+            vector = new Vector2((float)System.Math.Cos(angle), (float)System.Math.Sin(angle));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Serialization;
 using System;
 using System.Collections.Generic;
@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace Fitamas.Scene
 {
-    public class GameObject : MonoObject
+    public class EntityData : MonoObject
     {
         public string Name;
         public List<Component> Components = new List<Component>();
 
-        public GameObject(ICollection<Component> components = null, string name = "Entity")
+        public EntityData(ICollection<Component> components = null, string name = "Entity")
         {
             if (components != null)
             {

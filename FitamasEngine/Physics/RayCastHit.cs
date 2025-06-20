@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Dynamics;
 using System;

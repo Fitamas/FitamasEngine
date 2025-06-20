@@ -1,5 +1,6 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Serialization;
+using System;
 
 namespace Fitamas.Scene
 {
@@ -22,7 +23,7 @@ namespace Fitamas.Scene
         {
             if (string.IsNullOrEmpty(name))
             {
-                return;
+                throw new ArgumentNullException("name");
             }
 
             Debug.Log("Open Scene: " + name);
@@ -36,24 +37,23 @@ namespace Fitamas.Scene
         {
             if (scene == null)
             {
-                return;
+                throw new ArgumentNullException(nameof(scene));
             }
 
             activeScene = scene;
 
             ClearScene();
 
-            if (scene.GameObjects == null)
+            if (scene.Entities == null)
             {
                 return;
             }
 
-            foreach (var gameObject in scene.GameObjects)
+            foreach (var entityData in scene.Entities)
             {
-                Entity entity = entityManager.Create();
-                entity.Name = gameObject.Name;
+                Entity entity = entityManager.Create(entityData.Name);
 
-                foreach (var component in gameObject.Components)
+                foreach (var component in entityData.Components)
                 {
                     entity.Attach(component.GetType(), component);
                 }

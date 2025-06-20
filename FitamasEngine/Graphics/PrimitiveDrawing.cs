@@ -28,7 +28,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using Fitamas.Math2D;
+using Fitamas.Math;
 
 namespace Fitamas.Graphics
 {
@@ -263,8 +263,8 @@ namespace Fitamas.Graphics
             var dt = 2.0 * System.Math.PI / sides;
             for (var i = 0; i < sides; i++, t += dt)
             {
-                var x = (float)(rx * Math.Cos(t));
-                var y = (float)(ry * Math.Sin(t));
+                var x = (float)(rx * System.Math.Cos(t));
+                var y = (float)(ry * System.Math.Sin(t));
                 vertices[i] = new Vector2(x, y);
             }
             return vertices;

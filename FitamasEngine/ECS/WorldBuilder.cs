@@ -25,12 +25,45 @@
     SOFTWARE.
 */
 
+using Fitamas.Collections;
 using Microsoft.Xna.Framework;
+using System;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
-    public interface IDrawSystem : ISystem
+    public class WorldBuilder
     {
-        void Draw(GameTime gameTime);
+        private Bag<IExecutor> executors = new Bag<IExecutor>();
+        private Bag<ISystem> systems = new Bag<ISystem>();
+        private Game game;
+
+        public WorldBuilder(Game game)
+        {
+            executors = new Bag<IExecutor>();
+            systems = new Bag<ISystem>();
+            this.game = game;         
+        }
+
+        public WorldBuilder AddSystem(ISystem system)
+        {
+            systems.Add(system);
+            return this;
+        }
+
+        public WorldBuilder AddExecutor(IExecutor executor)
+        {
+            executors.Add(executor);
+            return this;
+        }
+
+        public GameWorld Build()
+        {
+            var world = new GameWorld(executors);
+
+            foreach (var system in systems)
+                world.RegisterSystem(system);
+
+            return world;
+        }
     }
 }

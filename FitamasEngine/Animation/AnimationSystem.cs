@@ -1,6 +1,6 @@
 ﻿using Fitamas.Animation.Rigging;
 using Fitamas.Collections;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Animation

@@ -1,5 +1,5 @@
 ﻿using Fitamas.Collections;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
 using nkast.Aether.Physics2D.Dynamics;
 using System.Linq;

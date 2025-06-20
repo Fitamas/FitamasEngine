@@ -25,7 +25,7 @@
     SOFTWARE.
 */
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public interface IComponentMapperService
     {

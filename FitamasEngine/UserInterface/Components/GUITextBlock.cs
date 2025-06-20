@@ -289,8 +289,8 @@ namespace Fitamas.UserInterface.Components
 
             for (int i = 0; i < text.Length + 1; i++)
             {
-                float xDist = Math.Abs(position.X - xPos);
-                float yDist = Math.Abs(position.Y - yPos);
+                float xDist = global::System.Math.Abs(position.X - xPos);
+                float yDist = global::System.Math.Abs(position.Y - yPos);
 
                 if (yDist < closestYDist)
                 {
@@ -330,7 +330,7 @@ namespace Fitamas.UserInterface.Components
                 if (value1 == null || value2 == null)
                     return false;
 
-                return Math.Abs(value1.Value - value2.Value) < unimportantDifference;
+                return global::System.Math.Abs(value1.Value - value2.Value) < unimportantDifference;
             }
 
             return true;

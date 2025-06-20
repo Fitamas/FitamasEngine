@@ -1,5 +1,5 @@
-﻿using Fitamas.Entities;
-using Fitamas.Math2D;
+﻿using Fitamas.ECS;
+using Fitamas.Math;
 using Fitamas.Graphics.ViewportAdapters;
 using Microsoft.Xna.Framework;
 using System;
@@ -12,21 +12,13 @@ namespace Fitamas.Graphics
         public static Camera Main { get; set; }
         public static Camera Current { get; set; }
 
-        private float zoom;
+        public Vector2 Position { get; set; }
+        public float Rotation { get; set; }
 
-        public Vector2 Position;
-        public float Rotation;
+        public float Zoom;
         public Color Color;
 
         public ViewportAdapter ViewportAdapter { get; set; }
-
-        public float Zoom
-        {
-            get
-            {
-                return zoom;
-            }
-        }
 
         public Vector2 Origin
         {
@@ -79,7 +71,7 @@ namespace Fitamas.Graphics
         public Camera()
         {
             Color = Color.CornflowerBlue;
-            zoom = 100;
+            Zoom = 100;
         }
 
         public void Dispose()
@@ -116,10 +108,10 @@ namespace Fitamas.Graphics
 
         public void AdjustZoom(float amount)
         {
-            zoom += amount;
-            if (zoom < 0.25f)
+            Zoom += amount;
+            if (Zoom < 0.25f)
             {
-                zoom = 0.25f;
+                Zoom = 0.25f;
             }
         }
 
@@ -150,7 +142,7 @@ namespace Fitamas.Graphics
 
         public RectangleF WorldBounds()
         {
-            Vector2 size = VirtualSize / zoom;
+            Vector2 size = VirtualSize / Zoom;
             return new RectangleF(Position - size / 2, size);
         }
     }

@@ -1,4 +1,4 @@
-﻿using Fitamas.Math2D;
+﻿using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -101,7 +101,7 @@ namespace Fitamas.UserInterface.Components
             }
             else
             {
-                float distance = Math.Abs(track.MaxValue - track.MinValue);
+                float distance = global::System.Math.Abs(track.MaxValue - track.MinValue);
                 float k = 0;
 
                 if (distance > 0)

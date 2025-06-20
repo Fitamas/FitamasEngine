@@ -1,6 +1,6 @@
 ﻿using Fitamas.DebugTools;
-using Fitamas.Entities;
-using Fitamas.Math2D;
+using Fitamas.ECS;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -80,6 +80,11 @@ namespace Fitamas.Graphics
             {
                 Transform transform = transformMapper.Get(entityId);
                 SpriteRender spriteRender = spriteMapper.Get(entityId);
+
+                if (spriteRender.Sprite == null)
+                {
+                    continue;
+                }
 
                 Gizmos.DrawRectangle(transform.Position, transform.Rotation, spriteRender.RenderSize, Color.Blue);
             }

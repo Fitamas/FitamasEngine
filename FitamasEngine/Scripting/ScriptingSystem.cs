@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using System.IO;
 using NLua;
 using System.Linq;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
 using Microsoft.Xna.Framework.Content;
 

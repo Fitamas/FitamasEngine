@@ -1,6 +1,6 @@
 ﻿using Fitamas.Animation;
 using Fitamas.Core;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.Input;
 using Fitamas.UserInterface;

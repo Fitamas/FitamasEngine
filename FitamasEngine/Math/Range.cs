@@ -27,7 +27,7 @@
 
 using System;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     /// <summary>
     ///     Represents a closed interval defined by a minimum and a maximum value of a give type.

@@ -4,7 +4,7 @@ using System;
 
 namespace Fitamas.Audio
 {
-    public class AudioClip : MonoObject
+    public class AudioClip : MonoContentObject
     {
         internal Wav Wav { get; }
 

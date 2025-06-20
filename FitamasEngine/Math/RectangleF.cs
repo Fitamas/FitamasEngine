@@ -31,7 +31,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using Microsoft.Xna.Framework;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     // Real-Time Collision Detection, Christer Ericson, 2005. Chapter 4.2; Bounding Volumes - Axis-aligned Bounding Boxes (AABBs). pg 77
 
@@ -202,10 +202,10 @@ namespace Fitamas.Math2D
         ///     <paramref name="second" />.</param>
         public static void Union(ref RectangleF first, ref RectangleF second, out RectangleF result)
         {
-            result.X = Math.Min(first.X, second.X);
-            result.Y = Math.Min(first.Y, second.Y);
-            result.Width = Math.Max(first.Right, second.Right) - result.X;
-            result.Height = Math.Max(first.Bottom, second.Bottom) - result.Y;
+            result.X = System.Math.Min(first.X, second.X);
+            result.Y = System.Math.Min(first.Y, second.Y);
+            result.Width = System.Math.Max(first.Right, second.Right) - result.X;
+            result.Height = System.Math.Max(first.Bottom, second.Bottom) - result.Y;
         }
 
         /// <summary>
@@ -343,7 +343,7 @@ namespace Fitamas.Math2D
         /// <returns>The distance from this <see cref="RectangleF"/> to the <paramref name="point"/>.</returns>
         public float DistanceTo(Vector2 point)
         {
-            return (float)Math.Sqrt(SquaredDistanceTo(point));
+            return (float)System.Math.Sqrt(SquaredDistanceTo(point));
         }
 
         /// <summary>

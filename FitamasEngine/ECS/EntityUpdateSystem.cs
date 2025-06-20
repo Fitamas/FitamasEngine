@@ -25,55 +25,17 @@
     SOFTWARE.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
-    public class Aspect
+    public abstract class EntityUpdateSystem : EntitySystem, IUpdateSystem
     {
-        internal Aspect()
+        protected EntityUpdateSystem(AspectBuilder aspectBuilder) : base(aspectBuilder)
         {
-            AllSet = new BitVector32();
-            ExclusionSet = new BitVector32();
-            OneSet = new BitVector32();
+
         }
 
-        public BitVector32 AllSet;
-        public BitVector32 ExclusionSet;
-        public BitVector32 OneSet;
-
-        public static AspectBuilder All(params Type[] types)
-        {
-            return new AspectBuilder().All(types);
-        }
-
-        public static AspectBuilder One(params Type[] types)
-        {
-            return new AspectBuilder().One(types);
-        }
-
-        public static AspectBuilder Exclude(params Type[] types)
-        {
-            return new AspectBuilder().Exclude(types);
-        }
-
-        public bool IsInterested(BitVector32 componentBits)
-        {
-            if (AllSet.Data != 0 && (componentBits.Data & AllSet.Data) != AllSet.Data)
-                return false;
-
-            if (ExclusionSet.Data != 0 && (componentBits.Data & ExclusionSet.Data) != 0)
-                return false;
-
-            if (OneSet.Data != 0 && (componentBits.Data & OneSet.Data) == 0)
-                return false;
-
-            return true;
-        }
+        public abstract void Update(GameTime gameTime);
     }
 }

@@ -1,25 +1,25 @@
 ﻿using Fitamas.DebugTools;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Serialization;
 using System.Collections.Generic;
 
 namespace Fitamas.Scene
 {
-    public class SceneProperties
-    {
-
-    }
-
     [AssetMenu(fileName: "NewScene.scene", title: "Scene")]
-    public class Scene : MonoObject
+    public class Scene : MonoContentObject
     {
-        public List<GameObject> GameObjects;
-        public SceneProperties SceneProperties;
+        public List<EntityData> Entities;
+        public SceneProperties Properties;
 
         public Scene()
         {
-            GameObjects = new List<GameObject>();
-            SceneProperties = new SceneProperties();
+            Entities = new List<EntityData>();
+            Properties = new SceneProperties();
         }
+    }
+
+    public class SceneProperties
+    {
+
     }
 }

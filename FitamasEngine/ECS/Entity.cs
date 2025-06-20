@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Specialized;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public class Entity : IEntity, IEquatable<Entity>
     {

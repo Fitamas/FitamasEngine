@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
 using Fitamas.Collections;
 using Fitamas.Physics.Characters;

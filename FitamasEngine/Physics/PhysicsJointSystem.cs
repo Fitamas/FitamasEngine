@@ -1,6 +1,6 @@
 ﻿using Fitamas.Collections;
 using Fitamas.DebugTools;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
 using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Dynamics;

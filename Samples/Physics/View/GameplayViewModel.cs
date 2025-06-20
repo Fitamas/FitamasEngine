@@ -1,7 +1,7 @@
 ﻿using Fitamas;
 using Fitamas.Audio;
 using Fitamas.Core;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.MVVM;
 using Fitamas.Physics;

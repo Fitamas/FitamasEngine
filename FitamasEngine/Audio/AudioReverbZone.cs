@@ -1,5 +1,5 @@
 ﻿using Fitamas.Audio.Filters;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using System;
 
 namespace Fitamas.Audio

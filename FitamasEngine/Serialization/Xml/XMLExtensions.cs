@@ -123,7 +123,7 @@ namespace Fitamas.Serialization.Xml
             return attribute.ParseToColor();
         }
 
-        public static T GetAttributeMonoObject<T>(this XElement element, string name) where T : MonoObject
+        public static T GetAttributeMonoObject<T>(this XElement element, string name) where T : MonoContentObject
         {
             string path = element.GetAttributeString(name);
             if (!string.IsNullOrEmpty(path))

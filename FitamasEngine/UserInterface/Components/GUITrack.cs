@@ -1,5 +1,5 @@
 ﻿using Fitamas.Events;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using System;
 
@@ -167,7 +167,7 @@ namespace Fitamas.UserInterface.Components
 
         protected int CalculateSliderProgress(int lenght, float value)
         {
-            float distance = Math.Abs(MaxValue - MinValue);
+            float distance = global::System.Math.Abs(MaxValue - MinValue);
 
             if (distance > 0)
             {

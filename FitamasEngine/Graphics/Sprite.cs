@@ -17,7 +17,7 @@ namespace Fitamas.Graphics
     }
 
     [AssetMenu(fileName: "NewSprite.sprite", title: "Sprite")]
-    public class Sprite : MonoObject
+    public class Sprite : MonoContentObject
     {
         [SerializeField] private string name;
         [SerializeField] private Texture2D texture;

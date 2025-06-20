@@ -1,7 +1,7 @@
 ﻿using Fitamas.DebugTools;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using nkast.Aether.Physics2D.Collision.Shapes;
 using nkast.Aether.Physics2D.Common.PolygonManipulation;
@@ -10,7 +10,7 @@ using nkast.Aether.Physics2D.Dynamics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Transform = Fitamas.Entities.Transform;
+using Transform = Fitamas.ECS.Transform;
 
 namespace Fitamas.Physics
 {

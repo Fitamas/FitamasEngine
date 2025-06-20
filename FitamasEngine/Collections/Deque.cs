@@ -586,7 +586,7 @@ namespace Fitamas.Collections
             var newCapacity = _defaultCapacity;
             if (_items.Length > 0)
                 newCapacity = _resizeFunction(_items.Length);
-            newCapacity = Math.Max(newCapacity, minimumCapacity);
+            newCapacity = System.Math.Max(newCapacity, minimumCapacity);
             Capacity = newCapacity;
         }
 

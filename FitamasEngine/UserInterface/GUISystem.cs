@@ -1,5 +1,5 @@
 ﻿using Fitamas.Core;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Extended.Entities;
 using Fitamas.Graphics;
 using Fitamas.Input;

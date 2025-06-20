@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Fitamas.Animation
 {
-    public class AnimationSkeletonMask : MonoObject
+    public class AnimationSkeletonMask : MonoContentObject
     {
         [SerializeField] private Dictionary<string, bool> bones;
 

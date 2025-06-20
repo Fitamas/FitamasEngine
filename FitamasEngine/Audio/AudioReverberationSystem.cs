@@ -1,5 +1,5 @@
 ﻿using Fitamas.DebugTools;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;

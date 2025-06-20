@@ -12,7 +12,6 @@ namespace Fitamas.Audio
         internal Soloud Soloud { get; }
 
         public bool IsDisposed { get; private set; }
-        public AudioListener Listener { get; set; }
 
         public AudioManager(GameEngine game)
         {
@@ -58,19 +57,6 @@ namespace Fitamas.Audio
 
         public override void Update(GameTime gameTime)
         {
-            if (manager.Listener != null)
-            {
-                Vector3 position = manager.Listener.Position;
-                Vector3 forward = manager.Listener.Forward;
-                Vector3 up = manager.Listener.Up;
-                Vector3 velocity = manager.Listener.Velocity;
-
-                manager.Soloud.set3dListenerPosition(position.X, position.Y, position.Z);
-                manager.Soloud.set3dListenerAt(forward.X, forward.Y, forward.Z);
-                manager.Soloud.set3dListenerUp(up.X, up.Y, up.Z);
-                manager.Soloud.set3dListenerVelocity(velocity.X, velocity.Y, velocity.Z);
-            }
-
             manager.Soloud.update3dAudio();
         }
     }

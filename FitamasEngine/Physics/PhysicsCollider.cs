@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Fitamas.Serialization;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using System.Linq;
 
 namespace Fitamas.Physics

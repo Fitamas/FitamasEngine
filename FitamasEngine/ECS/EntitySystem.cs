@@ -27,7 +27,7 @@
 
 using Fitamas.Collections;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public abstract class EntitySystem : ISystem
     {

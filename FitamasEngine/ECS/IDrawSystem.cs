@@ -25,15 +25,12 @@
     SOFTWARE.
 */
 
-using System;
+using Microsoft.Xna.Framework;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
-    public interface IEntity
+    public interface IDrawSystem : ISystem
     {
-        void Attach<T>(T component) where T : class;
-        T Get<T>() where T : class;
-        bool TryGet<T>(out T output) where T : class;
-        bool Has<T>() where T : class;
+        void Draw(GameTime gameTime);
     }
 }

@@ -28,7 +28,7 @@
 using Fitamas;
 using Microsoft.Xna.Framework;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     public static class RectangleExtensions
     {

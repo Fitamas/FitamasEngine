@@ -1,8 +1,8 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Fitamas.DebugTools;
 
 namespace Fitamas.Graphics

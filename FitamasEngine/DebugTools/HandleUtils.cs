@@ -1,6 +1,6 @@
 ﻿using Fitamas.Physics.Characters;
 using Fitamas.DebugTools;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
 using System;
 

@@ -25,19 +25,12 @@
     SOFTWARE.
 */
 
-using Microsoft.Xna.Framework;
+using System;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
-    public interface IUpdateSystem : ISystem
+    public interface ISystem : IDisposable
     {
-        void Update(GameTime gameTime);
-    }
-
-    public abstract class UpdateSystem : IUpdateSystem
-    {
-        public virtual void Dispose() { }
-        public virtual void Initialize(GameWorld world) { }
-        public abstract void Update(GameTime gameTime);
+        void Initialize(GameWorld world);
     }
 }

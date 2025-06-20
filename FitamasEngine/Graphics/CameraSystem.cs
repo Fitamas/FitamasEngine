@@ -1,5 +1,5 @@
 ﻿using Fitamas.Core;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Microsoft.Xna.Framework;
 using System;
 

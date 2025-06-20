@@ -1,5 +1,5 @@
 ﻿using Fitamas.Collections;
-using Fitamas.Entities;
+using Fitamas.ECS;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using System;

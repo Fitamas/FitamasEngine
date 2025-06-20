@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     public static class MathV
     {

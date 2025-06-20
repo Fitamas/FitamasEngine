@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 using Fitamas.Serialization;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public class Transform : Component
     {

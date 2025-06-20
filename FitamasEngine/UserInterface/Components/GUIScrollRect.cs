@@ -1,6 +1,6 @@
 ﻿using Fitamas.Events;
 using Fitamas.Input.InputListeners;
-using Fitamas.Math2D;
+using Fitamas.Math;
 using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 

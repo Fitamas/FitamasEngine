@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Fitamas.Animation
 {
-    public class AnimationClip : MonoObject
+    public class AnimationClip : MonoContentObject
     {
         [SerializeField] private string name;
         [SerializeField] private float time;

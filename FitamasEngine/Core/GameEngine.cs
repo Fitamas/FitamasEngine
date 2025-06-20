@@ -1,4 +1,4 @@
-﻿using Fitamas.Entities;
+﻿using Fitamas.ECS;
 using Fitamas.Graphics;
 using Microsoft.Xna.Framework;
 using Fitamas.Container;

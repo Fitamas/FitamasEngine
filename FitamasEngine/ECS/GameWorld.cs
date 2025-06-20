@@ -28,7 +28,7 @@
 using Fitamas.Collections;
 using System;
 
-namespace Fitamas.Entities
+namespace Fitamas.ECS
 {
     public class GameWorld : IDisposable
     {

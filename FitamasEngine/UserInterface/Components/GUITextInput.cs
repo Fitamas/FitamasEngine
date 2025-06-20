@@ -139,7 +139,7 @@ namespace Fitamas.UserInterface.Components
             }
             set
             {
-                caretIndex = Math.Clamp(value, 0, TextLenght);
+                caretIndex = global::System.Math.Clamp(value, 0, TextLenght);
             }
         }
 
@@ -148,7 +148,7 @@ namespace Fitamas.UserInterface.Components
             get
             {
                 string text = Text;
-                int start = Math.Clamp(caretIndex - 1, 0, text.Length > 0 ? text.Length - 1 : 0);
+                int start = global::System.Math.Clamp(caretIndex - 1, 0, text.Length > 0 ? text.Length - 1 : 0);
                 int index = text.LastIndexOf('\n', start);
                 return index == -1 ? caretIndex : caretIndex - index - 1;
             }
@@ -212,8 +212,8 @@ namespace Fitamas.UserInterface.Components
 
             if (isSelect && !string.IsNullOrEmpty(text))
             {
-                int min = Math.Min(startSelectIndex, CaretIndex);
-                int max = Math.Max(startSelectIndex, CaretIndex);
+                int min = global::System.Math.Min(startSelectIndex, CaretIndex);
+                int max = global::System.Math.Max(startSelectIndex, CaretIndex);
                 int lineCount = 0;
                 int lineStart = 0;
 
@@ -460,8 +460,8 @@ namespace Fitamas.UserInterface.Components
 
         public void RemoveSelectedText()
         {
-            int min = Math.Min(startSelectIndex, CaretIndex);
-            int max = Math.Max(startSelectIndex, CaretIndex);
+            int min = global::System.Math.Min(startSelectIndex, CaretIndex);
+            int max = global::System.Math.Max(startSelectIndex, CaretIndex);
             Unselect();
             CaretIndex = min;
             Text = Text.Remove(min, max - min);
@@ -568,7 +568,7 @@ namespace Fitamas.UserInterface.Components
             if (end != -1)
             {
                 int start = text.LastIndexOf('\n', end - 1) + 1;
-                CaretIndex = Math.Clamp(CaretIndexOnLine + start, start, end);
+                CaretIndex = global::System.Math.Clamp(CaretIndexOnLine + start, start, end);
             }
         }
 
@@ -586,7 +586,7 @@ namespace Fitamas.UserInterface.Components
                     end = text.Length;
                 }
 
-                CaretIndex = Math.Clamp(CaretIndexOnLine + start, start, end);
+                CaretIndex = global::System.Math.Clamp(CaretIndexOnLine + start, start, end);
             }
         }
     }

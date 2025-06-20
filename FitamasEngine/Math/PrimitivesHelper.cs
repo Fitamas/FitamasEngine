@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 
-namespace Fitamas.Math2D
+namespace Fitamas.Math
 {
     internal class PrimitivesHelper
     {

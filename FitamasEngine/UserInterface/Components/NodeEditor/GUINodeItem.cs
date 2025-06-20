@@ -137,7 +137,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         {
             Point size0 = Pin != null ? Pin.LocalSize : new Point();
             Point size1 = Content != null ? Content.LocalSize : new Point();
-            LocalSize = new Point(size0.X + size1.X, Math.Max(size0.Y, size1.Y));
+            LocalSize = new Point(size0.X + size1.X, global::System.Math.Max(size0.Y, size1.Y));
         }
 
         private static void AlignmentChangedCallback(DependencyObject dependencyObject, DependencyProperty<GUINodeItemAlignment> property, GUINodeItemAlignment oldValue, GUINodeItemAlignment newValue)
