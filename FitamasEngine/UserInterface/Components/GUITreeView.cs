@@ -7,11 +7,16 @@ using System;
 
 namespace Fitamas.UserInterface.Components
 {
-    public class SelectNodeArgs
+    public class GUISelectNodeArgs : GUIEventArgs
     {
         public GUITreeNode Node { get; set; }
         public int Id { get; set; }
         public Point MousePosition { get; set; }
+
+        public GUISelectNodeArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source)
+        {
+
+        }
     }
 
     public class GUITreeView : GUIItemsControl
@@ -19,11 +24,11 @@ namespace Fitamas.UserInterface.Components
         public static readonly RoutedEvent OnSelectTreeNodeEvent = new RoutedEvent();
 
         public GUIComponent Container { get; set; }
-        public MonoEvent<SelectNodeArgs> OnSelectTreeNode { get; }
+        public MonoEvent<GUISelectNodeArgs> OnSelectTreeNode { get; }
 
         public GUITreeView()
         {
-            OnSelectTreeNode = eventHandlersStore.Create<SelectNodeArgs>(OnSelectTreeNodeEvent);
+            OnSelectTreeNode = new MonoEvent<GUISelectNodeArgs>();
 
             RaycastTarget = true;
         }
@@ -54,7 +59,7 @@ namespace Fitamas.UserInterface.Components
 
         internal void Select(GUITreeNode node)
         {
-            SelectNodeArgs args = new SelectNodeArgs();
+            GUISelectNodeArgs args = new GUISelectNodeArgs(OnSelectTreeNodeEvent, this);
             args.Node = node;
             if (node.ParentNode != null)
             {
@@ -65,6 +70,7 @@ namespace Fitamas.UserInterface.Components
                 args.Id = node.TreeView.Items.IndexOf(node);
             }
             OnSelectTreeNode.Invoke(args);
+            RaiseEvent(args);
         }
     }
 }

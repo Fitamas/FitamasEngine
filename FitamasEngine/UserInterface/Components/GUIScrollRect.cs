@@ -101,7 +101,7 @@ namespace Fitamas.UserInterface.Components
             Horizontal = true;
             Vertical = true;
 
-            OnValueChanged = eventHandlersStore.Create<GUIScrollRect, Vector2>(OnValueChangedEvent);
+            OnValueChanged = new MonoEvent<GUIScrollRect, Vector2>();
         }
 
         protected override void OnInit()
@@ -189,6 +189,7 @@ namespace Fitamas.UserInterface.Components
                 {
                     slider.UpdateContent();
                     slider.OnValueChanged.Invoke(slider, newValue);
+                    slider.RaiseEvent(new GUIEventArgs(OnValueChangedEvent, slider));
                 }
             }
         }

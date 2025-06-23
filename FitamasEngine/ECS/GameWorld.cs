@@ -82,6 +82,11 @@ namespace Fitamas.ECS
             return EntityManager.Create();
         }
 
+        public Entity CreateEntity(string name)
+        {
+            return EntityManager.Create(name);
+        }
+
         public void DestroyEntity(int entityId)
         {
             EntityManager.Destroy(entityId);

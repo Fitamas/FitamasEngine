@@ -1,9 +1,11 @@
-﻿using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Themes;
+﻿using Fitamas;
 using Fitamas.UserInterface;
+using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Components.NodeEditor;
+using Fitamas.UserInterface.Input;
+using Fitamas.UserInterface.Themes;
 using System;
 using System.Collections.Generic;
-using Fitamas.UserInterface.Components.NodeEditor;
 
 namespace WDL.Gameplay.ViewModel
 {
@@ -28,6 +30,54 @@ namespace WDL.Gameplay.ViewModel
         public static readonly string FolderTexture = nameof(FolderTexture);
 
         public static readonly string CircuitTexture = nameof(CircuitTexture);
+
+        public static readonly string ButtonPressedAudio = nameof(ButtonPressedAudio);
+
+        public static readonly string ButtonHoverAudio = nameof(ButtonHoverAudio);
+
+        public static GUIStyle CreateButton(ResourceDictionary dictionary)
+        {
+            GUIStyle style = new GUIStyle(dictionary);
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUIImage.ColorProperty, dictionary, CommonResourceKeys.ButtonDefaultColor)));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITextBlock.ColorProperty, dictionary, CommonResourceKeys.ButtonTextDefaultColor)));
+
+            style.Setters.Add(new Setter(new ResourceReferenceExpression(GUITextBlock.FontProperty, dictionary, CommonResourceKeys.DefaultFont)));
+
+            TriggerBase trigger;
+
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIComponent.InteractebleProperty, false,
+                CommonResourceKeys.ButtonDisableColor, CommonResourceKeys.ButtonTextDisableColor);
+            style.Trigges.Add(trigger);
+
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, GUIButton.IsPressedProperty, true,
+                CommonResourceKeys.ButtonPressedColor, CommonResourceKeys.ButtonTextPressedColor);
+            style.Trigges.Add(trigger);
+
+            trigger = GUICommonHelpers.CreateTriggerForButton(dictionary, new List<TriggerCondition>() {
+                new TriggerCondition(GUIComponent.IsMouseOverProperty, true),
+                new TriggerCondition(GUIComponent.InteractebleProperty, true)},
+                CommonResourceKeys.ButtonHoverColor, CommonResourceKeys.ButtonTextHoverColor);
+            style.Trigges.Add(trigger);
+
+            TriggerEvent triggerEvent;
+            AudioSourceAction action;
+
+            triggerEvent = new TriggerEvent(GUIMouse.MouseEnterGUIEvent);
+            action = new AudioSourceAction();
+            action.SetResourceReference(AudioSourceAction.CLipProperty, dictionary, ButtonHoverAudio);
+            triggerEvent.Actions.Add(action);
+            style.TriggerEvents.Add(triggerEvent);
+
+            triggerEvent = new TriggerEvent(GUIButton.OnClickedEvent);
+            action = new AudioSourceAction();
+            action.SetResourceReference(AudioSourceAction.CLipProperty, dictionary, ButtonPressedAudio);
+            triggerEvent.Actions.Add(action);
+            style.TriggerEvents.Add(triggerEvent);
+
+            return style;
+        }
 
         public static GUIStyle CreateTreeNode(ResourceDictionary dictionary)
         {

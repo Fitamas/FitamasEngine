@@ -40,17 +40,17 @@ namespace Fitamas.UserInterface.Components
             RaycastTarget = true;
         }
 
-        private void StartDrag(GUIThumb thumb, DragEventArgs args)
+        private void StartDrag(GUIThumb thumb, GUIDragEventArgs args)
         {
             Focus();
         }
 
-        private void UpdateDrag(GUIThumb thumb, DragEventArgs args)
+        private void UpdateDrag(GUIThumb thumb, GUIDragEventArgs args)
         {
             track.Value = FindNearestValue(args.Position);
         }
 
-        private void EndDrag(GUIThumb thumb, DragEventArgs args)
+        private void EndDrag(GUIThumb thumb, GUIDragEventArgs args)
         {
 
         }

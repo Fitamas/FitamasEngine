@@ -74,8 +74,8 @@ namespace Fitamas.UserInterface.Components
 
         public GUIPopup()
         {
-            OnOpen = eventHandlersStore.Create<GUIPopup>(OnOpenEvent);
-            OnClose = eventHandlersStore.Create<GUIPopup>(OnCloseEvent);
+            OnOpen = new MonoEvent<GUIPopup>();
+            OnClose = new MonoEvent<GUIPopup>();
         }
 
         protected override void OnRemoveChild(GUIComponent component)
@@ -122,6 +122,7 @@ namespace Fitamas.UserInterface.Components
             System.Root.PopupWindow = Window;
             System.Mouse.MouseCapture = this;
             OnOpen.Invoke(this);
+            RaiseEvent(new GUIEventArgs(OnOpenEvent, this));
         }
 
         private void ClosePopup()
@@ -129,6 +130,7 @@ namespace Fitamas.UserInterface.Components
             System.Root.PopupWindow = null;
             System.Mouse.MouseCapture = null;
             OnClose.Invoke(this);
+            RaiseEvent(new GUIEventArgs(OnCloseEvent, this));
         }
 
         private static void IsOpenChangedCallback(DependencyObject dependencyObject, DependencyProperty<bool> property, bool oldValue, bool newValue)

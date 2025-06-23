@@ -38,20 +38,20 @@ namespace Physics
             GameplayInputBinder binder = new GameplayInputBinder(map);
             binder.Bind(viewModel);
 
+            AudioClip clip = AudioClip.LoadWav("Piano_Ui (5).wav");
+
             Entity entity = EntityHelper.CreatePumpkin(World, Vector2.Zero);
-            EntityHelper.CreateRock(World, new Vector2(0, -15));
-
-            AudioClip clip = new AudioClip("Content\\Piano_Ui (5).wav");
-
             entity.Attach(new AudioSource() 
             { 
                 Clip = clip, PlayOnAwake = true, Looping = true, Is3d = true, MaxDistance = 4, 
                 AttenuationModel = AudioAttenuationModel.LinearDistance, AttenuationRolloffFactor = 2,
             });
 
-            entity = World.CreateEntity();
-            entity.Attach(new Transform() { Position = new Vector2(1, 0)});
-            entity.Attach(new AudioReverbZone() { MaxDistance = 3 });
+            EntityHelper.CreateRock(World, new Vector2(0, -15));
+
+            Entity entity1 = World.CreateEntity();
+            entity1.Attach(new Transform() { Position = new Vector2(1, 0)});
+            entity1.Attach(new AudioReverbZone() { MaxDistance = 3 });
         }
 
         protected override void LoadContent()

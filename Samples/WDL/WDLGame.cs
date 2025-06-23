@@ -1,7 +1,11 @@
-﻿using Fitamas.Core;
+﻿using Fitamas;
+using Fitamas.Core;
 using Fitamas.ECS;
+using Fitamas.Events;
 using Fitamas.Graphics;
 using Fitamas.UserInterface;
+using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework.Graphics;
 using WDL.DigitalLogic;
 using WDL.Gameplay.ViewModel;
@@ -13,6 +17,8 @@ namespace WDL
         protected override void Initialize()
         {
             base.Initialize();
+
+            World.CreateMainCamera();
 
             GameplayViewModel gameplayViewModel = new GameplayViewModel(MainContainer.Resolve<LogicSystem>());
             MainContainer.RegisterInstance(gameplayViewModel);

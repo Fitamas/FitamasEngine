@@ -115,7 +115,7 @@ namespace Fitamas.UserInterface.Components
         {
             RaycastTarget = true;
 
-            OnValueChanged = eventHandlersStore.Create<GUITrack, float>(OnValueChangedEvent);
+            OnValueChanged = new MonoEvent<GUITrack, float>();
         }
 
         protected override Rectangle AvailableRectangle(GUIComponent component)
@@ -187,6 +187,7 @@ namespace Fitamas.UserInterface.Components
                     newValue = MathV.Clamp(newValue, slider.MinValue, slider.MaxValue);
                     dependencyObject.SetValue(property, newValue);
                     slider.OnValueChanged.Invoke(slider, newValue);
+                    slider.RaiseEvent(new GUIEventArgs(OnValueChangedEvent, slider));
                     slider.UpdateThumb();
                 }
             }

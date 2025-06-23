@@ -116,6 +116,7 @@ namespace Fitamas.UserInterface.Components
             {
                 TextBlock.Text = value;
                 OnValueChanged.Invoke(this, value);
+                RaiseEvent(new GUIEventArgs(OnValueChangedEvent, this));
             }
         }
 
@@ -159,10 +160,10 @@ namespace Fitamas.UserInterface.Components
             IsMask = true;
             RaycastTarget = true;
 
-            OnSelect = eventHandlersStore.Create<GUITextInput>(OnSelectEvent);
-            OnDeselect = eventHandlersStore.Create<GUITextInput>(OnDeselectEvent);
-            OnValueChanged = eventHandlersStore.Create<GUITextInput, string>(OnValueChangedEvent);
-            OnEndEdit = eventHandlersStore.Create<GUITextInput, string>(OnEndEditEvent);
+            OnSelect = new MonoEvent<GUITextInput>();
+            OnDeselect = new MonoEvent<GUITextInput>();
+            OnValueChanged = new MonoEvent<GUITextInput, string>();
+            OnEndEdit = new MonoEvent<GUITextInput, string>();
         }
 
         protected override void OnFocus()
@@ -190,6 +191,7 @@ namespace Fitamas.UserInterface.Components
                     break;
             }
             OnEndEdit.Invoke(this, Text);
+            RaiseEvent(new GUIEventArgs(OnEndEditEvent, this));
         }
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)
@@ -450,12 +452,14 @@ namespace Fitamas.UserInterface.Components
         {
             isSelect = true;
             OnSelect.Invoke(this);
+            RaiseEvent(new GUIEventArgs(OnSelectEvent, this));
         }
 
         public void Unselect()
         {
             isSelect = false;
             OnDeselect.Invoke(this);
+            RaiseEvent(new GUIEventArgs(OnDeselectEvent, this));
         }
 
         public void RemoveSelectedText()

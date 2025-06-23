@@ -41,10 +41,7 @@ namespace Physics.View
             world = game.World;
             physicsWorld = game.MainContainer.Resolve<PhysicsWorldSystem>();
 
-            camera = world.CreateEntity();
-            camera.Attach(new Transform());
-            camera.Attach(new Camera());
-            camera.Attach(new AudioListener());
+            camera = world.CreateMainCamera();
         }
 
         public void MoveCamera(Vector2 direction)

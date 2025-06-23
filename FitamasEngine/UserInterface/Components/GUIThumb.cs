@@ -5,10 +5,14 @@ using Microsoft.Xna.Framework;
 
 namespace Fitamas.UserInterface.Components
 {
-    public class DragEventArgs
+    public class GUIDragEventArgs : GUIEventArgs
     {
         public Point Position { get; set; }
         public Point Delta { get; set; }
+
+        public GUIDragEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source)
+        {
+        }
     }
 
     public class GUIThumb : GUIComponent, IDragMouseEvent
@@ -21,9 +25,9 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly RoutedEvent DragEndEvent = new RoutedEvent();
 
-        public MonoEvent<GUIThumb, DragEventArgs> DragStart { get; }
-        public MonoEvent<GUIThumb, DragEventArgs> DragDelta { get; }
-        public MonoEvent<GUIThumb, DragEventArgs> DragEnd { get; }
+        public MonoEvent<GUIThumb, GUIDragEventArgs> DragStart { get; }
+        public MonoEvent<GUIThumb, GUIDragEventArgs> DragDelta { get; }
+        public MonoEvent<GUIThumb, GUIDragEventArgs> DragEnd { get; }
 
         public Point StartDragOffset { get; private set; }
 
@@ -43,9 +47,9 @@ namespace Fitamas.UserInterface.Components
         {
             RaycastTarget = true;
 
-            DragStart = eventHandlersStore.Create<GUIThumb, DragEventArgs>(DragStartEvent);
-            DragDelta = eventHandlersStore.Create<GUIThumb, DragEventArgs>(DragDeltaEvent);
-            DragEnd = eventHandlersStore.Create<GUIThumb, DragEventArgs>(DragEndEvent);
+            DragStart = new MonoEvent<GUIThumb, GUIDragEventArgs>();
+            DragDelta = new MonoEvent<GUIThumb, GUIDragEventArgs>();
+            DragEnd = new MonoEvent<GUIThumb, GUIDragEventArgs>();
         }
 
         public void OnStartDragMouse(GUIMouseEventArgs mouse)
@@ -55,7 +59,12 @@ namespace Fitamas.UserInterface.Components
                 System.Mouse.MouseCapture = this;
                 IsDrag = true;
                 StartDragOffset = mouse.Position - Rectangle.Location;
-                DragStart.Invoke(this, new DragEventArgs() { Position = mouse.Position });
+                GUIDragEventArgs args = new GUIDragEventArgs(DragStartEvent, this)
+                {
+                    Position = mouse.Position
+                };
+                DragStart.Invoke(this, args);
+                RaiseEvent(args);
             }
         }
 
@@ -63,7 +72,13 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsDrag)
             {
-                DragDelta.Invoke(this, new DragEventArgs() { Position = mouse.Position, Delta = mouse.Delta });
+                GUIDragEventArgs args = new GUIDragEventArgs(DragDeltaEvent, this)
+                {
+                    Position = mouse.Position,
+                    Delta = mouse.Delta
+                };
+                DragDelta.Invoke(this, args);
+                RaiseEvent(args);
             }
         }
 
@@ -73,7 +88,12 @@ namespace Fitamas.UserInterface.Components
             {
                 System.Mouse.MouseCapture = null;
                 IsDrag = false;
-                DragEnd.Invoke(this, new DragEventArgs() { Position = mouse.Position });
+                GUIDragEventArgs args = new GUIDragEventArgs(DragEndEvent, this)
+                {
+                    Position = mouse.Position,
+                };
+                DragEnd.Invoke(this, args);
+                RaiseEvent(args);
             }
         }
     }

@@ -6,7 +6,7 @@ using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using Fitamas.Graphics;
-using nkast.Aether.Physics2D.Collision;
+using Fitamas.Audio;
 
 namespace WDL.Gameplay.ViewModel
 {
@@ -51,6 +51,10 @@ namespace WDL.Gameplay.ViewModel
             dictionary[GUIStyleHelpers.FolderTexture] = Sprite.Create("Folder");
             dictionary[GUIStyleHelpers.CircuitTexture] = Sprite.Create("Circuit");
 
+            dictionary[GUIStyleHelpers.ButtonHoverAudio] = AudioClip.LoadWav("Sound\\Fantasy_UI (1).wav");
+            dictionary[GUIStyleHelpers.ButtonPressedAudio] = AudioClip.LoadWav("Sound\\Fantasy_UI (6).wav");
+
+            dictionary[CommonResourceKeys.ButtonStyle] = GUIStyleHelpers.CreateButton(dictionary);
             dictionary[GUIStyleHelpers.CheckBoxStyle1] = GUIStyleHelpers.CreateCheckBox(dictionary);
             dictionary[CommonResourceKeys.NodeEditorPinStyle] = GUIStyleHelpers.CreatePin(dictionary);
             dictionary[CommonResourceKeys.TreeNodeStyle] = GUIStyleHelpers.CreateTreeNode(dictionary);

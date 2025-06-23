@@ -45,28 +45,24 @@ namespace Fitamas.UserInterface.Input
             }
             set
             {
+                if (mouseOver == value)
+                {
+                    return;
+                }
+
                 GUIComponent oldMouseOver = mouseOver;
                 mouseOver = value;
 
-                if (mouseOver != oldMouseOver)
+                if (oldMouseOver != null)
                 {
-                    if (oldMouseOver != null)
-                    {
-                        oldMouseOver.IsMouseOver = false;
-                        if (mouseOver == null)
-                        {
-                            oldMouseOver?.RaiseEvent(new GUIEventArgs(MouseExitGUIEvent, oldMouseOver));
-                        }
-                    }
+                    oldMouseOver.IsMouseOver = false;
+                    oldMouseOver.RaiseEvent(new GUIEventArgs(MouseExitGUIEvent, oldMouseOver));
+                }
 
-                    if (mouseOver != null)
-                    {
-                        mouseOver.IsMouseOver = true;
-                        if (oldMouseOver == null)
-                        {
-                            mouseOver?.RaiseEvent(new GUIEventArgs(MouseEnterGUIEvent, mouseOver));
-                        }
-                    }
+                if (mouseOver != null)
+                {
+                    mouseOver.IsMouseOver = true;
+                    mouseOver.RaiseEvent(new GUIEventArgs(MouseEnterGUIEvent, mouseOver));
                 }
             }
         }

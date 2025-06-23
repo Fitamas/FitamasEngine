@@ -1,6 +1,7 @@
 ﻿using Fitamas.Serialization;
 using SoLoud;
 using System;
+using System.IO;
 
 namespace Fitamas.Audio
 {
@@ -8,10 +9,18 @@ namespace Fitamas.Audio
     {
         internal Wav Wav { get; }
 
-        public AudioClip(string path)
+        private AudioClip(Wav wav)
         {
-            Wav = new Wav();
-            Wav.load(path);
+            Wav = wav;
+        }
+
+        public static AudioClip LoadWav(string path)
+        {
+            path = Path.Combine(Resources.RootDirectory, path);
+            Wav wav = new Wav();
+            wav.load(path);
+
+            return new AudioClip(wav);
         }
     }
 }

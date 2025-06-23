@@ -1,7 +1,6 @@
 ﻿using R3;
 using Fitamas;
 using ObservableCollections;
-using SharpFont;
 using WDL.DigitalLogic.Components;
 
 namespace WDL.DigitalLogic

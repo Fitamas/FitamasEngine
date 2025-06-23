@@ -31,12 +31,12 @@ namespace Fitamas.UserInterface.Themes
                 CommonResourceKeys.ComboBoxHoverColor, CommonResourceKeys.ComboBoxTextHoverColor);
             style.Trigges.Add(trigger);
 
-            style.TriggerEvents.Add(new TriggerEvent(GUIComboBox.OnSelectItemEvent, SetText));
-
-            void SetText(GUIComboBox comboBox, ComboBoxEventArgs args)
+            TriggerEvent triggerEvent = new TriggerEvent(GUIComboBox.OnSelectItemEvent);
+            triggerEvent.Actions.Add(new HandlerAction() { Delegate = (GUIComboBox comboBox, ComboBoxEventArgs args) =>
             {
-                comboBox.SetValue(GUITextBlock.TextProperty, args.Item);
-            }
+                    comboBox.SetValue(GUITextBlock.TextProperty, args.Item); //TODO
+            }});
+            style.TriggerEvents.Add(triggerEvent);
 
             return style;
         }

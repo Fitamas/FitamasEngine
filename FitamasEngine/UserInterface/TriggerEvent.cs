@@ -1,21 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Fitamas.Audio;
+using Fitamas.Core;
 using Fitamas.Events;
+using Fitamas.UserInterface.Components;
 
 namespace Fitamas.UserInterface
 {
     public class TriggerEvent
     {
         public RoutedEvent RoutedEvent { get; }
-        public Delegate Handler { get; }
+        public List<IAction> Actions { get; }
 
-        public TriggerEvent(RoutedEvent routedEvent, Delegate handler)
+        public TriggerEvent(RoutedEvent routedEvent)
         {
             RoutedEvent = routedEvent;
-            Handler = handler;
+            Actions = new List<IAction>();
+        }
+
+        internal void Handler(GUIComponent sender, GUIEventArgs args)
+        {
+            foreach (var action in Actions)
+            {
+                action.Execute(sender, args);
+            }
+        }
+    }
+
+    public interface IAction
+    {
+        void Execute(GUIComponent sender, GUIEventArgs args);
+    }
+
+    public class HandlerAction : IAction
+    {
+        public Delegate Delegate { get; set; }
+
+        public void Execute(GUIComponent sender, GUIEventArgs args)
+        {
+            Delegate?.DynamicInvoke(sender, args);
+        }
+    }
+
+    public class AudioSourceAction : DependencyObject, IAction
+    {
+        public static readonly DependencyProperty<AudioClip> CLipProperty = new DependencyProperty<AudioClip>();
+
+        public AudioClip CLip
+        {
+            get
+            {
+                return GetValue(CLipProperty);
+            }
+            set
+            {
+                SetValue(CLipProperty, value);
+            }
+        }
+
+        public void Execute(GUIComponent sender, GUIEventArgs args)
+        {
+            AudioClip clip = CLip;
+            if (clip != null)
+            {
+                GameEngine.Instance.AudioManager.Play(clip);
+            }
         }
     }
 
@@ -37,32 +86,23 @@ namespace Fitamas.UserInterface
 
     public class EventHandlersStore
     {
-        private Dictionary<int, MonoEventBase> delegates = new Dictionary<int, MonoEventBase>();
+        private Dictionary<int, List<Delegate>> delegates;
 
-        public int Count => delegates.Count;
-
-        public MonoEvent Create(RoutedEvent routedEvent)
+        public EventHandlersStore()
         {
-            return AddEvent(routedEvent, new MonoEvent());
+            delegates = new Dictionary<int, List<Delegate>>();
         }
 
-        public MonoEvent<T0> Create<T0>(RoutedEvent routedEvent)
+        public void Invoke(GUIComponent sender, RoutedEvent routedEvent, GUIEventArgs args)
         {
-            return AddEvent(routedEvent, new MonoEvent<T0>());
+            if (delegates.ContainsKey(routedEvent.Id))
+            {
+                foreach (var handler in delegates[routedEvent.Id])
+                {
+                    handler.DynamicInvoke(sender, args);
+                }
+            }
         }
-
-
-        public MonoEvent<T0, T1> Create<T0, T1>(RoutedEvent routedEvent)
-        {
-            return AddEvent(routedEvent, new MonoEvent<T0, T1>());
-        }
-
-        private T AddEvent<T>(RoutedEvent routedEvent, T eventBase) where T : MonoEventBase
-        {
-            delegates[routedEvent.Id] = eventBase;
-            return eventBase;
-        }
-
 
         public void AddRoutedEventHandler(RoutedEvent routedEvent, Delegate handler)
         {
@@ -71,15 +111,14 @@ namespace Fitamas.UserInterface
 
         private void Add(int id, Delegate handler)
         {
-            if (delegates.ContainsKey(id))
+            if (!delegates.ContainsKey(id))
             {
-                delegates[id].AddDelegate(handler);
+                delegates[id] = new List<Delegate>() { handler };
             }
-        }
-
-        public bool Contains(RoutedEvent key)
-        {
-            return delegates.ContainsKey(key.Id);
+            else
+            {
+                delegates[id].Add(handler);
+            }
         }
 
         public void RemoveRoutedEventHandler(RoutedEvent routedEvent, Delegate handler)
@@ -91,7 +130,12 @@ namespace Fitamas.UserInterface
         {
             if (delegates.ContainsKey(id))
             {
-                delegates[id].RemoveDelegate(handler);
+                delegates[id].Remove(handler);
+
+                if (delegates[id].Count == 0)
+                {
+                    delegates.Remove(id);
+                }
             }
         }
     }

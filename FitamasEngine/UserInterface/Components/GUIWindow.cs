@@ -115,7 +115,7 @@ namespace Fitamas.UserInterface.Components
             RaycastTarget = true;
             IsFocusScope = true;
 
-            OnClose = eventHandlersStore.Create<GUIWindow>(OnCloseEvent);
+            OnClose = new MonoEvent<GUIWindow>();
         }
 
         protected override void OnChildPropertyChanged(GUIComponent component, DependencyProperty property)
@@ -156,6 +156,7 @@ namespace Fitamas.UserInterface.Components
                 }
                 OnCloseWindow();
                 OnClose.Invoke(this);
+                RaiseEvent(new GUIEventArgs(OnCloseEvent, this));
             }
         }
 

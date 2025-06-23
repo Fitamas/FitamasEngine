@@ -26,7 +26,7 @@ namespace Fitamas.UserInterface.Components
 
         public GUICheckBox()
         {
-            OnValueChanged = eventHandlersStore.Create<GUICheckBox, bool>(OnValueChangedEvent);
+            OnValueChanged = new MonoEvent<GUICheckBox, bool>();
         }
 
         protected override void OnClickedButton()
@@ -41,6 +41,7 @@ namespace Fitamas.UserInterface.Components
                 if (dependencyObject is GUICheckBox checkBox)
                 {
                     checkBox.OnValueChanged.Invoke(checkBox, newValue);
+                    checkBox.RaiseEvent(new GUIEventArgs(OnValueChangedEvent, checkBox));
                 }
             }
         }

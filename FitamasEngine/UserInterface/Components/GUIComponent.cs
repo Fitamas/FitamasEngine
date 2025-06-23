@@ -515,6 +515,8 @@ namespace Fitamas.UserInterface.Components
         {
             MonoEventBase eventBase = GUIEventManager.GetEvent(args.RoutedEvent);
 
+            eventHandlersStore.Invoke(this, args.RoutedEvent, args);
+
             if (eventBase != null)
             {
                 RaiseEvent(eventBase, args);

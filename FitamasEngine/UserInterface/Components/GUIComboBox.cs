@@ -7,10 +7,15 @@ using Fitamas.Events;
 
 namespace Fitamas.UserInterface.Components
 {
-    public class ComboBoxEventArgs
+    public class ComboBoxEventArgs : GUIEventArgs
     {
         public int Index { get; set; }
         public string Item { get; set; }
+
+        public ComboBoxEventArgs(RoutedEvent routedEvent, object source) : base(routedEvent, source)
+        {
+
+        }
     }
 
     public class GUIComboBox : GUIComponent, IMouseEvent
@@ -52,7 +57,7 @@ namespace Fitamas.UserInterface.Components
         public GUIComboBox()
         {
             Items = new ObservableList<string>();
-            OnSelectItem = eventHandlersStore.Create<GUIComboBox, ComboBoxEventArgs>(OnSelectItemEvent);
+            OnSelectItem = new MonoEvent<GUIComboBox, ComboBoxEventArgs>();
             RaycastTarget = true;
         }
 
@@ -114,7 +119,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (dependencyObject is GUIComboBox comboBox)
             {
-                ComboBoxEventArgs args = new ComboBoxEventArgs();
+                ComboBoxEventArgs args = new ComboBoxEventArgs(OnSelectItemEvent, comboBox);
 
                 if (newValue >= 0 && comboBox.Items.Count > newValue)
                 {
@@ -128,6 +133,7 @@ namespace Fitamas.UserInterface.Components
                 }
 
                 comboBox.OnSelectItem.Invoke(comboBox, args);
+                comboBox.RaiseEvent(args);
             }
         }
 

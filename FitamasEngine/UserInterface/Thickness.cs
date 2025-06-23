@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fitamas.UserInterface
 {
@@ -52,9 +48,7 @@ namespace Fitamas.UserInterface
 
         public override string ToString()
         {
-            StringBuilder stringBuilder = new StringBuilder(64);
-            stringBuilder.AppendFormat("{0}, {1}, {2}, {3}", Left, Top, Right, Bottom);
-            return stringBuilder.ToString();
+            return $"{Left}, {Top}, {Right}, {Bottom}";
         }
 
         public override int GetHashCode()

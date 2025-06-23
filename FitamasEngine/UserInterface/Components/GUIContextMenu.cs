@@ -27,12 +27,12 @@ namespace Fitamas.UserInterface.Components
         void OnClose(GUIContextMenuEventArgs args);
     }
 
-    public class GUISelectContextItemEventArgs
+    public class GUISelectContextItemEventArgs : GUIEventArgs
     {
         public string Name { get; }
         public int Index { get; }
 
-        public GUISelectContextItemEventArgs(string name, int index)
+        public GUISelectContextItemEventArgs(RoutedEvent routedEvent, object source, string name, int index) : base(routedEvent, source)
         {
             Name = name;
             Index = index;
@@ -41,7 +41,7 @@ namespace Fitamas.UserInterface.Components
 
     public class GUIContextMenu : GUIWindow
     {
-        public static readonly RoutedEvent routedEvent = new RoutedEvent();
+        public static readonly RoutedEvent OnSelectItemEvent = new RoutedEvent();
 
         private List<GUIContextItem> items;
 
@@ -74,7 +74,7 @@ namespace Fitamas.UserInterface.Components
 
         public GUIContextMenu()
         {
-            OnSelectItem = eventHandlersStore.Create<GUIContextMenu, GUISelectContextItemEventArgs>(routedEvent);
+            OnSelectItem = new MonoEvent<GUIContextMenu, GUISelectContextItemEventArgs>();
             SizeToContent = GUISizeToContent.WidthAndHeight;
             items = new List<GUIContextItem>();
         }
@@ -111,8 +111,9 @@ namespace Fitamas.UserInterface.Components
         {
             if (Group.ChildrensComponent.Contains(item))
             {
-                GUISelectContextItemEventArgs args = new GUISelectContextItemEventArgs(item.Name, items.IndexOf(item));
+                GUISelectContextItemEventArgs args = new GUISelectContextItemEventArgs(OnSelectItemEvent, this, item.Name, items.IndexOf(item));
                 OnSelectItem.Invoke(this, args);
+                RaiseEvent(args);
             }
 
             IsOpen = false;

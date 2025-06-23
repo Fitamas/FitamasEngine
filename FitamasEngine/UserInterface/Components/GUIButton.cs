@@ -28,7 +28,7 @@ namespace Fitamas.UserInterface.Components
         public GUIButton()
         {
             RaycastTarget = true;
-            OnClicked = eventHandlersStore.Create<GUIButton>(OnClickedEvent);
+            OnClicked = new MonoEvent<GUIButton>();
         }
 
         protected override void OnMouseExitted()
@@ -61,6 +61,7 @@ namespace Fitamas.UserInterface.Components
                 if (IsMouseOver)
                 {
                     OnClicked.Invoke(this);
+                    RaiseEvent(new GUIEventArgs(OnClickedEvent, this));
                     OnClickedButton();
                 }
             }
