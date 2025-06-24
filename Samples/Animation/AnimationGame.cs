@@ -1,8 +1,11 @@
-﻿using Fitamas.Animation;
+﻿using Fitamas;
+using Fitamas.Animation;
 using Fitamas.Core;
 using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.Input;
+using Fitamas.Serialization.Json.Converters;
+using Fitamas.Tweening;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -16,6 +19,8 @@ namespace Animation
         protected override void Initialize()
         {
             base.Initialize();
+
+            World.CreateMainCamera();
 
             AnimationClip clip = new AnimationClip("test", 4, [
                     new TransformPositionTimeLine("BONE1",
@@ -55,7 +60,7 @@ namespace Animation
             });
             entity.Attach(new Transform()
             {
-
+                Position = new Vector2(4, 0)
             });
             entity.Attach(animator = new Animator(tree)
             {
@@ -78,7 +83,7 @@ namespace Animation
             });
             entity.Attach(new Transform()
             {
-
+                Position = new Vector2(4, 0)
             });
             entity.Attach(new AnimationBone()
             {
@@ -94,6 +99,33 @@ namespace Animation
                 animator.SetValue("test", v);
             });
             system.AddComponent(slider);
+
+
+            manager = new TweenManager();
+
+            tween = TweenHelper.ColorTween(Color.White, Color.Black, 1, 0, x => Debug.LogError(x));
+            tween.Repeat(4, 0.5f)
+                 .OnBegin((c) => Debug.LogError("begin"))
+                 .OnPlay((c) => Debug.LogError("play"))
+                 .OnPause((c) => Debug.LogError("pause"))
+                 .OnComplete((c) => Debug.LogError("complete"))
+                 .OnStepComplete((c) => Debug.LogError("step complete"))
+                 .OnEnd((c) => Debug.LogError("end"))
+                 /*.AutoReverse()*/;
+
+            manager.AddActive(tween);
+            //TODO TWEEN
+        }
+
+        TweenManager manager;
+        Color color = Color.White;
+        Tween tween;
+
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            manager.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         protected override void LoadContent()
