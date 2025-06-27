@@ -10,6 +10,7 @@ using Fitamas.UserInterface;
 using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.DebugTools;
 using Fitamas.Audio;
+using Fitamas.Tweening;
 
 namespace Fitamas.Core
 {
@@ -31,6 +32,7 @@ namespace Fitamas.Core
         public DIContainer MainContainer { get; }
         public InputManager InputManager { get; }
         public AudioManager AudioManager { get; }
+        public TweenManager TweenManager { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
         public WindowViewportAdapter WindowViewportAdapter { get; private set; }
 
@@ -47,10 +49,16 @@ namespace Fitamas.Core
             };
 
             InputManager = new InputManager(this);
+            Components.Add(InputManager);
             MainContainer.RegisterInstance(InputManager);
 
             AudioManager = new AudioManager(this);
+            Components.Add(AudioManager);
             MainContainer.RegisterInstance(AudioManager);
+
+            TweenManager = new TweenManager(this);
+            Components.Add(TweenManager);
+            MainContainer.RegisterInstance(TweenManager);
         }
 
         protected override void Initialize()
@@ -94,7 +102,8 @@ namespace Fitamas.Core
 
                 //Animation
                 .AddSystem(new AnimationSystem())
-
+                .AddSystem(new TweenSystem(TweenManager))
+                
                 //Audio
                 .AddSystem(new AudioSystem(AudioManager))
 
@@ -110,6 +119,8 @@ namespace Fitamas.Core
 
         protected override void Update(GameTime gameTime)
         {
+            TweenManager.Update(gameTime);
+
             base.Update(gameTime);
 
             accamulatorTime += (float)gameTime.ElapsedGameTime.TotalSeconds;

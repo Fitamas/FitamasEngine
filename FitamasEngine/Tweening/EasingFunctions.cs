@@ -105,7 +105,6 @@ namespace Fitamas.Tweening
             return 1f - (float)(bounceConst2 * System.Math.Pow(value - 2.625f / bounceConst1, 2) + .984375);
         }
 
-
         private static float Out(float value, Func<float, float> function)
         {
             return 1 - function(1 - value);

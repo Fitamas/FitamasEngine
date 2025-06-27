@@ -12,10 +12,10 @@ namespace Fitamas.Events
 
     public delegate void MonoAction<T0, T1>(T0 arg0, T1 arg1);
 
-    public delegate TResult MonoCallBack<out TResult>();
+    public delegate TResult MonoFunc<out TResult>();
 
-    public delegate TResult MonoCallBack<T0, out TResult>(T0 arg0);
+    public delegate TResult MonoFunc<T0, out TResult>(T0 arg0);
 
-    public delegate TResult MonoCallBack<T0, T1, out TResult>(T0 arg0, T1 arg1);
+    public delegate TResult MonoFunc<T0, T1, out TResult>(T0 arg0, T1 arg1);
 
 }

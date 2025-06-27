@@ -26,98 +26,41 @@
 */
 
 using Fitamas.Events;
-using Fitamas.Math;
-using Microsoft.Xna.Framework;
 using System;
 
 namespace Fitamas.Tweening
 {
-    public class Tween<T> : Tween  where T : struct
-    {
-        private Func<T, T, float, T> interpolateFunction;
-        private MonoCallBack<T> getValueFunction;
-        private MonoAction<T> setVelueFunction;
-
-        internal Tween(Func<T, T, float, T> interpolateFunction, MonoCallBack<T> getValueFunction, MonoAction<T> setVelueFunction, T endValue, float duration, float delay) : base(duration, delay)
-        {
-            this.interpolateFunction = interpolateFunction;
-            this.getValueFunction = getValueFunction;
-            this.setVelueFunction = setVelueFunction;
-            this.endValue = endValue;
-        }
-
-        protected T startValue;
-        protected T endValue;
-
-        protected override void OnInitialized()
-        {
-            startValue = getValueFunction.Invoke();
-        }
-
-        protected override void Interpolate(float n)
-        {
-            T value = interpolateFunction.Invoke(startValue, endValue, n);
-            setVelueFunction.Invoke(value);
-        }
-
-        protected override void Swap()
-        {
-            endValue = startValue;
-            OnInitialized();
-        }
-
-        public Tween From(T value)
-        {
-            startValue = value;
-            return this;
-        }
-    }
-
     public abstract class Tween
     {
-        private Func<float, float> easingFunction;
-        private bool isInitialized;
-        private float completion;
+        private bool isStarted;
         private float elapsedDuration;
-        private float remainingDelay;
         private float repeatDelay;
+        private float remainingDelay;
+        private int repeats;
         private int remainingRepeats;
-        private MonoAction<Tween> onBegin;
+        private MonoAction<Tween> onStart;
         private MonoAction<Tween> onPlay;
         private MonoAction<Tween> onPause;
         private MonoAction<Tween> onComplete;
         private MonoAction<Tween> onStepComplete;
-        private MonoAction<Tween> onEnd;
+        private MonoAction<Tween> onKill;
 
-        public float Duration { get; }
-        public float Delay { get; }
-        public bool IsPaused { get; set; }
+        public float Delay { get; private set; }
+        public bool IsInitialized => isStarted;
         public bool IsRepeating => remainingRepeats != 0;
         public bool IsRepeatingForever => remainingRepeats < 0;
+        public bool IsPaused { get; private set; }
         public bool IsAutoReverse { get; private set; }
-        public bool IsAlive { get; private set; }
+        public bool IsFinished { get; private set; }
         public bool IsComplete { get; private set; }
-        public float TimeRemaining => Duration - elapsedDuration;
-        public float Completion => MathV.Clamp01(completion);
+        public float RepeatDelay => repeatDelay;
+        public float ElapsedDuration => elapsedDuration;
+        public int RemainingRepeats => remainingRepeats;
 
-        internal Tween(float duration, float delay)
+        public Tween OnStart(MonoAction<Tween> action)
         {
-            Duration = duration;
-            Delay = delay;
-            IsAlive = true;
-            remainingDelay = delay;
-        }
-
-        public Tween Easing(Func<float, float> easingFunction) 
-        { 
-            this.easingFunction = easingFunction; 
-            return this; 
-        }
-
-        public Tween OnBegin(MonoAction<Tween> action) 
-        { 
-            onBegin = action; 
-            return this; 
+            onStart = action;
+            return this;
         }
 
         public Tween OnPlay(MonoAction<Tween> action)
@@ -144,29 +87,51 @@ namespace Fitamas.Tweening
             return this;
         }
 
-        public Tween OnEnd(MonoAction<Tween> action)
+        public Tween OnKill(MonoAction<Tween> action)
         {
-            onEnd = action;
+            onKill = action;
+            return this;
+        }
+
+        public Tween Reset()
+        {
+            elapsedDuration = 0;
+            IsFinished = false;
+            remainingRepeats = repeats;
+            OnReset();
+            return this;
+        }
+
+        protected virtual void OnReset()
+        {
+
+        }
+
+        public Tween SetDelay(float delay)
+        {
+            Delay = delay;
+            remainingDelay = delay;
             return this;
         }
 
         public Tween Play()
         {
             IsPaused = false;
+            elapsedDuration = 0;
             onPlay?.Invoke(this);
             return this;
         }
 
-        public Tween Pause() 
-        { 
-            IsPaused = true; 
+        public Tween Pause()
+        {
+            IsPaused = true;
             onPause?.Invoke(this);
-            return this; 
+            return this;
         }
 
         public Tween Repeat(int count, float repeatDelay = 0f)
         {
-            remainingRepeats = count;
+            repeats = remainingRepeats = count;
             this.repeatDelay = repeatDelay;
             return this;
         }
@@ -184,62 +149,75 @@ namespace Fitamas.Tweening
             return this;
         }
 
-        protected abstract void OnInitialized();
-
-        protected abstract void Interpolate(float n);
-
-        protected abstract void Swap();
-
-        public void Cancel()
+        public void Kill()
         {
             remainingRepeats = 0;
-            IsAlive = false;
-            onEnd?.Invoke(this);
+            IsFinished = true;
+            IsPaused = true;
+            onKill?.Invoke(this);
         }
 
-        public void CancelAndComplete()
+        public void KillAndComplete()
         {
-            if (IsAlive)
+            if (!IsFinished)
             {
-                completion = 1;
-
-                Interpolate(1);
-                IsComplete = true;
                 onComplete?.Invoke(this);
             }
 
-            Cancel();
+            Kill();
         }
 
-        internal void Update(float elapsedSeconds)
+        protected void Complete()
         {
-            if (IsPaused || !IsAlive)
+            if (remainingRepeats != 0)
+            {
+                if (remainingRepeats > 0)
+                {
+                    remainingRepeats--;
+                }
+
+                remainingDelay = repeatDelay;
+            }
+            else if (remainingRepeats == 0)
+            {
+                IsFinished = true;
+            }
+
+            IsComplete = true;
+        }
+
+        internal void Update(float deltaTime)
+        {
+            if (IsPaused || IsFinished)
             {
                 return;
             }
 
             if (remainingDelay > 0)
             {
-                remainingDelay -= elapsedSeconds;
+                remainingDelay -= deltaTime;
 
                 if (remainingDelay > 0)
                 {
                     return;
-                }  
+                }
             }
 
-            if (!isInitialized)
+            if (!isStarted)
             {
-                isInitialized = true;
-                OnInitialized();
-                onBegin?.Invoke(this);
+                isStarted = true;
+                onStart?.Invoke(this);
+                OnStart();
+                onPlay?.Invoke(this);
+                OnPlay();
             }
 
             if (IsComplete)
             {
-                IsComplete = false;
                 elapsedDuration = 0;
+                IsComplete = false;
                 onPlay?.Invoke(this);
+                OnPlay();
 
                 if (IsAutoReverse)
                 {
@@ -247,46 +225,51 @@ namespace Fitamas.Tweening
                 }
             }
 
-            elapsedDuration += elapsedSeconds;
+            elapsedDuration += deltaTime;
 
-            var n = completion = elapsedDuration / Duration;
-
-            if (easingFunction != null)
-            {
-                n = easingFunction.Invoke(n);
-            }
-
-            if (elapsedDuration >= Duration)
-            {
-                if (remainingRepeats != 0)
-                {
-                    if (remainingRepeats > 0)
-                    {
-                        remainingRepeats--;
-                    }
-
-                    remainingDelay = repeatDelay;
-                }
-                else if (remainingRepeats == 0)
-                {
-                    IsAlive = false;
-                }
-
-                n = completion = 1;
-                IsComplete = true;
-            }
-
-            Interpolate(n);
+            OnUpdate(deltaTime);
 
             if (IsComplete)
             {
                 onStepComplete?.Invoke(this);
+                OnStepComplete();
 
-                if (!IsAlive)
+                if (IsFinished)
                 {
                     onComplete?.Invoke(this);
+                    OnComplete();
                 }
-            } 
+            }
+        }
+
+        protected virtual void OnStart()
+        {
+
+        }
+
+        protected virtual void OnUpdate(float deltaTime)
+        {
+
+        }
+
+        protected virtual void OnPlay()
+        {
+
+        }
+
+        protected virtual void OnComplete()
+        {
+
+        }
+
+        protected virtual void OnStepComplete()
+        {
+
+        }
+
+        protected virtual void Swap()
+        {
+
         }
     }
 }

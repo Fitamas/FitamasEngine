@@ -4,13 +4,11 @@ using Fitamas.Core;
 using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.Input;
-using Fitamas.Serialization.Json.Converters;
 using Fitamas.Tweening;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Animation
 {
@@ -53,15 +51,7 @@ namespace Animation
 
             Animator animator;
 
-            Entity entity = World.CreateEntity();
-            entity.Attach(new SpriteRender()
-            {
-                Sprite = Sprite.Create("Pumpkin"),
-            });
-            entity.Attach(new Transform()
-            {
-                Position = new Vector2(4, 0)
-            });
+            Entity entity = CreatePumpkin();
             entity.Attach(animator = new Animator(tree)
             {
 
@@ -76,16 +66,16 @@ namespace Animation
                 Animation = "test"
             });
 
-            entity = World.CreateEntity();
-            entity.Attach(new SpriteRender()
+            Entity entity1 = World.CreateEntity();
+            entity1.Attach(new SpriteRender()
             {
                 Sprite = Sprite.Create("TestBox", [new Rectangle(0, 0, 40, 40), new Rectangle(32, 32, 20, 20)]),
             });
-            entity.Attach(new Transform()
+            entity1.Attach(new Transform()
             {
                 Position = new Vector2(4, 0)
             });
-            entity.Attach(new AnimationBone()
+            entity1.Attach(new AnimationBone()
             {
                 Animator = animator,
                 Name = "BONE2",
@@ -101,31 +91,27 @@ namespace Animation
             system.AddComponent(slider);
 
 
-            manager = new TweenManager();
+            entity.Attach(entity.Get<Transform>().Move(new Vector2(4, 4), 1)
+                                   .Easing(EasingFunctions.CircleInOut).SetDelay(1).RepeatForever()
+                                   .OnStart((c) => Debug.Log("start"))
+                                   .OnPlay((c) => Debug.Log("play"))
+                                   .OnPause((c) => Debug.Log("pause"))
+                                   .OnComplete((c) => Debug.Log("complete"))
+                                   .OnStepComplete((c) => Debug.Log("step complete"))
+                                   .OnKill((c) => Debug.Log("killp"))
+                                   .AutoReverse().ToInstance());
 
-            tween = TweenHelper.ColorTween(Color.White, Color.Black, 1, 0, x => Debug.LogError(x));
-            tween.Repeat(4, 0.5f)
-                 .OnBegin((c) => Debug.LogError("begin"))
-                 .OnPlay((c) => Debug.LogError("play"))
-                 .OnPause((c) => Debug.LogError("pause"))
-                 .OnComplete((c) => Debug.LogError("complete"))
-                 .OnStepComplete((c) => Debug.LogError("step complete"))
-                 .OnEnd((c) => Debug.LogError("end"))
-                 /*.AutoReverse()*/;
+            //entity.Attach(new SequenceTween().Append(entity.Get<Transform>().Move(new Vector2(4, 4), 1)
+            //                              .Easing(EasingFunctions.BounceOut)
+            //                              .RepeatForever().AutoReverse().Repeat(1, 1))
 
-            manager.AddActive(tween);
-            //TODO TWEEN
-        }
+            //                              .Join(entity.Get<Transform>().Rotate(4, 1)
+            //                              .RepeatForever().AutoReverse().Repeat(4, 0))
 
-        TweenManager manager;
-        Color color = Color.White;
-        Tween tween;
+            //                              .Append(entity.Get<Transform>().Move(new Vector2(4, 4), 1)
+            //                              .RepeatForever().AutoReverse().Repeat(1, 1))
 
-        protected override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-
-            manager.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            //                              .ToInstance());
         }
 
         protected override void LoadContent()
@@ -137,6 +123,20 @@ namespace Animation
             FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
             ResourceDictionary dictionary = ResourceDictionary.DefaultResources;
             dictionary[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
+        }
+
+        public Entity CreatePumpkin()
+        {
+            Entity entity = World.CreateEntity();
+            entity.Attach(new SpriteRender()
+            {
+                Sprite = Sprite.Create("Pumpkin"),
+            });
+            entity.Attach(new Transform()
+            {
+                Position = new Vector2(4, 0)
+            });
+            return entity;
         }
     }
 }

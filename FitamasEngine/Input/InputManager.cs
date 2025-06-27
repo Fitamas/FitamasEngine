@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Fitamas.Input
 {
-    public class InputManager
+    public class InputManager : GameComponent
     {
         private InputListenerComponent inputListenerComponent;
         private InputActionMapComponent inputActionMapComponent;
@@ -16,7 +16,7 @@ namespace Fitamas.Input
 
         public IList<InputListener> Listeners => inputListenerComponent.Listeners;
 
-        public InputManager(GameEngine game)
+        public InputManager(GameEngine game) : base(game)
         {
             KeyboardListenerSettings settings = new KeyboardListenerSettings();
             settings.InitialDelayMilliseconds = 0;
