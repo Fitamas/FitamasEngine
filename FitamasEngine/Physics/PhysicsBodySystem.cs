@@ -8,13 +8,13 @@ namespace Fitamas.Physics
 {
     public class PhysicsBodySystem : EntityFixedUpdateSystem
     {
-        private PhysicsWorldSystem physicsWorld;
+        private PhysicsWorld physicsWorld;
 
         private Bag<Body> bodies;
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<PhysicsRigidBody> rigidBodyMapper;
 
-        public PhysicsBodySystem(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(Transform), typeof(PhysicsRigidBody)))
+        public PhysicsBodySystem(PhysicsWorld physicsWorld) : base(Aspect.All(typeof(Transform), typeof(PhysicsRigidBody)))
         {
             this.physicsWorld = physicsWorld;
 

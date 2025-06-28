@@ -18,7 +18,7 @@ namespace WDL
         {
             base.Initialize();
 
-            World.CreateMainCamera();
+            GameWorld.CreateMainCamera();
 
             GameplayViewModel gameplayViewModel = new GameplayViewModel(MainContainer.Resolve<LogicSystem>());
             MainContainer.RegisterInstance(gameplayViewModel);

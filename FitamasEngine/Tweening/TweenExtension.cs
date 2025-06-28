@@ -6,7 +6,7 @@ namespace Fitamas.Tweening
 {
     public static class TweenExtension
     {
-        public static TweenComponent ToInstance(this Tween tween)
+        public static TweenComponent ToComponent(this Tween tween)
         {
             return new TweenComponent(tween);
         }

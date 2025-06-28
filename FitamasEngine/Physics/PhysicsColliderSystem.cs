@@ -16,15 +16,13 @@ namespace Fitamas.Physics
 {
     public class PhysicsColliderSystem : EntitySystem, IDrawGizmosSystem
     {
-        private PhysicsWorldSystem physicsWorld;
-
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<PhysicsRigidBody> rigidBodyMapper;
         private ComponentMapper<PhysicsCollider> colliderMapper;
 
-        public PhysicsColliderSystem(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(Transform), typeof(PhysicsRigidBody), typeof(PhysicsCollider)))
+        public PhysicsColliderSystem() : base(Aspect.All(typeof(Transform), typeof(PhysicsRigidBody), typeof(PhysicsCollider)))
         {
-            this.physicsWorld = physicsWorld;
+
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -120,42 +118,41 @@ namespace Fitamas.Physics
             foreach (var entityId in ActiveEntities)
             {
                 Transform transform = transformMapper.Get(entityId);
+                PhysicsRigidBody rigidBody = rigidBodyMapper.Get(entityId);
+                PhysicsCollider collider = colliderMapper.Get(entityId);
 
-                if (colliderMapper.TryGet(entityId, out PhysicsCollider collider))
+                Color color = Color.GreenYellow;
+                Body body = rigidBody.Body;
+                float rotation = body.Rotation;
+                Vector2 position = body.Position + MathV.Rotate(collider.Offset, rotation);
+
+                switch (collider.ColliderType)
                 {
-                    Color color = Color.GreenYellow;
-                    Body body = physicsWorld.GetBody(entityId);
-                    float rotation = body.Rotation;
-                    Vector2 position = body.Position + MathV.Rotate(collider.Offset, rotation);
-
-                    switch (collider.ColliderType)
-                    {
-                        case ColliderType.Box:
-                            Gizmos.DrawRectangle(position, rotation, collider.Size, color);
-                            break;
-                        case ColliderType.Circle:
-                            Gizmos.DrawCircle(position, collider.Radius, color);
-                            break;
-                        case ColliderType.Polygon:
-                            if (collider.ColliderShapes != null)
+                    case ColliderType.Box:
+                        Gizmos.DrawRectangle(position, rotation, collider.Size, color);
+                        break;
+                    case ColliderType.Circle:
+                        Gizmos.DrawCircle(position, collider.Radius, color);
+                        break;
+                    case ColliderType.Polygon:
+                        if (collider.ColliderShapes != null)
+                        {
+                            foreach (var polygon in collider.ColliderShapes)
                             {
-                                foreach (var polygon in collider.ColliderShapes)
-                                {
-                                    Gizmos.DrawPolygon(position, rotation, polygon, color);
-                                }
+                                Gizmos.DrawPolygon(position, rotation, polygon, color);
                             }
-                            break;
-                        case ColliderType.Capsule:
-                            Vector2 scale = collider.Size;
-                            Gizmos.DrawRectangle(position, rotation, new Vector2(scale.X * 2, scale.Y), color);
+                        }
+                        break;
+                    case ColliderType.Capsule:
+                        Vector2 scale = collider.Size;
+                        Gizmos.DrawRectangle(position, rotation, new Vector2(scale.X * 2, scale.Y), color);
 
-                            Vector2 posUp = transform.ToAbsolutePosition(new Vector2(0, scale.Y / 2) - collider.Offset);
-                            Vector2 posDown = transform.ToAbsolutePosition(new Vector2(0, -scale.Y / 2) - collider.Offset);
+                        Vector2 posUp = transform.ToAbsolutePosition(new Vector2(0, scale.Y / 2) - collider.Offset);
+                        Vector2 posDown = transform.ToAbsolutePosition(new Vector2(0, -scale.Y / 2) - collider.Offset);
 
-                            Gizmos.DrawCircle(posUp, scale.X, color);
-                            Gizmos.DrawCircle(posDown, scale.X, color);
-                            break;
-                    }
+                        Gizmos.DrawCircle(posUp, scale.X, color);
+                        Gizmos.DrawCircle(posDown, scale.X, color);
+                        break;
                 }
             }
         }

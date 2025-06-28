@@ -5,7 +5,7 @@ using System;
 
 namespace Fitamas.Tweening
 {
-    class TweenSystem : EntityUpdateSystem
+    class TweenSystem : EntitySystem
     {
         private TweenManager manager;
 
@@ -50,11 +50,6 @@ namespace Fitamas.Tweening
                 tweens[entityId] = null;
                 manager.RemoveActive(tween);
             }
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-
         }
     }
 }

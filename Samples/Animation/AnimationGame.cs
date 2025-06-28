@@ -9,6 +9,8 @@ using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
+using R3;
 
 namespace Animation
 {
@@ -18,7 +20,7 @@ namespace Animation
         {
             base.Initialize();
 
-            World.CreateMainCamera();
+            GameWorld.CreateMainCamera();
 
             AnimationClip clip = new AnimationClip("test", 4, [
                     new TransformPositionTimeLine("BONE1",
@@ -66,7 +68,7 @@ namespace Animation
                 Animation = "test"
             });
 
-            Entity entity1 = World.CreateEntity();
+            Entity entity1 = GameWorld.CreateEntity();
             entity1.Attach(new SpriteRender()
             {
                 Sprite = Sprite.Create("TestBox", [new Rectangle(0, 0, 40, 40), new Rectangle(32, 32, 20, 20)]),
@@ -90,16 +92,16 @@ namespace Animation
             });
             system.AddComponent(slider);
 
-
-            entity.Attach(entity.Get<Transform>().Move(new Vector2(4, 4), 1)
-                                   .Easing(EasingFunctions.CircleInOut).SetDelay(1).RepeatForever()
+            TweenComponent component;
+            entity.Attach(component = entity.Get<Transform>().Move(new Vector2(4, 4), 1)
+                                   .Easing(EasingFunctions.CircleInOut).SetDelay(1).Repeat(1) //RepeatForever()
                                    .OnStart((c) => Debug.Log("start"))
                                    .OnPlay((c) => Debug.Log("play"))
                                    .OnPause((c) => Debug.Log("pause"))
                                    .OnComplete((c) => Debug.Log("complete"))
                                    .OnStepComplete((c) => Debug.Log("step complete"))
                                    .OnKill((c) => Debug.Log("killp"))
-                                   .AutoReverse().ToInstance());
+                                   .AutoReverse().ToComponent());
 
             //entity.Attach(new SequenceTween().Append(entity.Get<Transform>().Move(new Vector2(4, 4), 1)
             //                              .Easing(EasingFunctions.BounceOut)
@@ -112,6 +114,8 @@ namespace Animation
             //                              .RepeatForever().AutoReverse().Repeat(1, 1))
 
             //                              .ToInstance());
+
+
         }
 
         protected override void LoadContent()
@@ -127,7 +131,7 @@ namespace Animation
 
         public Entity CreatePumpkin()
         {
-            Entity entity = World.CreateEntity();
+            Entity entity = GameWorld.CreateEntity();
             entity.Attach(new SpriteRender()
             {
                 Sprite = Sprite.Create("Pumpkin"),

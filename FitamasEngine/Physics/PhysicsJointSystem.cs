@@ -11,12 +11,12 @@ namespace Fitamas.Physics
 {
     public class PhysicsJointSystem : EntitySystem, IDrawGizmosSystem
     {
-        private PhysicsWorldSystem physicsWorld;
+        private PhysicsWorld physicsWorld;
 
         private Bag<Joint> joints;
         private ComponentMapper<PhysicsJoint> jointMapper;
 
-        public PhysicsJointSystem(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(PhysicsJoint)))
+        public PhysicsJointSystem(PhysicsWorld physicsWorld) : base(Aspect.All(typeof(PhysicsJoint)))
         {
             this.physicsWorld = physicsWorld;
 

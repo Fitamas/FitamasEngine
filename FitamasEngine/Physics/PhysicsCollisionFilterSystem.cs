@@ -7,17 +7,17 @@ namespace Fitamas.Physics
 {
     public class PhysicsCollisionFilterSystem : EntityFixedUpdateSystem
     {
-        private PhysicsWorldSystem physicsWorld;
-
+        private ComponentMapper<PhysicsRigidBody> rigidBodyMapper;
         private ComponentMapper<PhysicsCollisionFilter> collisionFilterMapper;
 
-        public PhysicsCollisionFilterSystem(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(PhysicsCollisionFilter)))
+        public PhysicsCollisionFilterSystem() : base(Aspect.All(typeof(PhysicsCollisionFilter)))
         {
-            this.physicsWorld = physicsWorld;
+
         }
 
         public override void Initialize(IComponentMapperService mapperService)
         {
+            rigidBodyMapper = mapperService.GetMapper<PhysicsRigidBody>();
             collisionFilterMapper = mapperService.GetMapper<PhysicsCollisionFilter>();
         }
 
@@ -26,7 +26,8 @@ namespace Fitamas.Physics
             foreach (var entityId in ActiveEntities)
             {
                 PhysicsCollisionFilter collisionFilter = collisionFilterMapper.Get(entityId);
-                Body body = physicsWorld.GetBody(entityId);
+                PhysicsRigidBody rigidBody = rigidBodyMapper.Get(entityId);
+                Body body = rigidBody.Body;
 
                 Category category = collisionFilter.Filter.CollisionCategories;
                 Category collidesWith = collisionFilter.Filter.CollidesWith;

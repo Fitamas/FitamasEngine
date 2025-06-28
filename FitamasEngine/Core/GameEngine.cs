@@ -11,12 +11,14 @@ using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.DebugTools;
 using Fitamas.Audio;
 using Fitamas.Tweening;
+using Fitamas.ECS.Transform2D;
 
 namespace Fitamas.Core
 {
     public class GameEngine : Game
     {
-        private GameWorld world;
+        private GameWorld gameWorld;
+        private PhysicsWorld physicsWorld;
         private LoadContentExecutor loadContentExecutor;
         private FixedUpdateExecutor fixedUpdateExecutor;
         private UpdateExecutor updateExecutor;
@@ -26,7 +28,8 @@ namespace Fitamas.Core
 
         public const float FixedTimeStep = 0.02f;
 
-        public GameWorld World => world;
+        public GameWorld GameWorld => gameWorld;
+        public PhysicsWorld PhysicsWorld => physicsWorld;
 
         public static GameEngine Instance { get; private set; }
         public DIContainer MainContainer { get; }
@@ -80,7 +83,7 @@ namespace Fitamas.Core
 
             Debug.Log("Initialize systems");
 
-            world = CreateWorldBuilder().Build();
+            gameWorld = CreateWorldBuilder().Build();
 
             Debug.Log("Load systems content");
 
@@ -97,8 +100,12 @@ namespace Fitamas.Core
                 .AddExecutor(drawExecutor = new DrawExecutor())
                 .AddExecutor(drawGizmosExecutor = new DrawGizmosExecutor())
 
-                //Load content
+                //Core
                 .AddSystem(new SceneSystem())
+                .AddSystem(new TransformSystem())
+
+                //Phisics
+                .AddSystem(physicsWorld = new PhysicsWorld())
 
                 //Animation
                 .AddSystem(new AnimationSystem())
@@ -111,10 +118,7 @@ namespace Fitamas.Core
                 .AddSystem(new CameraSystem(this))
                 .AddSystem(new SpriteRenderSystem(GraphicsDevice))
                 .AddSystem(new MeshRenderSystem(GraphicsDevice))
-                .AddSystem(new GUISystem(this))
-
-                //Phisics
-                .AddSystemAndRegister(new PhysicsWorldSystem(), MainContainer);
+                .AddSystem(new GUISystem(this));
         }
 
         protected override void Update(GameTime gameTime)
@@ -164,7 +168,7 @@ namespace Fitamas.Core
         {
             base.Dispose(disposing);
 
-            world.Dispose();
+            gameWorld.Dispose();
             AudioManager.Dispose();
         }
     }

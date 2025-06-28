@@ -9,7 +9,7 @@ namespace Fitamas.Physics
 {
     public static class PhysicsDebugTools
     {
-        private static PhysicsWorldSystem physicsWorld = GameEngine.Instance.MainContainer.Resolve<PhysicsWorldSystem>();
+        private static PhysicsWorld physicsWorld = GameEngine.Instance.PhysicsWorld;
         private static FixedMouseJoint mouseJoint;
         private static bool isConnect = false;
 

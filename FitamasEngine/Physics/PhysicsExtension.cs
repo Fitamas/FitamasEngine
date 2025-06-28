@@ -9,7 +9,6 @@ using Fitamas.Math;
 using System;
 using System.Linq;
 using Fitamas.Core;
-using nkast.Aether.Physics2D.Common.PhysicsLogic;
 
 
 namespace Fitamas.Physics
@@ -25,7 +24,7 @@ namespace Fitamas.Physics
             //realExplosion.Activate(position, radius, force);
         }
 
-        public static RayCastHit TestPoint(this PhysicsWorldSystem physicsWorld, Vector2 position, CollisionFilter layers = default)
+        public static RayCastHit TestPoint(this PhysicsWorld physicsWorld, Vector2 position, CollisionFilter layers = default)
         {
             Fixture fixture = physicsWorld.World.TestPoint(position);
 
@@ -47,7 +46,7 @@ namespace Fitamas.Physics
             return default;
         }
 
-        public static RayCastHit[] RayCast(this PhysicsWorldSystem physicsWorld, Vector2 position1, Vector2 position2, CollisionFilter layers = default)
+        public static RayCastHit[] RayCast(this PhysicsWorld physicsWorld, Vector2 position1, Vector2 position2, CollisionFilter layers = default)
         {
             List<RayCastHit> hits = new List<RayCastHit>();
             Category category = layers.CollisionCategories;
@@ -68,7 +67,7 @@ namespace Fitamas.Physics
             return hits.ToArray();
         }
 
-        public static RayCastHit[] OverlapCircle(this PhysicsWorldSystem physicsWorld, Vector2 position, float radius, CollisionFilter layers = default)
+        public static RayCastHit[] OverlapCircle(this PhysicsWorld physicsWorld, Vector2 position, float radius, CollisionFilter layers = default)
         {
             AABB aabb = default;
             aabb.LowerBound = position + new Vector2(-radius, -radius);
@@ -108,7 +107,7 @@ namespace Fitamas.Physics
             return hits.ToArray();
         }
 
-        public static RayCastHit[] CircleCast(this PhysicsWorldSystem physicsWorld, Vector2 origin, Vector2 direction, float distance, float radius, CollisionFilter layer = default)
+        public static RayCastHit[] CircleCast(this PhysicsWorld physicsWorld, Vector2 origin, Vector2 direction, float distance, float radius, CollisionFilter layer = default)
         {
             if (distance <= 0 || direction == Vector2.Zero) 
             { 
@@ -164,7 +163,7 @@ namespace Fitamas.Physics
             return sortedValues;
         }
 
-        public static RayCastHit[] OverlapBox(this PhysicsWorldSystem physicsWorld, Vector2 position, float width, float height, float angle,  CollisionFilter layers = default)
+        public static RayCastHit[] OverlapBox(this PhysicsWorld physicsWorld, Vector2 position, float width, float height, float angle,  CollisionFilter layers = default)
         {
             float halfWidth = width / 2;
             float halfHeight = height / 2;
@@ -239,7 +238,7 @@ namespace Fitamas.Physics
             return hits.ToArray();
         }
 
-        public static RayCastHit[] BoxCast(this PhysicsWorldSystem physicsWorld, Vector2 position, Vector2 direction, float distance, float width, float height, float angle,  CollisionFilter layers = default)
+        public static RayCastHit[] BoxCast(this PhysicsWorld physicsWorld, Vector2 position, Vector2 direction, float distance, float width, float height, float angle,  CollisionFilter layers = default)
         {
             position += direction.NormalizeF() * distance;
 
@@ -257,7 +256,7 @@ namespace Fitamas.Physics
             return hits;
         }
 
-        public static RayCastHit[] CapsuleCast(this PhysicsWorldSystem physicsWorld, Vector2 position, Vector2 direction, float distance, Vector2 scale, CollisionFilter layers = default)
+        public static RayCastHit[] CapsuleCast(this PhysicsWorld physicsWorld, Vector2 position, Vector2 direction, float distance, Vector2 scale, CollisionFilter layers = default)
         {
             float radius = scale.X;
             float width = scale.X * 2;
@@ -271,7 +270,7 @@ namespace Fitamas.Physics
             return hits.OrderBy(x => x.Distance).ToArray();
         }
 
-        public static RayCastHit[] CapsuleCast(this PhysicsWorldSystem physicsWorld, PhysicsCollider collider, Vector2 position, Vector2 direction, float distance, CollisionFilter layers = default)
+        public static RayCastHit[] CapsuleCast(this PhysicsWorld physicsWorld, PhysicsCollider collider, Vector2 position, Vector2 direction, float distance, CollisionFilter layers = default)
         {
             RayCastHit[] castHits = CapsuleCast(physicsWorld, position, direction, distance, collider.Size, layers);
             List<RayCastHit> hits = new List<RayCastHit>();
@@ -292,6 +291,7 @@ namespace Fitamas.Physics
             point = new Vector2();
             normal = new Vector2();
 
+            //TODO
 
             //a = dist(startp, endp)
             //b = dist(startp, p)

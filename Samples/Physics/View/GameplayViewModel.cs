@@ -1,12 +1,10 @@
 ﻿using Fitamas;
-using Fitamas.Audio;
 using Fitamas.Core;
 using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.MVVM;
 using Fitamas.Physics;
 using Microsoft.Xna.Framework;
-using nkast.Aether.Physics2D.Dynamics;
 using Physics.Gameplay;
 using System;
 
@@ -28,25 +26,28 @@ namespace Physics.View
     public class GameplayViewModel : IViewModel
     {
         private GameWorld world;
-        private PhysicsWorldSystem physicsWorld;
+        private PhysicsWorld physicsWorld;
         private Tool tool;
         private bool use;
 
         private Entity camera;
+        private TransformMovement transformMovement;
         private Entity entityA;
         private Vector2 positionA;
+        private float speed = 7;
 
         public GameplayViewModel(GameEngine game)
         {
-            world = game.World;
-            physicsWorld = game.MainContainer.Resolve<PhysicsWorldSystem>();
+            world = game.GameWorld;
+            physicsWorld = game.PhysicsWorld;
 
             camera = world.CreateMainCamera();
+            camera.Attach(transformMovement = new TransformMovement());
         }
 
         public void MoveCamera(Vector2 direction)
         {
-            camera.Get<Transform>().Position += direction;
+            transformMovement.Velocity = direction * speed;
         }
 
         public void SelectTool(Tool tool)

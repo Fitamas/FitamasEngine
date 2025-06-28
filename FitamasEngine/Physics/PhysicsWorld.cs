@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Fitamas.ECS;
 using Fitamas.Extended.Entities;
-using Fitamas.Collections;
 using Fitamas.Physics.Characters;
 using nkast.Aether.Physics2D.Dynamics.Joints;
 using nkast.Aether.Physics2D.Dynamics;
 
 namespace Fitamas.Physics
 {
-    public class PhysicsWorldSystem : IFixedUpdateSystem
+    public class PhysicsWorld : IFixedUpdateSystem
     {
         private PhysicsBodySystem bodySystem;
         private PhysicsJointSystem jointSystem;
 
         internal World World { get; }
 
-        public PhysicsWorldSystem()
+        public PhysicsWorld()
         {
             Vector2 gravity = new Vector2(0, -9.8f);
 
@@ -27,10 +25,11 @@ namespace Fitamas.Physics
         public void Initialize(GameWorld world)
         {
             world.RegisterSystem(bodySystem = new PhysicsBodySystem(this));
-            world.RegisterSystem(new PhysicsColliderSystem(this));
+            world.RegisterSystem(new PhysicsColliderSystem());
             world.RegisterSystem(jointSystem = new PhysicsJointSystem(this));
-            world.RegisterSystem(new PhysicsCollisionFilterSystem(this));
+            world.RegisterSystem(new PhysicsCollisionFilterSystem());
             world.RegisterSystem(new CharacterController(this));
+            world.RegisterSystem(new PhysicsContactSystem(this));
         }
 
         public void FixedUpdate(float deltaTime)

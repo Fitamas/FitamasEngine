@@ -10,12 +10,12 @@ namespace Fitamas.Physics.Characters
     {
         private const int bounces = 10;
 
-        private PhysicsWorldSystem physicsWorld;
+        private PhysicsWorld physicsWorld;
 
         private ComponentMapper<Character> characterMapper;
         private ComponentMapper<PhysicsCollider> colliderMapper;
 
-        public CharacterController(PhysicsWorldSystem physicsWorld) : base(Aspect.All(typeof(PhysicsCollider), typeof(Character)))
+        public CharacterController(PhysicsWorld physicsWorld) : base(Aspect.All(typeof(PhysicsCollider), typeof(Character)))
         {
             this.physicsWorld = physicsWorld;
         }

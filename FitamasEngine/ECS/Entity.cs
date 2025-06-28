@@ -39,6 +39,8 @@ namespace Fitamas.ECS
         public int Id { get; }
 
         public BitVector32 ComponentBits => _entityManager.GetComponentBits(Id);
+        internal EntityManager EntityManager => _entityManager;
+        internal ComponentManager ComponentManager => _componentManager;
 
         internal Entity(int id, EntityManager entityManager, ComponentManager componentManager)
         {

@@ -1,13 +1,8 @@
 ﻿using Fitamas;
 using Fitamas.Audio;
-using Fitamas.Audio.Filters;
 using Fitamas.Core;
 using Fitamas.ECS;
-using Fitamas.Graphics;
 using Fitamas.Input;
-using Fitamas.Physics;
-using Fitamas.Scene;
-using Fitamas.Serialization.Json;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
@@ -40,16 +35,16 @@ namespace Physics
 
             AudioClip clip = AudioClip.LoadWav("Piano_Ui (5).wav");
 
-            Entity entity = EntityHelper.CreatePumpkin(World, Vector2.Zero);
+            Entity entity = EntityHelper.CreatePumpkin(GameWorld, Vector2.Zero);
             entity.Attach(new AudioSource() 
             { 
                 Clip = clip, PlayOnAwake = true, Looping = true, Is3d = true, MaxDistance = 4, 
                 AttenuationModel = AudioAttenuationModel.LinearDistance, AttenuationRolloffFactor = 2,
             });
 
-            EntityHelper.CreateRock(World, new Vector2(0, -15));
+            EntityHelper.CreateRock(GameWorld, new Vector2(0, -15));
 
-            Entity entity1 = World.CreateEntity();
+            Entity entity1 = GameWorld.CreateEntity();
             entity1.Attach(new Transform() { Position = new Vector2(1, 0)});
             entity1.Attach(new AudioReverbZone() { MaxDistance = 3 });
         }
