@@ -131,7 +131,7 @@ namespace Fitamas.UserInterface.Components
             Point offset = (direction.PerpendicularCounterClockwise().NormalizeF() * halfThickness).ToPoint();
             Rectangle rectangle = new Rectangle(position + lastAnchor - offset, new Point((int)distance, thickness));
 
-            Render.Draw(texture, rectangle, color, angle);
+            Render.Draw(texture, rectangle, color, angle, Alpha);
         }
     }
 }
