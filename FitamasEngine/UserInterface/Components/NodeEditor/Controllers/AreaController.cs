@@ -13,7 +13,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
         public AreaController(GUINodeEditor editor) : base(editor)
         {
             editor.OnMouseEvent.AddListener(OnMouseEvent);
-            editor.OnKeybordEvent.AddListener(OnKeyTyped);
         }
 
         private void OnMouseEvent(GUINodeEditorEventArgs args)
@@ -30,14 +29,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
                 {
                     moving = false;
                 }
-            }
-        }
-
-        private void OnKeyTyped(GUIKeyboardEventArgs args)
-        {
-            if (args.Key == Keys.Space)
-            {
-                editor.Content.LocalPosition = new Point(0, 0);
             }
         }
 

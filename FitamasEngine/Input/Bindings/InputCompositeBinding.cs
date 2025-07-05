@@ -44,4 +44,26 @@ namespace Fitamas.Input.Bindings
             return this;
         }
     }
+
+    public class InputCompositeBinding : InputCompositeBinding<bool>
+    {
+        public InputCompositeBinding()
+        {
+
+        }
+
+        protected override bool ReadValue(InputListener listener)
+        {
+            foreach (var binding in bindingMap.Values)
+            {
+                if (!binding.Value)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+
+        }
+    }
 }

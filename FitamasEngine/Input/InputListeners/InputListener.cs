@@ -35,8 +35,6 @@ namespace Fitamas.Input.InputListeners
     public abstract class InputListener
     {
         internal List<InputEventPtr> InputEvents { get; }
-
-
         public abstract string Name { get; }
         public bool Enable { get; set; }
 

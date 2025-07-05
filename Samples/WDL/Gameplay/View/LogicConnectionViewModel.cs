@@ -4,7 +4,7 @@ using ObservableCollections;
 using R3;
 using WDL.DigitalLogic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicConnectionViewModel : IViewModel
     {

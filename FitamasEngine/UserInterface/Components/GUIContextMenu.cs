@@ -1,6 +1,4 @@
 ﻿using Fitamas.Events;
-using Fitamas.Input.InputListeners;
-using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections;
@@ -50,28 +48,6 @@ namespace Fitamas.UserInterface.Components
         public GUIGroup Group { get; set; }
         public GUIComponent Target { get; set; }
 
-        public bool IsOpen
-        {
-            get
-            {
-                if (Parent is GUIPopup popup)
-                {
-                    return popup.IsOpen;
-                }
-                else
-                {
-                    throw new ArgumentNullException("popup");
-                }
-            }
-            set
-            {
-                if (Parent is GUIPopup popup)
-                {
-                    popup.IsOpen = value;
-                }
-            }
-        }
-
         public GUIContextMenu()
         {
             OnSelectItem = new MonoEvent<GUIContextMenu, GUISelectContextItemEventArgs>();
@@ -116,7 +92,10 @@ namespace Fitamas.UserInterface.Components
                 RaiseEvent(args);
             }
 
-            IsOpen = false;
+            if (Parent is GUIPopup popup)
+            {
+                popup.IsOpen = false;
+            }
         }
 
         public void SetFixedWidth(int width)

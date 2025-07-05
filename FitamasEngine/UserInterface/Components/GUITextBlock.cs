@@ -227,7 +227,7 @@ namespace Fitamas.UserInterface.Components
             }
 
             Render.Begin(context.Mask);
-            Render.DrawString(font, text, TextPostion, Color, Scale);
+            Render.DrawString(font, text, TextPostion, Color, Scale, context.Alpha);
             Render.End();
 
             base.OnDraw(gameTime, context);

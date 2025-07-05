@@ -1,14 +1,12 @@
 ﻿using Fitamas;
 using Fitamas.Core;
 using Fitamas.ECS;
-using Fitamas.Events;
-using Fitamas.Graphics;
 using Fitamas.UserInterface;
-using Fitamas.UserInterface.Components;
-using Fitamas.UserInterface.Input;
 using Microsoft.Xna.Framework.Graphics;
 using WDL.DigitalLogic;
-using WDL.Gameplay.ViewModel;
+using WDL.Gameplay.Settings;
+using WDL.Gameplay.View;
+using R3;
 
 namespace WDL
 {
@@ -26,6 +24,21 @@ namespace WDL
             MainContainer.RegisterInstance(manager);
             GameplayScreenViewModel viewModel = manager.OpenGameplayScreen();
             MainContainer.RegisterInstance(viewModel);
+
+            ActionMap map = new ActionMap();
+            InputManager.AddActionMap(map.InputActionMap);
+
+            GameplayInputBinder gameplayInputBinder = new GameplayInputBinder(map);
+            gameplayInputBinder.Bind(viewModel);
+
+            LogicSimulationInputBinder logicSimulationInputBinder = new LogicSimulationInputBinder(map);
+            viewModel.Simulation.Subscribe(value =>
+            {
+                logicSimulationInputBinder.Bind(value);
+            });
+
+            //MainContainer.RegisterInstance(new GameplayInputBinder(map));
+            //MainContainer.RegisterInstance(new LogicSimulationInputBinder());
 
             viewModel.CreateSimulation();
             viewModel.OpenComponents();

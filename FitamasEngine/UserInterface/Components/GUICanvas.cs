@@ -9,7 +9,7 @@ namespace Fitamas.UserInterface.Components
     {
         public GUICanvas() : base()
         {
-            Interacteble = false;
+
         }
 
         protected override void OnDraw(GameTime gameTime, GUIContextRender context)

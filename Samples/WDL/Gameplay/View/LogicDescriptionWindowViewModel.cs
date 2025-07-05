@@ -2,7 +2,7 @@
 using System;
 using WDL.DigitalLogic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicDescriptionWindowViewModel : GUIWindowViewModel
     {

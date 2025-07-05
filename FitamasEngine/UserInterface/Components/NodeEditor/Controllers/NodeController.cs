@@ -18,7 +18,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
         {
             editor.OnMouseEvent.AddListener(OnMouseEvent);
             editor.OnNodeInteractMouseEvent.AddListener(OnNodeEvent);
-            editor.OnKeybordEvent.AddListener(OnKeyTyped);
         }
 
         public override bool IsBusy()
@@ -115,6 +114,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             if (!selectNodes.Contains(node))
             {
                 selectNodes.Add(node);
+                editor.OnNodeEvent.Invoke(new GUINodeEventArgs(node, GUINodeEventType.Select));
                 node.IsSelect = true;
             }
         }
@@ -124,20 +124,10 @@ namespace Fitamas.UserInterface.Components.NodeEditor.Controllers
             foreach (var node in selectNodes)
             {
                 node.IsSelect = false;
+                editor.OnNodeEvent.Invoke(new GUINodeEventArgs(node, GUINodeEventType.Unselect));
             }
 
             selectNodes.Clear();
-        }
-
-        private void OnKeyTyped(GUIKeyboardEventArgs args)
-        {
-            if (args.Key == Keys.Back)
-            {
-                foreach (var node in selectNodes)
-                {
-                    editor.RemoveItem(node);
-                }
-            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Input;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace Fitamas.UserInterface
@@ -75,8 +76,11 @@ namespace Fitamas.UserInterface
 
             if (contextMenu != null)
             {
-                contextMenu.IsOpen = true;
-                contextMenu.LocalPosition = contextMenu.Parent.ToLocal(args.Position);
+                if (contextMenu.Parent is GUIPopup popup)
+                {
+                    popup.IsOpen = true;
+                    popup.Place(new Rectangle(args.Position, Point.Zero));
+                }
                 contextMenu.Target = component;
                 component.RaiseEvent(new GUIContextMenuEventArgs(component, args.Position, ContextMenuOpeningEvent));
             }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WDL.DigitalLogic.Components
 {
@@ -13,9 +10,7 @@ namespace WDL.DigitalLogic.Components
         private LogicOutput[] pinOutput;
 
         public LogicCircuit(LogicComponentManager manager, LogicComponentDescription description, LogicComponentData data)
-            : base(description, data,
-                   description.Components.Count(s => s.TypeId == LogicComponents.Input.FullName),
-                   description.Components.Count(s => s.TypeId == LogicComponents.Output.FullName))
+            : base(description, data, description.InputConnectors.Count, description.OutputConnectors.Count)
         {
             components = new LogicComponent[description.Components.Count];
             pinInput = new LogicInput[InputCount];
@@ -54,19 +49,21 @@ namespace WDL.DigitalLogic.Components
                 input.Connect(connection);
             }
 
-            int inputCount = 0;
-            int outputCount = 0;
-            foreach (var component in components)
+            for (int i = 0; i < InputCount;  i++)
             {
-                if (component is LogicInput input)
+                int id = description.InputConnectors[i].ComponentID;
+                if (componentsMap.ContainsKey(id) && componentsMap[id] is LogicInput input)
                 {
-                    pinInput[inputCount] = input;
-                    inputCount++;
+                    pinInput[i] = input;
                 }
-                if (component is LogicOutput output)
+            }
+
+            for (int i = 0; i < OutputCount; i++)
+            {
+                int id = description.OutputConnectors[i].ComponentID;
+                if (componentsMap.ContainsKey(id) && componentsMap[id] is LogicOutput output)
                 {
-                    pinOutput[outputCount] = output;
-                    outputCount++;
+                    pinOutput[i] = output;
                 }
             }
         }

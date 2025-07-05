@@ -6,7 +6,7 @@ namespace Fitamas.UserInterface.Components
     {
         public GUIFrame()
         {
-            Interacteble = false;
+
         }
     }
 }

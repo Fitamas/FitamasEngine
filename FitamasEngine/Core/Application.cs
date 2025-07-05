@@ -10,7 +10,7 @@ namespace Fitamas.Core
 
         public static string Name = Assembly.GetEntryAssembly()?.GetName().Name ?? nameof(Fitamas);
 
-        public static readonly string DataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Name);
+        public static readonly string DataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Fitamas), Name);
 
         static Application()
         {

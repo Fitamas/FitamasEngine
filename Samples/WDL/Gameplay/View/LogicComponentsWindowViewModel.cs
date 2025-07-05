@@ -1,10 +1,11 @@
-﻿using Fitamas.UserInterface.ViewModel;
+﻿using Fitamas.Events;
+using Fitamas.UserInterface.ViewModel;
 using ObservableCollections;
 using R3;
 using System;
 using WDL.DigitalLogic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicComponentsWindowViewModel : GUIWindowViewModel
     {
@@ -37,6 +38,11 @@ namespace WDL.Gameplay.ViewModel
         public void OpenDescription(LogicComponentDescription description)
         {
             gameplay.OpenDescription(description);
+        }
+
+        public void SelectComponent(LogicComponentDescription description)
+        {
+            gameplay.SelectComponent(description);
         }
     }
 }

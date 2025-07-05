@@ -22,6 +22,8 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<GUIComponent> FocusedComponentProperty = new DependencyProperty<GUIComponent>(FocusedComponentChangedCallback, null, false);
 
+        public static readonly DependencyProperty<float> AlphaProperty = new DependencyProperty<float>(1f, false);
+
         public static readonly DependencyProperty<bool> IsFocusScopeProperty = new DependencyProperty<bool>(false, false);
 
         public static readonly DependencyProperty<bool> FocusableProperty = new DependencyProperty<bool>(true, false);
@@ -113,6 +115,18 @@ namespace Fitamas.UserInterface.Components
             set
             {
                 SetValue(VerticalAlignmentProperty, value);
+            }
+        }
+
+        public float Alpha
+        {
+            get
+            {
+                return GetValue(AlphaProperty);
+            }
+            set
+            {
+                SetValue(AlphaProperty, value);
             }
         }
 
@@ -463,7 +477,7 @@ namespace Fitamas.UserInterface.Components
 
         public virtual void RaycastAll(Point point, List<GUIComponent> result)
         {
-            if (!Enable)
+            if (!Enable || !Interacteble)
             {
                 return;
             }
@@ -513,6 +527,11 @@ namespace Fitamas.UserInterface.Components
 
         public void RaiseEvent(GUIEventArgs args)
         {
+            if (args.Handled)
+            {
+                return;
+            }
+
             MonoEventBase eventBase = GUIEventManager.GetEvent(args.RoutedEvent);
 
             eventHandlersStore.Invoke(this, args.RoutedEvent, args);
@@ -525,6 +544,11 @@ namespace Fitamas.UserInterface.Components
 
         private void RaiseEvent(MonoEventBase eventBase, GUIEventArgs args)
         {
+            if (args.Handled)
+            {
+                return;
+            }
+
             eventBase.InvokeEvent(this, args);
 
             if (parent != null)
@@ -610,6 +634,7 @@ namespace Fitamas.UserInterface.Components
             if (Enable)
             {
                 visibleRectangle = Rectangle.Intersect(Rectangle, context.Mask);
+                context.Alpha *= Alpha;
 
                 if (IsMask)
                 {
@@ -793,12 +818,12 @@ namespace Fitamas.UserInterface.Components
     public struct GUIContextRender
     {
         public Rectangle Mask { get; set; }
-        public float Opacity { get; set; }
+        public float Alpha { get; set; }
 
-        public GUIContextRender(Rectangle rectangle, float opacity = 1)
+        public GUIContextRender(Rectangle rectangle, float alpha)
         {
             Mask = rectangle;
-            Opacity = opacity;
+            Alpha = alpha;
         }
 
         public void SetMask(Rectangle rectangle)

@@ -37,12 +37,14 @@ namespace Fitamas.Input.Actions
             bindings = new List<InputAbstractBinding>();
         }
 
-        public void AddBinding(InputAbstractBinding binding)
+        public InputAction AddBinding(InputAbstractBinding binding)
         {
             if (!bindings.Contains(binding))
             {
                 bindings.Add(binding);
             }
+
+            return this;
         }
 
         public void Update(GameTime gameTime)

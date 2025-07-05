@@ -96,8 +96,10 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver)
             {
-                if (Interacteble && mouse.Button == MouseButton.Left)
+                if (mouse.Button == MouseButton.Left)
                 {
+                    mouse.Handled = true;
+
                     if (IsFocused)
                     {
                         IsDropDownOpen = !IsDropDownOpen;

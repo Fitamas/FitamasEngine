@@ -85,7 +85,7 @@ namespace Fitamas.UserInterface
         public void Draw(GameTime gameTime)
         {
             Rectangle rectangle = new Rectangle(new Point(0, 0), Render.GetViewportSize());
-            canvas.Draw(gameTime, new GUIContextRender(rectangle));
+            canvas.Draw(gameTime, new GUIContextRender(rectangle, 1f));
 
             if (GUIDebug.Active)
             {

@@ -1,51 +1,40 @@
-﻿using Fitamas.UserInterface.Components.NodeEditor;
+﻿using Fitamas;
+using Fitamas.MVVM;
+using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.UserInterface.ViewModel;
+using Microsoft.Xna.Framework;
+using ObservableCollections;
+using R3;
 using System;
 using System.Collections.Generic;
 using WDL.DigitalLogic;
-using Fitamas.UserInterface;
-using Microsoft.Xna.Framework.Input;
-using ObservableCollections;
-using R3;
-using Microsoft.Xna.Framework;
-using Fitamas;
-using Fitamas.UserInterface.Themes;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
+    public class LogicComponentBinder
+    {
+        public LogicComponentViewModel Component { get; }
+        public GUINode Node { get; }
+        public Dictionary<GUIPin, LogicConnectorViewModel> ConnectorMap { get; }
+        public Dictionary<LogicConnectorViewModel, GUIPin> PinMap { get; }
+
+        public LogicComponentBinder(LogicComponentViewModel component, GUINode node)
+        {
+            Component = component;
+            Node = node;
+            ConnectorMap = new Dictionary<GUIPin, LogicConnectorViewModel>();
+            PinMap = new Dictionary<LogicConnectorViewModel, GUIPin>();
+        }
+    }
+
     public class LogicSimulationWindowBinder : GUIWindowBinder<LogicSimulationWindowViewModel>
     {
-        public class NodeStore
-        {
-            public GUINode Node { get; }
-            public Dictionary<LogicConnectorViewModel, GUIPin> PinMap { get; }
-
-            public NodeStore(GUINode node, Dictionary<LogicConnectorViewModel, GUIPin> pinMap)
-            {
-                Node = node;
-                PinMap = pinMap;
-            }
-        }
-
-        public class ViewModelStore
-        {
-            public LogicComponentViewModel Component { get; }
-            public Dictionary<GUIPin, LogicConnectorViewModel> ConnectorMap { get; }
-
-            public ViewModelStore(LogicComponentViewModel component)
-            {
-                Component = component;
-                ConnectorMap = new Dictionary<GUIPin, LogicConnectorViewModel>();
-            }
-        }
-
         private GUINodeEditor editor;
 
-        private Dictionary<LogicComponentDescription, Func<LogicComponentViewModel, GUINode, ViewModelStore>> creatorMap;
-
-        private Dictionary<LogicComponentViewModel, NodeStore> componentToNode;
-        private Dictionary<GUINode, ViewModelStore> nodeToComponent;
+        private Dictionary<LogicComponentViewModel, LogicComponentBinder> componentToNode;
+        private Dictionary<GUINode, LogicComponentBinder> nodeToComponent;
 
         private Dictionary<LogicConnectionViewModel, GUIWire> connectionToWire;
         private Dictionary<GUIWire, LogicConnectionViewModel> wireToConnection;
@@ -54,14 +43,16 @@ namespace WDL.Gameplay.ViewModel
         private GUIContextMenu nodeContextMenu;
         private GUIContextMenu wireContextMenu;
 
-        protected override IDisposable OnBind(LogicSimulationWindowViewModel viewModel)
+        public LogicSimulationWindowBinder()
         {
-            creatorMap = new Dictionary<LogicComponentDescription, Func<LogicComponentViewModel, GUINode, ViewModelStore>>();
-            componentToNode = new Dictionary<LogicComponentViewModel, NodeStore>();
-            nodeToComponent = new Dictionary<GUINode, ViewModelStore>();
+            componentToNode = new Dictionary<LogicComponentViewModel, LogicComponentBinder>();
+            nodeToComponent = new Dictionary<GUINode, LogicComponentBinder>();
             connectionToWire = new Dictionary<LogicConnectionViewModel, GUIWire>();
             wireToConnection = new Dictionary<GUIWire, LogicConnectionViewModel>();
+        }
 
+        protected override IDisposable OnBind(LogicSimulationWindowViewModel viewModel)
+        {
             SetAlignment(GUIAlignment.Stretch);
             Margin = new Thickness(400, 120, 0, 0);
 
@@ -77,6 +68,15 @@ namespace WDL.Gameplay.ViewModel
             {
                 if (nodeToComponent.TryGetValue(args.Node, out var viewModel))
                 {
+                    if (args.EventType == GUINodeEventType.Select)
+                    {
+                        viewModel.Component.IsSelect = true;
+                    }
+                    else if (args.EventType == GUINodeEventType.Unselect)
+                    {
+                        viewModel.Component.IsSelect = false;
+                    }
+
                     viewModel.Component.Position.Value = args.Node.LocalPosition;
                 }
             });
@@ -94,21 +94,21 @@ namespace WDL.Gameplay.ViewModel
 
             GUIPopup popup;
 
-            popup = new GUIPopup();
-            editorContextMenu = GUI.CreateContextMenu();
-            editorContextMenu.AddItem("...");
-            popup.Window = editorContextMenu;
-            popup.AddChild(editorContextMenu);
-            AddChild(popup);
-            GUIContextMenuManager.SetContextMenu(editor, editorContextMenu);
+            //popup = new GUIPopup();
+            //editorContextMenu = GUI.CreateContextMenu();
+            //editorContextMenu.AddItem("...");
+            //popup.Window = editorContextMenu;
+            //popup.AddChild(editorContextMenu);
+            //AddChild(popup);
+            //GUIContextMenuManager.SetContextMenu(editor, editorContextMenu);
 
             popup = new GUIPopup();
             nodeContextMenu = GUI.CreateContextMenu();
             nodeContextMenu.AddItem("Destroy");
-            nodeContextMenu.AddItem("TODO rename IN/OUT ");
+            //nodeContextMenu.AddItem("TODO rename IN/OUT ");
             nodeContextMenu.OnSelectItem.AddListener((m, a) =>
             {
-                if (m.Target is GUINode node && nodeToComponent.TryGetValue(node, out ViewModelStore store))
+                if (m.Target is GUINode node && nodeToComponent.TryGetValue(node, out LogicComponentBinder store))
                 {
                     switch (a.Index)
                     {
@@ -160,38 +160,6 @@ namespace WDL.Gameplay.ViewModel
             popup.AddChild(wireContextMenu);
             AddChild(popup);
 
-            creatorMap.Add(LogicComponents.Input, (viewModel, node) =>
-            {
-                ViewModelStore model = new ViewModelStore(viewModel);
-                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(79, 67), GUINodeItemAlignment.Right, GUIPinType.Output);
-                model.ConnectorMap[item.Pin] = viewModel.Connectors[0];
-                GUICheckBox checkBox = (GUICheckBox)item.Content;
-                checkBox.OnValueChanged.AddListener((b, a) =>
-                {
-                    viewModel.TrySetSignalValue(a);
-                });
-                node.AddItem(item);
-                return model;
-            });
-            creatorMap.Add(LogicComponents.Output, (viewModel, node) =>
-            {
-                ViewModelStore model = new ViewModelStore(viewModel);
-                GUINodeItem item = GUIUtils.CreateNodeItemWithCheckBox(new Point(79, 67), GUINodeItemAlignment.Left, GUIPinType.Input);
-                model.ConnectorMap[item.Pin] = viewModel.Connectors[0];
-                GUICheckBox checkBox = (GUICheckBox)item.Content;
-                checkBox.Interacteble = false;
-                if (viewModel.TryGetSignalValue(out ReadOnlyReactiveProperty<bool> signal))
-                {
-                    signal.Subscribe(v =>
-                    {
-                        checkBox.Value = v;
-                    });
-                }
-                checkBox.SetValue(GUIImage.ImageEffectProperty, GUIImageEffect.FlipHorizontally);
-                node.AddItem(item);
-                return model;
-            });
-
             foreach (var component in viewModel.Components)
             {
                 AddComponent(component);
@@ -218,63 +186,35 @@ namespace WDL.Gameplay.ViewModel
                 RemoveConnection(e.Value);
             });
 
+            viewModel.ToLocal = position =>
+            {
+                return ToLocal(position) - editor.Content.LocalPosition;
+            };
+
             return null;
         }
 
-        void AddComponent(LogicComponentViewModel viewModel)
+        private void AddComponent(LogicComponentViewModel viewModel)
         {
             GUINode node = editor.CreateNode(viewModel.Name);
-            node.LocalPosition = viewModel.Position.Value;
-            node.Style = GUIUtils.GetNodeStyle(ResourceDictionary.DefaultResources, viewModel.ThemeId);
+            LogicComponentBinder binder = new LogicComponentBinder(viewModel, node);
+            GUIComponentUtils.Process(binder);
             GUIContextMenuManager.SetContextMenu(node, nodeContextMenu);
-            ViewModelStore store;
 
-            if (creatorMap.ContainsKey(viewModel.Description))
-            {
-                store = creatorMap[viewModel.Description].Invoke(viewModel, node);
-            }
-            else
-            {
-                store = new ViewModelStore(viewModel);
-                foreach (var connector in viewModel.Connectors)
-                {
-                    GUIPin pin = null;
-                    if (connector.IsInput)
-                    {
-                        pin = node.CreateItem(connector.Name, GUINodeItemAlignment.Left, GUIPinType.Input).Pin;
-                    }
-                    else if (connector.IsOutput)
-                    {
-                        pin = node.CreateItem(connector.Name, GUINodeItemAlignment.Right, GUIPinType.Output).Pin;
-                    }
-
-                    if (pin != null)
-                    {
-                        store.ConnectorMap[pin] = connector;
-                    }
-                }
-            }
-
-            Dictionary<LogicConnectorViewModel, GUIPin> pinMap = new Dictionary<LogicConnectorViewModel, GUIPin>();
-            foreach (var connector in store.ConnectorMap)
-            {
-                pinMap[connector.Value] = connector.Key;
-            }
-
-            componentToNode.Add(viewModel, new NodeStore(node, pinMap));
-            nodeToComponent.Add(node, store);
+            componentToNode.Add(viewModel, binder);
+            nodeToComponent.Add(node, binder);
         }
 
-        void RemoveComponent(LogicComponentViewModel viewModel)
+        private void RemoveComponent(LogicComponentViewModel viewModel)
         {
-            if (componentToNode.Remove(viewModel, out NodeStore store))
+            if (componentToNode.Remove(viewModel, out LogicComponentBinder binder))
             {
-                nodeToComponent.Remove(store.Node);
-                editor.RemoveItem(store.Node);
+                nodeToComponent.Remove(binder.Node);
+                editor.RemoveItem(binder.Node);
             }
         }
 
-        void AddConnection(LogicConnectionViewModel viewModel)
+        private void AddConnection(LogicConnectionViewModel viewModel)
         {
             GUIPin pinA = componentToNode[viewModel.Output.Component].PinMap[viewModel.Output];
             GUIPin pinB = componentToNode[viewModel.Input.Component].PinMap[viewModel.Input];
@@ -302,7 +242,7 @@ namespace WDL.Gameplay.ViewModel
             });
         }
 
-        void RemoveConnection(LogicConnectionViewModel viewModel)
+        private void RemoveConnection(LogicConnectionViewModel viewModel)
         {
             if (connectionToWire.Remove(viewModel, out GUIWire wire))
             {

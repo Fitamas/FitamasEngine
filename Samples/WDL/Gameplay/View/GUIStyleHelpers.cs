@@ -7,7 +7,7 @@ using Fitamas.UserInterface.Themes;
 using System;
 using System.Collections.Generic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public static class GUIStyleHelpers
     {
@@ -66,13 +66,13 @@ namespace WDL.Gameplay.ViewModel
 
             triggerEvent = new TriggerEvent(GUIMouse.MouseEnterGUIEvent);
             action = new AudioSourceAction();
-            action.SetResourceReference(AudioSourceAction.CLipProperty, dictionary, ButtonHoverAudio);
+            action.SetResourceReference(AudioSourceAction.ClipProperty, dictionary, ButtonHoverAudio);
             triggerEvent.Actions.Add(action);
             style.TriggerEvents.Add(triggerEvent);
 
             triggerEvent = new TriggerEvent(GUIButton.OnClickedEvent);
             action = new AudioSourceAction();
-            action.SetResourceReference(AudioSourceAction.CLipProperty, dictionary, ButtonPressedAudio);
+            action.SetResourceReference(AudioSourceAction.ClipProperty, dictionary, ButtonPressedAudio);
             triggerEvent.Actions.Add(action);
             style.TriggerEvents.Add(triggerEvent);
 

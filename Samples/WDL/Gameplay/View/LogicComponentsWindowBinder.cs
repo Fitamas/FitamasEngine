@@ -2,7 +2,6 @@
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using WDL.DigitalLogic;
@@ -11,7 +10,7 @@ using R3;
 using Fitamas;
 using Fitamas.UserInterface.Themes;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicComponentsWindowBinder : GUIWindowBinder<LogicComponentsWindowViewModel>
     {
@@ -42,7 +41,7 @@ namespace WDL.Gameplay.ViewModel
             {
                 if (nodeToDescription.TryGetValue(args.Node, out var description))
                 {
-                    viewModel.Simulation.CurrentValue?.CreateComponent(description);
+                    viewModel.SelectComponent(description);
                 }
             });
             image1.AddChild(treeView);

@@ -1,8 +1,6 @@
 ﻿using Fitamas.Events;
-using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Input;
-using ObservableCollections;
-using System;
+using Microsoft.Xna.Framework;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -12,13 +10,13 @@ namespace Fitamas.UserInterface.Components
         Top,
         Right,
         Bottom,
-        Center,
         MousePoint,
+        Mouse,
     }
 
     public class GUIPopup : GUIComponent, IMouseEvent
     {
-        public static readonly DependencyProperty<GUIPlacementMode> PlacementModeProperty = new DependencyProperty<GUIPlacementMode>(GUIPlacementMode.Center, false);
+        public static readonly DependencyProperty<GUIPlacementMode> PlacementModeProperty = new DependencyProperty<GUIPlacementMode>(GUIPlacementMode.MousePoint, false);
 
         public static readonly DependencyProperty<bool> IsOpenProperty = new DependencyProperty<bool>(IsOpenChangedCallback, false, false);
 
@@ -67,7 +65,6 @@ namespace Fitamas.UserInterface.Components
                 {
                     window = value;
                     window.Enable = IsOpen;
-                    UpdatePosition();
                 }
             }
         }
@@ -86,14 +83,52 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        private void UpdatePosition()
+        public void Place(Rectangle rectangle)
         {
-            //TODO
+            if (window == null || !IsOpen)
+            {
+                return;
+            }
+
+            switch (PlacementMode)
+            {
+                case GUIPlacementMode.Left:
+                    window.LocalPosition = ToLocal(rectangle.Location); //TODO
+                    break;
+                case GUIPlacementMode.Top:
+                    window.LocalPosition = ToLocal(rectangle.Location);
+                    break;
+                case GUIPlacementMode.Right:
+                    window.LocalPosition = ToLocal(rectangle.Location);
+                    break;
+                case GUIPlacementMode.Bottom:
+                    window.LocalPosition = ToLocal(rectangle.Location);
+                    break;
+                case GUIPlacementMode.MousePoint:
+                    window.LocalPosition = ToLocal(rectangle.Location);
+                    break;
+                case GUIPlacementMode.Mouse:
+                    UpdatePosition(rectangle.Location);
+                    break;
+            }
+        }
+
+        public void UpdatePosition(Point point)
+        {
+            if (window == null || !IsOpen)
+            {
+                return;
+            }
+
+            if (PlacementMode == GUIPlacementMode.Mouse)
+            {
+                window.LocalPosition = ToLocal(point);
+            }
         }
 
         public void OnMovedMouse(GUIMousePositionEventArgs mouse)
         {
-            UpdatePosition();
+            UpdatePosition(mouse.Position);
         }
 
         public void OnClickedMouse(GUIMouseEventArgs mouse)
@@ -119,16 +154,27 @@ namespace Fitamas.UserInterface.Components
 
         private void OpenPopup()
         {
-            System.Root.PopupWindow = Window;
+            if (!IsInHierarchy)
+            {
+                return;
+            }
+
+            System.Root.Popup = this;
             System.Mouse.MouseCapture = this;
+            Enable = true;
             OnOpen.Invoke(this);
             RaiseEvent(new GUIEventArgs(OnOpenEvent, this));
+            UpdatePosition(System.Mouse.Position);
         }
 
         private void ClosePopup()
         {
-            System.Root.PopupWindow = null;
-            System.Mouse.MouseCapture = null;
+            if (!IsInHierarchy)
+            {
+                return;
+            }
+
+            Enable = false;
             OnClose.Invoke(this);
             RaiseEvent(new GUIEventArgs(OnCloseEvent, this));
         }

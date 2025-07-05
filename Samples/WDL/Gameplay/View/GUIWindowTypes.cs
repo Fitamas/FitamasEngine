@@ -5,7 +5,7 @@ using Fitamas.UserInterface.Components;
 using WDL.DigitalLogic;
 using Fitamas.UserInterface;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public static class GUIWindowTypes
     {

@@ -1,18 +1,22 @@
 ﻿using Fitamas;
+using Fitamas.Events;
 using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
 using ObservableCollections;
 using R3;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WDL.DigitalLogic;
 using WDL.DigitalLogic.Components;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicSimulationWindowViewModel : GUIWindowViewModel
     {
         private LogicSimulationViewModel simulation;
+
+        public Func<Point, Point> ToLocal;
 
         public LogicComponentDescription Description => simulation.Description;
         public IObservableCollection<LogicComponentViewModel> Components => simulation.Components;
@@ -24,14 +28,26 @@ namespace WDL.Gameplay.ViewModel
             this.simulation = simulation;
         }
 
-        public void CreateComponent(LogicComponentDescription description)
+        public void CreateComponent(LogicComponentDescription description, Point position)
         {
-            simulation.CreateComponent(description);
+            if (ToLocal != null)
+            {
+                position = ToLocal(position);
+            }
+            simulation.CreateComponent(description, position);
         }
 
         public void DestroyComponent(LogicComponentViewModel viewModel)
         {
             simulation.DestroyComponent(viewModel);
+        }
+
+        public void DestroySelectComponents()
+        {
+            foreach (var item in simulation.Components.Where(x => x.IsSelect).ToArray())
+            {
+                simulation.DestroyComponent(item);
+            }
         }
 
         public void CreateConnect(LogicConnectorViewModel connectorA, LogicConnectorViewModel connectorB, List<Point> points)
@@ -52,20 +68,8 @@ namespace WDL.Gameplay.ViewModel
 
     public class LogicSimulationViewModel
     {
-        private class ViewModelStore
-        {
-            public LogicComponentViewModel Component { get; }
-            public Dictionary<LogicConnector, LogicConnectorViewModel> ConnectorMap { get; }
-
-            public ViewModelStore(LogicComponentViewModel component)
-            {
-                Component = component;
-                ConnectorMap = new Dictionary<LogicConnector, LogicConnectorViewModel>();
-            }
-        }
-
         private LogicSimulation simulation;
-        private Dictionary<LogicComponent, ViewModelStore> componentsMap;
+        private Dictionary<LogicComponent, LogicComponentViewModel> componentsMap;
         private ObservableList<LogicComponentViewModel> components;
         private Dictionary<LogicConnection, LogicConnectionViewModel> connectionsMap;
         private ObservableList<LogicConnectionViewModel> connections;
@@ -78,7 +82,7 @@ namespace WDL.Gameplay.ViewModel
         {
             this.simulation = simulation;
 
-            componentsMap = new Dictionary<LogicComponent, ViewModelStore>();
+            componentsMap = new Dictionary<LogicComponent, LogicComponentViewModel>();
             components = new ObservableList<LogicComponentViewModel>();
             connectionsMap = new Dictionary<LogicConnection, LogicConnectionViewModel>();
             connections = new ObservableList<LogicConnectionViewModel>();
@@ -113,47 +117,22 @@ namespace WDL.Gameplay.ViewModel
         private void Add(LogicComponent component)
         {
             LogicComponentViewModel viewModel = new LogicComponentViewModel(component);
-            ViewModelStore store = new ViewModelStore(viewModel);
-            for (int i = 0; i < component.InputCount; i++)
-            {
-                LogicConnector connector = component.GetInputFromIndex(i);
-                LogicConnectorViewModel connectorViewModel = new LogicConnectorViewModel(viewModel, connector, $"In{i}");
-                viewModel.Connectors.Add(connectorViewModel);
-                store.ConnectorMap.Add(connector, connectorViewModel);
-            }
-
-            for (int i = 0; i < component.OutputCount; i++)
-            {
-                LogicConnector connector = component.GetOutputFromIndex(i);
-                LogicConnectorViewModel connectorViewModel = new LogicConnectorViewModel(viewModel, connector, $"Out{i}");
-                viewModel.Connectors.Add(connectorViewModel);
-                store.ConnectorMap.Add(connector, connectorViewModel);
-            }
-
-            foreach (var item in viewModel.Connectors)
-            {
-                if (viewModel.Description.Connectors.TryGetValue(item.Id, out string name))
-                {
-                    item.Name = name;
-                }
-            }
-
             components.Add(viewModel);
-            componentsMap.Add(component, store);
+            componentsMap.Add(component, viewModel);
         }
 
         private void Remove(LogicComponent component)
         {
-            if (componentsMap.Remove(component, out ViewModelStore store))
+            if (componentsMap.Remove(component, out LogicComponentViewModel viewModel))
             {
-                components.Remove(store.Component);
+                components.Remove(viewModel);
             }
         }
 
         private void Add(LogicConnection connection)
         {
-            LogicConnectorViewModel output = componentsMap[connection.Output.Component].ConnectorMap[connection.Output];
-            LogicConnectorViewModel input = componentsMap[connection.Input.Component].ConnectorMap[connection.Input];
+            LogicConnectorViewModel output = componentsMap[connection.Output.Component].GetConnector(connection.Output.Id);
+            LogicConnectorViewModel input = componentsMap[connection.Input.Component].GetConnector(connection.Input.Id);
             LogicConnectionViewModel viewModel = new LogicConnectionViewModel(connection, output, input);
             connections.Add(viewModel);
             connectionsMap.Add(connection, viewModel);
@@ -167,9 +146,9 @@ namespace WDL.Gameplay.ViewModel
             }
         }
 
-        public void CreateComponent(LogicComponentDescription description)
+        public void CreateComponent(LogicComponentDescription description, Point position)
         {
-            simulation.CreateComponent(description);
+            simulation.CreateComponent(description, position);
         }
 
         public void DestroyComponent(LogicComponentViewModel viewModel)

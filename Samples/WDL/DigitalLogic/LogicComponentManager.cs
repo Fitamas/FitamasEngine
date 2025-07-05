@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using ObservableCollections;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using WDL.DigitalLogic.Serialization;
 
@@ -12,7 +13,7 @@ namespace WDL.DigitalLogic
     public class LogicComponentManager
     {
         public static readonly string RootDirectory = Path.Combine(Application.DataPath, "Saves");
-        public const string FileExtension = ".lc";
+        public const string FileExtension = "lc";
 
         private ObservableList<LogicComponentDescription> components;
 
@@ -108,7 +109,7 @@ namespace WDL.DigitalLogic
                 return;
             }
 
-            string contentPath = Path.Combine(RootDirectory, description.FullName) + FileExtension;
+            string contentPath = Path.ChangeExtension(Path.Combine(RootDirectory, description.FullName), FileExtension);
 
             Directory.CreateDirectory(Path.GetDirectoryName(contentPath));
 
@@ -128,7 +129,7 @@ namespace WDL.DigitalLogic
                 return;
             }
 
-            string filter = "*" + FileExtension;
+            string filter = "*." + FileExtension;
             string[] files = Directory.GetFiles(RootDirectory, filter, SearchOption.AllDirectories);
 
             foreach (string file in files)
@@ -161,27 +162,19 @@ namespace WDL.DigitalLogic
             }
         }
 
-        //public void Import(string path)
-        //{
-        //    string target;
+        public void Import(IEnumerable<string> paths)
+        {
+            foreach (string path in paths)
+            {
+                string resultPath = Path.Combine(RootDirectory, Path.GetFileName(path));
+                if (File.Exists(path) && !File.Exists(resultPath))
+                {
+                    File.Copy(path, resultPath, true);
+                }
+            }
 
-        //    if (File.Exists(path) || Directory.Exists(path))
-        //    {
-        //        target = Path.Combine(RootDirectory, Path.GetFileName(path));
-        //        Directory.CreateDirectory(target);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("File or directory not exists");
-        //        return;
-        //    }
-
-        //    Debug.Log("Copy files from: " + path + " to: " + target);
-        //    CopyFilesRecursively(path, target);
-
-        //    Debug.Log("Import");
-        //    LoadAll();
-        //}
+            LoadAll();
+        }
 
         //private static void CopyFilesRecursively(string sourcePath, string targetPath)
         //{

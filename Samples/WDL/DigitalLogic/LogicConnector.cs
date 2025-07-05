@@ -8,14 +8,15 @@ namespace WDL.DigitalLogic
 {
     public abstract class LogicConnector
     {
-        private int id;
+        private LogicConnectorData data;
 
-        public int Id => id;
+        public int Id => data.Id;
+        public string Name => data.Name;
         public LogicComponent Component { get; }
 
-        public LogicConnector( int id, LogicComponent component)
+        public LogicConnector(LogicConnectorData data, LogicComponent component)
         {
-            this.id = id;
+            this.data = data;
             Component = component;
         }
 
@@ -47,7 +48,7 @@ namespace WDL.DigitalLogic
             }
         }
 
-        public LogicConnectorInput(int id, LogicComponent component) : base(id, component)
+        public LogicConnectorInput(LogicConnectorData data, LogicComponent component) : base(data, component)
         {
 
         }
@@ -82,7 +83,7 @@ namespace WDL.DigitalLogic
     {
         private List<LogicConnection> connections;
 
-        public LogicConnectorOutput(int id, LogicComponent component) : base(id, component)
+        public LogicConnectorOutput(LogicConnectorData data, LogicComponent component) : base(data, component)
         {
             connections = new List<LogicConnection>();
         }

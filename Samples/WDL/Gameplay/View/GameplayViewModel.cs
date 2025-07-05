@@ -1,10 +1,13 @@
 ﻿using Fitamas;
 using Fitamas.MVVM;
+using Microsoft.Xna.Framework.Input;
 using ObservableCollections;
 using R3;
+using System.Collections;
+using System.Collections.Generic;
 using WDL.DigitalLogic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class GameplayViewModel : IViewModel
     {
@@ -33,6 +36,11 @@ namespace WDL.Gameplay.ViewModel
                     simulation.Value = null;
                 }
             });
+        }
+
+        public LogicComponentViewModel CreateComponent(LogicComponentDescription description)
+        {
+            return new LogicComponentViewModel(description.CreateComponent(logicSystem.Manager, new LogicComponentData()));
         }
 
         public void CreateSimulation(LogicComponentDescription description)
@@ -69,6 +77,11 @@ namespace WDL.Gameplay.ViewModel
         public void Remove(LogicComponentDescription description)
         {
             logicSystem.Manager.Remove(description);
+        }
+
+        public void Import(IEnumerable<string> paths)
+        {
+            logicSystem.Manager.Import(paths);
         }
     }
 }

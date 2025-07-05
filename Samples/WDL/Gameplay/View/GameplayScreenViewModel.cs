@@ -1,16 +1,19 @@
+using Fitamas.Events;
 using Fitamas.UserInterface.ViewModel;
-using System;
-using System.ComponentModel;
-using WDL.DigitalLogic;
-using WDL.Gameplay.ViewModel;
-using R3;
 using ObservableCollections;
+using R3;
+using System;
+using System.Collections.Generic;
+using WDL.DigitalLogic;
+using WDL.Gameplay.View;
 
 public class GameplayScreenViewModel : GUIWindowViewModel
 {
     private GUIGameblayManager manager;
     private GameplayViewModel gameplay;
     private ReactiveProperty<LogicSimulationWindowViewModel> simulation;
+
+    public MonoAction<LogicComponentDescription> OnSelectComponent;
 
     public override GUIWindowType Type => GUIWindowTypes.GameplayScreen;
     public IObservableCollection<LogicComponentDescription> ComponentDescriptions => gameplay.ComponentDescriptions;
@@ -50,6 +53,11 @@ public class GameplayScreenViewModel : GUIWindowViewModel
         manager.OpenSimulation(viewModel);
     }
 
+    public void OpenDescription()
+    {
+        OpenDescription(Simulation.CurrentValue.Description);
+    }
+
     public void OpenDescription(LogicComponentDescription description)
     {
         if (description.IsBase)
@@ -58,6 +66,11 @@ public class GameplayScreenViewModel : GUIWindowViewModel
         }
 
         manager.OpenCreateDescription(description);
+    }
+
+    public LogicComponentViewModel CreateComponent(LogicComponentDescription description)
+    {
+        return gameplay.CreateComponent(description);
     }
 
     public void CreateSimulation()
@@ -83,5 +96,15 @@ public class GameplayScreenViewModel : GUIWindowViewModel
     public void SaveProject()
     {
         gameplay.SaveProject();
+    }
+
+    public void SelectComponent(LogicComponentDescription description)
+    {
+        OnSelectComponent.Invoke(description);
+    }
+
+    public void Import(IEnumerable<string> paths)
+    {
+        gameplay.Import(paths);
     }
 }

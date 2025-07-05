@@ -1,5 +1,6 @@
 ﻿using Fitamas.Input;
 using Fitamas.Core;
+using Fitamas.ECS;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -9,19 +10,11 @@ namespace Fitamas.Samples.HelloWorld
 {
     public class HelloWorldGame : GameEngine
     {
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-
-            GUIDebug.Active = true;
-
-            FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
-            ResourceDictionary.DefaultResources[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
-        }
-
         protected override void Initialize()
         {
             base.Initialize();
+
+            GameWorld.CreateMainCamera();
 
             GUISystem system = MainContainer.Resolve<GUISystem>(ApplicationKey.GUISystem);
 
@@ -47,8 +40,8 @@ namespace Fitamas.Samples.HelloWorld
             stack.Pivot = new Vector2(0, 0);
             system.AddComponent(stack);
 
-            textBlock = GUI.CreateTextBlock(Point.Zero, "Enable button:");
-            stack.AddChild(textBlock);
+            GUITextBlock textBlock1 = GUI.CreateTextBlock(Point.Zero, "Enable button:");
+            stack.AddChild(textBlock1);
 
             GUICheckBox checkBox = GUI.CreateCheckBox(Point.Zero);
             checkBox.SetValue(GUICheckBox.ValueProperty, button.Interacteble);
@@ -126,14 +119,28 @@ namespace Fitamas.Samples.HelloWorld
 
             CreateWindow();
 
+            GUIPopup popup1 = new GUIPopup();
+            popup1.PlacementMode = GUIPlacementMode.Mouse;
+            system.AddComponent(popup1);
+
+            GUIWindow window1 = new GUIWindow();
+            //window1.LocalSize = new Point(200, 200);
+            popup1.Window = window1;
+            popup1.AddChild(window1);
+
+            GUIImage image1 = new GUIImage();
+            image1.LocalSize = new Point(200, 200);
+            window1.AddChild(image1);
+
+
             GUIPopup popup = new GUIPopup();
             system.AddComponent(popup);
 
             GUIContextMenu contextMenu = GUI.CreateContextMenu();
             contextMenu.AddItem("Create window");
-            contextMenu.AddItem("Test_111111");
-            contextMenu.AddItem("Test_222");
-            contextMenu.AddItem("Test_3");
+            contextMenu.AddItem("Message box");
+            contextMenu.AddItem("popup");
+            contextMenu.AddItem("HI");
             contextMenu.OnSelectItem.AddListener((m, a) =>
             {
                 if (a.Index == 0)
@@ -143,6 +150,14 @@ namespace Fitamas.Samples.HelloWorld
                 else if (a.Index == 1)
                 {
                     GUIMessageBox.Show("Hi world!", string.Empty, GUIMessageBoxType.OK, null);
+                }
+                else if (a.Index == 2)
+                {
+                    popup1.IsOpen = true;
+                }
+                else if (a.Index == 3)
+                {
+                    Debug.Log("HI!!!");
                 }
             });
             popup.Window = contextMenu;
@@ -159,6 +174,16 @@ namespace Fitamas.Samples.HelloWorld
 
                 return window;
             }
+        }
+
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+
+            GUIDebug.Active = true;
+
+            FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
+            ResourceDictionary.DefaultResources[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
         }
     }
 }

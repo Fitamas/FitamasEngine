@@ -268,7 +268,7 @@ namespace Fitamas.UserInterface.Components
                             Point linePosition = TextBlock.TextPostion + new Point(indent, lineCount * lineHeight);
 
                             Render.Begin(context.Mask);
-                            Render.FillRectangle(linePosition, lineSize, SelectColor);
+                            Render.FillRectangle(linePosition, lineSize, SelectColor, context.Alpha);
                             Render.End();
                         }
 
@@ -302,7 +302,7 @@ namespace Fitamas.UserInterface.Components
                 Point caretPosition = TextBlock.TextPostion + new Point(stringX + (int)font.Spacing / 2 - caretSize.X / 2, stringY);
 
                 Render.Begin(context.Mask);
-                Render.FillRectangle(caretPosition, caretSize, CaretColor);
+                Render.FillRectangle(caretPosition, caretSize, CaretColor, context.Alpha);
                 Render.End();
             }
         }
@@ -316,7 +316,12 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver && !IsFocused)
             {
+                System.Mouse.MouseCapture = this;
                 Focus();
+            }
+            else if (!IsMouseOver && IsFocused)
+            {
+                Unfocus();
             }
             else
             {

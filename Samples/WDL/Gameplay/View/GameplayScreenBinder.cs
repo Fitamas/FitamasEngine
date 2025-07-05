@@ -1,19 +1,27 @@
 ﻿using Fitamas;
-using Fitamas.MVVM;
+using Fitamas.Core;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.Components;
+using Fitamas.UserInterface.Components.NodeEditor;
 using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
-using ObservableCollections;
 using R3;
 using System;
+using System.IO;
+using WDL.DigitalLogic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class GameplayScreenBinder : GUIWindowBinder<GameplayScreenViewModel>
     {
+        private GUIPopup ghostPopup;
+        private GUINode ghostComponent;
+        private GameplayScreenViewModel viewModel;
+        private LogicComponentDescription description;
+
         protected override IDisposable OnBind(GameplayScreenViewModel viewModel)
         {
+            this.viewModel = viewModel;
             SetAlignment(GUIAlignment.Stretch);
 
             //TOOLBAR
@@ -41,7 +49,7 @@ namespace WDL.Gameplay.ViewModel
                     {
                         if (res == GUIMessageBoxResult.Yes)
                         {
-                            viewModel.OpenDescription(viewModel.Simulation.CurrentValue.Description);
+                            viewModel.OpenDescription();
                         }
                     });
                 }
@@ -61,7 +69,7 @@ namespace WDL.Gameplay.ViewModel
                     {
                         if (res == GUIMessageBoxResult.Yes)
                         {
-                            viewModel.OpenDescription(viewModel.Simulation.CurrentValue.Description);
+                            viewModel.OpenDescription();
                         }
                         else
                         {
@@ -76,14 +84,63 @@ namespace WDL.Gameplay.ViewModel
             });
             stack.AddChild(button1);
 
-            GUIButton button3 = GUI.CreateButton(new Point(0, 100), "TOOL3", new Point(100, 100));
+            GUIButton button3 = GUI.CreateButton(new Point(0, 100), "Import", new Point(100, 100));
             button3.OnClicked.AddListener(b => 
             { 
-                Debug.Log(b); 
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.DefaultPath = LogicComponentManager.RootDirectory;
+                dialog.Filter = LogicComponentManager.FileExtension;
+                dialog.Multiselect = true;
+                dialog.OnCompleted += d =>
+                {
+                    viewModel.Import(d.Paths);
+                };
+                dialog.Show();
             });
             stack.AddChild(button3);
 
+            viewModel.OnSelectComponent += value =>
+            {
+                if (ghostPopup != null)
+                {
+                    ghostPopup.IsOpen = true;
+                    description = value;
+
+                    if (ghostComponent != null)
+                    {
+                        ghostComponent.Destroy();
+                    }
+
+                    ghostComponent = GUINodeUtils.CreateNode(new Point(), description.TypeId);
+                    GUIComponentUtils.Process(ghostComponent, description);
+                    ghostComponent.Interacteble = false;
+                    ghostComponent.Alpha = 0.5f;
+                    ghostPopup.Window.AddChild(ghostComponent);
+                }
+            };
+
             return null;
+        }
+
+        protected override void OnInit()
+        {
+            base.OnInit();
+
+            ghostPopup = new GUIPopup();
+            ghostPopup.PlacementMode = GUIPlacementMode.Mouse;
+            ghostPopup.OnClose.AddListener(s =>
+            {
+                if (viewModel.Simulation.CurrentValue != null)
+                {
+                    viewModel.Simulation.CurrentValue.CreateComponent(description, ghostPopup.Window.LocalPosition);
+                }
+            });
+            System.AddComponent(ghostPopup);
+
+            GUIWindow window1 = new GUIWindow();
+            //window1.LocalSize = new Point(200, 200);
+            ghostPopup.Window = window1;
+            ghostPopup.AddChild(window1);
         }
     }
 }

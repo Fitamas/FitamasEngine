@@ -1,6 +1,5 @@
 ﻿using System;
 using Fitamas.Core;
-using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.ViewModel;
 
 namespace WDL.DigitalLogic

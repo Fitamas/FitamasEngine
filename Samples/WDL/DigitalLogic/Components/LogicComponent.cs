@@ -25,18 +25,15 @@ namespace WDL.DigitalLogic.Components
             Position = new ReactiveProperty<Point>(Data.Position);
             Position.Subscribe(position => Data.Position = position);
 
-            int index = 0;
             input = new LogicConnectorInput[inputCount];
             for (int i = 0; i < inputCount; i++)
             {
-                input[i] = new LogicConnectorInput(index, this);
-                index++;
+                input[i] = new LogicConnectorInput(description.InputConnectors[i], this);
             }
             output = new LogicConnectorOutput[outputCount];
             for (int i = 0; i < outputCount; i++)
             {
-                output[i] = new LogicConnectorOutput(index, this);
-                index++;
+                output[i] = new LogicConnectorOutput(description.OutputConnectors[i], this);
             }
         }
 

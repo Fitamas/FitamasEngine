@@ -188,7 +188,7 @@ namespace Fitamas.UserInterface.Components
                 switch (ImageType)
                 {
                     case GUIImageType.Simple:
-                        Render.Draw(Sprite, Color, rectangle, ImageEffect);
+                        Render.Draw(Sprite, Color, rectangle, ImageEffect, context.Alpha);
                         break;
                     case GUIImageType.Sliced: //TODO
                         break;
@@ -196,13 +196,13 @@ namespace Fitamas.UserInterface.Components
                         break;
                     case GUIImageType.Filled:
                         Rectangle mask = GetFilledMask(rectangle);
-                        Render.Draw(Sprite, Color, rectangle, ImageEffect);
+                        Render.Draw(Sprite, Color, rectangle, ImageEffect, context.Alpha);
                         break;
                 }
             }
             else
             {
-                Render.Draw(Texture2DHelper.DefaultTexture, Rectangle, Color);
+                Render.Draw(Texture2DHelper.DefaultTexture, Rectangle, Color, context.Alpha);
             }
 
             Render.End();

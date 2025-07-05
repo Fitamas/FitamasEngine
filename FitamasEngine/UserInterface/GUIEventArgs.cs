@@ -6,6 +6,7 @@ namespace Fitamas.UserInterface
     {
         public RoutedEvent RoutedEvent { get; set; }
         public object Source { get; set; }
+        public bool Handled { get; set; }
 
         public GUIEventArgs(RoutedEvent routedEvent, object source)
         {

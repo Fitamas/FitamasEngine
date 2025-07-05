@@ -11,10 +11,12 @@ namespace Fitamas.UserInterface.ViewModel
         public abstract GUIWindowType Type { get; }
 
         public Observable<GUIWindowViewModel> CloseRequested => closeRequested;
+        public ReactiveProperty<bool> IsFocus { get; }
 
         public GUIWindowViewModel()
         {
             closeRequested = new Subject<GUIWindowViewModel>();
+            IsFocus = new ReactiveProperty<bool>();
         }
 
         public void RequestClose()

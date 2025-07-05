@@ -14,11 +14,12 @@ namespace Fitamas.UserInterface
         private RasterizerState rasterState;
         private Rectangle clipRectangle;
 
+        public Rectangle ClipRectangle => clipRectangle;
+
         public GUIRenderBatch(GraphicsDevice graphicsDevice)
         {
             this.graphicsDevice = graphicsDevice;
             effect = new SpriteEffect(graphicsDevice);
-            //effect.VertexColorEnabled = true;
             spriteBatch = new SpriteBatch(graphicsDevice);
 
             rasterState = new RasterizerState();
@@ -38,17 +39,8 @@ namespace Fitamas.UserInterface
                 this.clipRectangle = clipRectangle;
             }
 
-
-            //effect.View = Camera.Current.ViewportScaleMatrix;
-            //effect.Projection = Camera.Current.GetProjectionMatrix();
-            //effect.CurrentTechnique.Passes[0].Apply();
-
-            //spriteBatch.
-
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointWrap,
                               DepthStencilState.DepthRead, rasterState);
-
-            //FillRectangle(new Point(50, 50), new Point(200, 200), Color.White);
         }
 
         public void End()
@@ -56,31 +48,35 @@ namespace Fitamas.UserInterface
             spriteBatch.End();
         }
 
-        public void FillRectangle(Point position, Point scale, Color color)
+        public void FillRectangle(Point position, Point scale, Color color, float alpha)
         {
             Rectangle rectangle = new Rectangle(position, scale);
 
-            Draw(Texture2DHelper.DefaultTexture, rectangle, color);
+            Draw(Texture2DHelper.DefaultTexture, rectangle, color, alpha);
         }
 
-        public void Draw(Texture2D texture, Rectangle rectangle, Color color)
+        public void Draw(Texture2D texture, Rectangle rectangle, Color color, float alpha)
         {
-            Draw(texture, rectangle, color, 0);
+            Draw(texture, rectangle, color, 0, alpha);
         }
 
-        public void Draw(Texture2D texture, Rectangle rectangle, Color color, float rotation)
+        public void Draw(Texture2D texture, Rectangle rectangle, Color color, float rotation, float alpha)
         {
+            color.A = (byte)(alpha * color.A);
             spriteBatch.Draw(texture, rectangle, null, color, rotation, Vector2.Zero, SpriteEffects.None, 1);
         }
 
-        public void DrawString(SpriteFont font, string text, Point position, Color color, float scale)
+        public void DrawString(SpriteFont font, string text, Point position, Color color, float scale, float alpha)
         {
+            color.A = (byte)(alpha * color.A);
             Vector2 origin = font.MeasureString(text);
             spriteBatch.DrawString(font, text, position.ToVector2(), color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 1);
         }
 
-        public void Draw(Sprite sprite, Color color, Rectangle rectangle, GUIImageEffect effect)
+        public void Draw(Sprite sprite, Color color, Rectangle rectangle, GUIImageEffect effect, float alpha)
         {
+            color.A = (byte)(alpha * color.A);
+
             Vector2 position = rectangle.Location.ToVector2();
             Vector2 sourceSize = sprite.Bounds.Size.ToVector2();
             Vector2 scale = rectangle.Size.ToVector2() / sourceSize;

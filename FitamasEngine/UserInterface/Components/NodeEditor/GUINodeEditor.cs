@@ -56,6 +56,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
     {
         Create,
         Moved,
+        Select,
+        Unselect,
         Destroy
     }
 
@@ -71,7 +73,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         }
     }
 
-    public class GUINodeEditor : GUIItemsControl, IMouseEvent, IDragMouseEvent, IKeyboardEvent
+    public class GUINodeEditor : GUIItemsControl, IMouseEvent, IDragMouseEvent
     {
         private List<GUINode> nodes = new List<GUINode>();
         private List<GUIWire> wires = new List<GUIWire>();
@@ -87,7 +89,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public MonoEvent<GUICreateConnectionEventArgs> OnCreateConnection = new MonoEvent<GUICreateConnectionEventArgs>();
 
-        public MonoEvent<GUIKeyboardEventArgs> OnKeybordEvent = new MonoEvent<GUIKeyboardEventArgs>();
         public MonoEvent<GUINodeEditorEventArgs> OnMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
         public MonoEvent<GUINodeEditorEventArgs> OnPinInteractMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
         public MonoEvent<GUINodeEditorEventArgs> OnNodeInteractMouseEvent = new MonoEvent<GUINodeEditorEventArgs>();
@@ -262,21 +263,6 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public void OnEndDragMouse(GUIMouseEventArgs mouse)
         {
             InvokeMouseEvent(mouse, GUINodeEditorEventType.EndDrag);
-        }
-
-        public void OnKeyDown(GUIKeyboardEventArgs args)
-        {
-            OnKeybordEvent.Invoke(args);
-        }
-
-        public void OnKeyUP(GUIKeyboardEventArgs args)
-        {
-
-        }
-
-        public void OnKey(GUIKeyboardEventArgs args)
-        {
-
         }
 
         private void InvokeMouseEvent(GUIMouseEventArgs mouse, GUINodeEditorEventType eventType)

@@ -3,16 +3,20 @@ using Microsoft.Xna.Framework;
 using R3;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WDL.DigitalLogic;
 using WDL.DigitalLogic.Components;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicComponentViewModel : IViewModel
     {
         private LogicComponent component;
+        private Dictionary<int, LogicConnectorViewModel> connectorMap;
+        public List<LogicConnectorViewModel> connectors;
 
-        public List<LogicConnectorViewModel> Connectors { get; }
+        public IReadOnlyList<LogicConnectorViewModel> Connectors => connectors;
+        public bool IsSelect { get; set; }
 
         public string Name => component.Description.TypeId;
         public int ThemeId => component.Description.ThemeId;
@@ -23,7 +27,29 @@ namespace WDL.Gameplay.ViewModel
         public LogicComponentViewModel(LogicComponent component)
         {
             this.component = component;
-            Connectors = new List<LogicConnectorViewModel>();
+            connectors = new List<LogicConnectorViewModel>();
+            connectorMap = new Dictionary<int, LogicConnectorViewModel>();
+
+            for (int i = 0; i < component.InputCount; i++)
+            {
+                LogicConnector connector = component.GetInputFromIndex(i);
+                LogicConnectorViewModel connectorViewModel = new LogicConnectorViewModel(this, connector);
+                connectors.Add(connectorViewModel);
+                connectorMap.Add(connector.Id, connectorViewModel);
+            }
+
+            for (int i = 0; i < component.OutputCount; i++)
+            {
+                LogicConnector connector = component.GetOutputFromIndex(i);
+                LogicConnectorViewModel connectorViewModel = new LogicConnectorViewModel(this, connector);
+                connectors.Add(connectorViewModel);
+                connectorMap.Add(connector.Id, connectorViewModel);
+            }
+        }
+
+        public LogicConnectorViewModel GetConnector(int id)
+        {
+            return connectorMap[id];
         }
 
         public bool TrySetSignalValue(bool signal)

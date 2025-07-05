@@ -3,6 +3,7 @@ using R3;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using WDL.DigitalLogic.Components;
 
 namespace WDL.DigitalLogic
@@ -15,11 +16,13 @@ namespace WDL.DigitalLogic
         public bool IsBase;
         public int ComponentCount;
         public int ConnectionCount;
+        public int ConnectorCount;
 
         public List<LogicComponentData> Components = new List<LogicComponentData>();
         public List<LogicConnectionData> Connections = new List<LogicConnectionData>();
 
-        public Dictionary<int, string> Connectors = new Dictionary<int, string>();
+        public List<LogicConnectorData> InputConnectors = new List<LogicConnectorData>();
+        public List<LogicConnectorData> OutputConnectors = new List<LogicConnectorData>();
 
         public Func<LogicComponentManager, LogicComponentDescription, LogicComponentData, LogicComponent> CreateFunc { get; set; }
 

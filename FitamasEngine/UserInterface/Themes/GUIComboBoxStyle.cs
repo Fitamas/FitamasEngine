@@ -34,7 +34,7 @@ namespace Fitamas.UserInterface.Themes
             TriggerEvent triggerEvent = new TriggerEvent(GUIComboBox.OnSelectItemEvent);
             triggerEvent.Actions.Add(new HandlerAction() { Delegate = (GUIComboBox comboBox, ComboBoxEventArgs args) =>
             {
-                    comboBox.SetValue(GUITextBlock.TextProperty, args.Item); //TODO
+                    comboBox.SetValue(GUITextBlock.TextProperty, args.Item);
             }});
             style.TriggerEvents.Add(triggerEvent);
 

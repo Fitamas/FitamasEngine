@@ -45,7 +45,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver)
             {
-                if (Interacteble && mouse.Button == MouseButton.Left)
+                if (mouse.Button == MouseButton.Left)
                 {
                     IsPressed = true;
                     Focus();

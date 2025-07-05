@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Fitamas.Graphics;
 using Fitamas.Audio;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public static class GUIUtils
     {

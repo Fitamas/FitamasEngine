@@ -11,12 +11,15 @@ namespace WDL.DigitalLogic
             TypeId = "And",
             Namespace = "Default",
             IsBase = true,
-            Connectors =
+            InputConnectors =
             {
-                { 0, "InA" },
-                { 1, "InB" },
-                { 2, "Out" },
-            }
+                new LogicConnectorData(0, 0, "InA"),
+                new LogicConnectorData(1, 0, "InB"),
+            },
+            OutputConnectors =
+            {
+                new LogicConnectorData(2, 0, "Out"),
+            },
         };
 
         public static readonly LogicComponentDescription Not = new LogicComponentDescription((manager, descriptoin, data) => new LogicNot(descriptoin, data))
@@ -24,11 +27,14 @@ namespace WDL.DigitalLogic
             TypeId = "Not",
             Namespace = "Default",
             IsBase = true,
-            Connectors =
+            InputConnectors =
             {
-                { 0, "In" },
-                { 1, "Out" },
-            }
+                new LogicConnectorData(0, 0, "In"),
+            },
+            OutputConnectors =
+            {
+                new LogicConnectorData(1, 0, "Out"),
+            },
         };
 
         public static readonly LogicComponentDescription Input = new LogicComponentDescription((manager, descriptoin, data) => new LogicInput(descriptoin, data))
@@ -36,10 +42,10 @@ namespace WDL.DigitalLogic
             TypeId = "Input",
             Namespace = "Default",
             IsBase = true,
-            Connectors =
+            OutputConnectors =
             {
-                { 0, "Out" },
-            }
+                new LogicConnectorData(0, 0, "Out"),
+            },
         };
 
         public static readonly LogicComponentDescription Output = new LogicComponentDescription((manager, descriptoin, data) => new LogicOutput(descriptoin, data))
@@ -47,10 +53,10 @@ namespace WDL.DigitalLogic
             TypeId = "Output",
             Namespace = "Default",
             IsBase = true,
-            Connectors =
+            InputConnectors =
             {
-                { 0, "In" },
-            }
+                new LogicConnectorData(0, 0, "In"),
+            },
         };
     }
 }

@@ -4,7 +4,7 @@ using Fitamas.MVVM;
 using Fitamas.UserInterface.ViewModel;
 using WDL.DigitalLogic;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class GUIGameblayManager : GUIManager
     {

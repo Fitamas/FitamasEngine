@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Fitamas.Audio;
+﻿using Fitamas.Audio;
 using Fitamas.Core;
-using Fitamas.Events;
 using Fitamas.UserInterface.Components;
+using System;
+using System.Collections.Generic;
 
 namespace Fitamas.UserInterface
 {
@@ -44,27 +43,40 @@ namespace Fitamas.UserInterface
 
     public class AudioSourceAction : DependencyObject, IAction
     {
-        public static readonly DependencyProperty<AudioClip> CLipProperty = new DependencyProperty<AudioClip>();
+        public static readonly DependencyProperty<AudioClip> ClipProperty = new DependencyProperty<AudioClip>();
 
-        public AudioClip CLip
+        private AudioSourceBusInstance sourceInstance;
+
+        public AudioSourceBusInstance SourceInstance => sourceInstance;
+
+        public AudioClip Clip
         {
             get
             {
-                return GetValue(CLipProperty);
+                return GetValue(ClipProperty);
             }
             set
             {
-                SetValue(CLipProperty, value);
+                SetValue(ClipProperty, value);
             }
+        }
+
+        public AudioSourceAction()
+        {
+            sourceInstance = new AudioSourceBusInstance(GameEngine.Instance.AudioManager);
+            sourceInstance.Play();
         }
 
         public void Execute(GUIComponent sender, GUIEventArgs args)
         {
-            AudioClip clip = CLip;
-            if (clip != null)
+            if (Clip == null)
             {
-                GameEngine.Instance.AudioManager.Play(clip);
+                return;
             }
+
+            AudioClipInstance clipInstance = new AudioClipInstance(GameEngine.Instance.AudioManager, Clip);
+            clipInstance.Source = sourceInstance;
+            clipInstance.Play();
         }
     }
 

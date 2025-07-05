@@ -2,6 +2,7 @@
 using Fitamas;
 using ObservableCollections;
 using WDL.DigitalLogic.Components;
+using Microsoft.Xna.Framework;
 
 namespace WDL.DigitalLogic
 {
@@ -13,6 +14,7 @@ namespace WDL.DigitalLogic
         private ObservableList<LogicConnection> connections;
         private ReactiveProperty<int> componentCount;
         private ReactiveProperty<int> connectionCount;
+        private ReactiveProperty<int> connectorCount;
 
         public LogicComponentDescription Description => description;
         public IObservableCollection<LogicComponent> Components => components;
@@ -29,6 +31,9 @@ namespace WDL.DigitalLogic
             connectionCount = new ReactiveProperty<int>(description.ConnectionCount);
             connectionCount.Subscribe(value => description.ConnectionCount = value);
 
+            connectorCount = new ReactiveProperty<int>(description.ConnectorCount);
+            connectorCount.Subscribe(value => description.ConnectorCount = value);
+
             components = new ObservableList<LogicComponent>();
             foreach (var item in description.Components)
             {
@@ -37,10 +42,30 @@ namespace WDL.DigitalLogic
             components.ObserveAdd().Subscribe(component =>
             {
                 description.Components.Add(component.Value.Data);
+
+                if (component.Value.Description == LogicComponents.Input)
+                {
+                    int id = connectorCount.Value++;
+                    description.InputConnectors.Add(new LogicConnectorData(id, component.Value.Id, $"In{id}"));
+                }
+                else if (component.Value.Description == LogicComponents.Output)
+                {
+                    int id = connectorCount.Value++;
+                    description.OutputConnectors.Add(new LogicConnectorData(id, component.Value.Id, $"Out{id}"));
+                }
             });
             components.ObserveRemove().Subscribe(component =>
             {
-                description.Components.Add(component.Value.Data);
+                description.Components.Remove(component.Value.Data);
+
+                if (component.Value.Description == LogicComponents.Input)
+                {
+                    description.InputConnectors.RemoveAll(x => x.ComponentID == component.Value.Id);
+                }
+                else if (component.Value.Description == LogicComponents.Output)
+                {
+                    description.OutputConnectors.RemoveAll(x => x.ComponentID == component.Value.Id);
+                }
             });
 
             connections = new ObservableList<LogicConnection>();
@@ -54,7 +79,7 @@ namespace WDL.DigitalLogic
             });
             connections.ObserveRemove().Subscribe(connector =>
             {
-                description.Connections.Add(connector.Value.Data);
+                description.Connections.Remove(connector.Value.Data);
             });
         }
 
@@ -190,11 +215,11 @@ namespace WDL.DigitalLogic
             connections.Remove(connection);
         }
 
-        public void CreateComponent(LogicComponentDescription description)
+        public LogicComponent CreateComponent(LogicComponentDescription description, Point position)
         {
             if (Description == description)
             {
-                return;
+                throw new System.Exception("simulation == description");
             }
 
             LogicComponentData data = new LogicComponentData()
@@ -203,8 +228,11 @@ namespace WDL.DigitalLogic
                 Id = componentCount.Value
             };
             LogicComponent component = description.CreateComponent(manager, data);
+            component.Position.Value = position;
             components.Add(component);
             componentCount.Value++;
+
+            return component;
         }
 
         public void DestroyComponent(int id)

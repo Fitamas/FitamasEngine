@@ -9,8 +9,30 @@ namespace Fitamas.UserInterface.Components
         private GUIWindow screen;
         private List<GUIWindow> windows;
         private GUIWindow messageBox;
+        private GUIPopup popup;
 
-        public GUIWindow PopupWindow { get; set; }
+        public GUIPopup Popup 
+        { 
+            get
+            {
+                return popup;
+            }
+            set
+            {
+                if (popup != value)
+                {
+                    if (popup != null)
+                    {
+                        popup.IsOpen = false;
+                    }
+                    popup = value;
+                    if (popup != null)
+                    {
+                        popup.IsOpen = true;
+                    }
+                }
+            }
+        }
 
         public GUIWindow Screen
         {
@@ -84,9 +106,9 @@ namespace Fitamas.UserInterface.Components
                 }
             }
 
-            if (PopupWindow != null)
+            if (Popup != null)
             {
-                PopupWindow.RaycastAll(point, result);
+                Popup.RaycastAll(point, result);
             }
         }
 
@@ -102,9 +124,9 @@ namespace Fitamas.UserInterface.Components
                 window.Draw(gameTime, context);
             }
 
-            if (PopupWindow != null)
+            if (Popup != null)
             {
-                PopupWindow.Draw(gameTime, context);
+                Popup.Draw(gameTime, context);
             }
 
             if (messageBox != null)
@@ -131,9 +153,9 @@ namespace Fitamas.UserInterface.Components
 
             windows.Remove(window);
 
-            if (PopupWindow == window && window.Parent is GUIPopup popup)
+            if (Popup != null && Popup.Window == window)
             {
-                popup.Destroy();
+                Popup.Destroy();
             }
         }
     }

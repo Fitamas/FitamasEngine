@@ -5,7 +5,7 @@ using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace WDL.Gameplay.ViewModel
+namespace WDL.Gameplay.View
 {
     public class LogicDescriptionWindowBinder : GUIWindowBinder<LogicDescriptionWindowViewModel>
     {
