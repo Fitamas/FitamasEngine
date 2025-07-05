@@ -37,9 +37,6 @@ namespace WDL
                 logicSimulationInputBinder.Bind(value);
             });
 
-            //MainContainer.RegisterInstance(new GameplayInputBinder(map));
-            //MainContainer.RegisterInstance(new LogicSimulationInputBinder());
-
             viewModel.CreateSimulation();
             viewModel.OpenComponents();
         }
