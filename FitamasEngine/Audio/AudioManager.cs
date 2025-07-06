@@ -39,8 +39,10 @@ namespace Fitamas.Audio
             Soloud.play3d(clip.Wav, position.X, position.Y, position.Z);
         }
 
-        public void Dispose()
+        protected override void Dispose(bool disposing)
         {
+            base.Dispose(disposing);
+
             if (!IsDisposed)
             {
                 IsDisposed = true;

@@ -12,30 +12,30 @@ namespace Fitamas.Scripting
 {
     public class ScriptingSystem : ILoadContentSystem
     {
-        readonly FileSystemWatcher watcher = new();
-        readonly string luaSrc;
+        //readonly FileSystemWatcher watcher = new();
+        //readonly string luaSrc;
 
-        Lua lua;
-        LuaFunction luaInitialize, luaLoadContent, luaUpdate, luaDraw;
+        //Lua lua;
+        //LuaFunction luaInitialize, luaLoadContent, luaUpdate, luaDraw;
 
-        public ScriptingSystem()
-        {
-            //luaSrc = Path.Combine(Directory.GetCurrentDirectory(), "Scripting\\Lua");
-            //ConfigureWatcher();
-        }
+        //public ScriptingSystem()
+        //{
+        //    //luaSrc = Path.Combine(Directory.GetCurrentDirectory(), "Scripting\\Lua");
+        //    //ConfigureWatcher();
+        //}
 
         public void Initialize(GameWorld world)
         {
-            try
-            {
-                lua?.Dispose();
-                lua = new();
-                lua.LoadCLRPackage();
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-            }
+            //try
+            //{
+            //    lua?.Dispose();
+            //    lua = new();
+            //    lua.LoadCLRPackage();
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.LogError(e);
+            //}
         }
 
         public void LoadContent(ContentManager content)
@@ -52,26 +52,26 @@ namespace Fitamas.Scripting
             //luaInitialize?.Call();
         }
 
-        void ConfigureWatcher()
-        {
-            watcher.Filter = "*.*";
-            watcher.Path = luaSrc;
-            watcher.EnableRaisingEvents = true;
-            watcher.NotifyFilter = NotifyFilters.LastWrite;
-            watcher.Created += WatcherHandler;
-            watcher.Deleted += WatcherHandler;
-            watcher.Renamed += WatcherHandler;
-            watcher.Changed += WatcherHandler;
-        }
+        //void ConfigureWatcher()
+        //{
+        //    watcher.Filter = "*.*";
+        //    watcher.Path = luaSrc;
+        //    watcher.EnableRaisingEvents = true;
+        //    watcher.NotifyFilter = NotifyFilters.LastWrite;
+        //    watcher.Created += WatcherHandler;
+        //    watcher.Deleted += WatcherHandler;
+        //    watcher.Renamed += WatcherHandler;
+        //    watcher.Changed += WatcherHandler;
+        //}
 
-        void WatcherHandler(object sender, FileSystemEventArgs e)
-        {
-            if (e.Name is null || File.GetAttributes(e.FullPath.TrimEnd('~'))
-                    .HasFlag(FileAttributes.Directory))
-                return;
+        //void WatcherHandler(object sender, FileSystemEventArgs e)
+        //{
+        //    if (e.Name is null || File.GetAttributes(e.FullPath.TrimEnd('~'))
+        //            .HasFlag(FileAttributes.Directory))
+        //        return;
 
-            //forceReload = true;
-        }
+        //    //forceReload = true;
+        //}
 
         public void Dispose()
         {

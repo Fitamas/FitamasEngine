@@ -39,7 +39,7 @@ namespace WDL.Gameplay.View
         private Dictionary<LogicConnectionViewModel, GUIWire> connectionToWire;
         private Dictionary<GUIWire, LogicConnectionViewModel> wireToConnection;
 
-        private GUIContextMenu editorContextMenu;
+        //private GUIContextMenu editorContextMenu;
         private GUIContextMenu nodeContextMenu;
         private GUIContextMenu wireContextMenu;
 

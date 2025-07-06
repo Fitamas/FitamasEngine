@@ -28,8 +28,8 @@ namespace Fitamas.Animation
         private AnimationLayerInfo layer;
         private Dictionary<string, AnimationState> states;
         private AnimationState currentState;
-        private AnimationState nextState;
-        private bool isTransition;
+        //private AnimationState nextState;
+        //private bool isTransition;
 
         public AnimationLayerState(Animator animator, AnimationLayerInfo layer)
         {
@@ -97,10 +97,10 @@ namespace Fitamas.Animation
             {
                 case AnimationBlendType.Blend1D: //TODO
                     throw new NotImplementedException();
-                    break;
+                    //break;
                 case AnimationBlendType.Blend2D: //TODO
                     throw new NotImplementedException();
-                    break;
+                    //break;
                 case AnimationBlendType.BlendDirect:
                     foreach (var state in animationStates)
                     {

@@ -127,7 +127,7 @@ namespace Fitamas.Graphics
 
             effect.View = Matrix.CreateLookAt(camPos, camLookAtVector, camUpVector);
             float aspectRatio = graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
-            float fieldOfView = MathHelper.PiOver4;
+            //float fieldOfView = MathHelper.PiOver4;
             float nearClip = 0.1f;
             float farClip = 200f;
 

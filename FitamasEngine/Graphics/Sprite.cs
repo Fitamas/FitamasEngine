@@ -19,24 +19,19 @@ namespace Fitamas.Graphics
     [AssetMenu(fileName: "NewSprite.sprite", title: "Sprite")]
     public class Sprite : MonoContentObject
     {
-        [SerializeField] private string name;
         [SerializeField] private Texture2D texture;
-        [SerializeField] private Rectangle bounds;
-        [SerializeField] private Rectangle border;
-        [SerializeField] private Rectangle[] rectangles;
 
         public int PixelInUnit = 32;
+        public Rectangle Bounds;
+        public Rectangle Border;
+        public Rectangle[] Rectangles;
 
-        public string Name => name;
         public Texture2D Texture => texture;
-        public int X => bounds.X;
-        public int Y => bounds.Y;
-        public int Width => bounds.Width;
-        public int Height => bounds.Height;
-        public Point Size => bounds.Size;
-        public Rectangle Bounds => bounds;
-        public Rectangle Border => border;
-        public Rectangle[] Rectangles => rectangles;
+        public int X => Bounds.X;
+        public int Y => Bounds.Y;
+        public int Width => Bounds.Width;
+        public int Height => Bounds.Height;
+        public Point Size => Bounds.Size;
         public int TextureWidth => texture.Width;
         public int TextureHeight => texture.Height;
 
@@ -45,24 +40,23 @@ namespace Fitamas.Graphics
 
         }
 
-        public Sprite(string name, Texture2D texture, Rectangle bounds, Rectangle[] rectangles)
+        public Sprite(string name, Texture2D texture, Rectangle bounds, Rectangle[] rectangles) : base(name)
         {
-            this.name = name;
             this.texture = texture;
-            this.bounds = bounds;
-            this.rectangles = rectangles;
+            Bounds = bounds;
+            Rectangles = rectangles;
         }
 
         public Sprite(Texture2D texture, Rectangle bounds) : this(texture.Name, texture, bounds, [])
         {
             this.texture = texture;
-            this.bounds = bounds;
+            Bounds = bounds;
         }
 
         public Sprite(Texture2D texture, Rectangle[] rectangles) : this(texture)
         {
             this.texture = texture;
-            this.rectangles = rectangles;
+            Rectangles = rectangles;
         }
 
         public Sprite(Texture2D texture) : this(texture.Name, texture, texture.Bounds, [])
