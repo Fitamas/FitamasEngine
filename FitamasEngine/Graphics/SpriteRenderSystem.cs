@@ -9,16 +9,18 @@ namespace Fitamas.Graphics
 {
     public class SpriteRenderSystem : EntityDrawSystem, IDrawGizmosSystem
     {
-        private GraphicsDevice graphics;
+        private GraphicsDevice graphicsDevice;
+        private Renderer renderer;
         private SpriteBatch spriteBatch;
         private AlphaTestEffect effect;
 
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<SpriteRender> spriteMapper;
 
-        public SpriteRenderSystem(GraphicsDevice graphicsDevice) : base(Aspect.All(typeof(Transform), typeof(SpriteRender)))
+        public SpriteRenderSystem(GraphicsDevice graphicsDevice, Renderer renderer) : base(Aspect.All(typeof(Transform), typeof(SpriteRender)))
         {
-            graphics = graphicsDevice;
+            this.graphicsDevice = graphicsDevice;
+            this.renderer = renderer;
 
             spriteBatch = new SpriteBatch(graphicsDevice);
             effect = new AlphaTestEffect(graphicsDevice);
@@ -37,19 +39,16 @@ namespace Fitamas.Graphics
                 return;
             }
 
-            effect.View = Camera.Current.GetViewMatrix();
-            effect.Projection = Camera.Current.GetProjectionMatrix();
-
             foreach (var entityId in ActiveEntities)
             {
                 Transform transform = transformMapper.Get(entityId);
                 SpriteRender spriteRender = spriteMapper.Get(entityId);
 
-                Render(transform, spriteRender);
+                Render(gameTime, transform, spriteRender);
             }
         }
 
-        public void Render(Transform transform, SpriteRender spriteRender)
+        public void Render(GameTime gameTime, Transform transform, SpriteRender spriteRender)
         {
             if (spriteRender.Sprite == null || spriteRender.Sprite.Texture == null)
             {
@@ -65,7 +64,38 @@ namespace Fitamas.Graphics
                                            spriteRender.RectangleIndex < sprite.Rectangles.Length ?
                                            sprite.Rectangles[spriteRender.RectangleIndex] : sprite.Bounds;
 
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend, SamplerState.PointWrap,
+            Effect effect;
+
+            if (spriteRender.Effect != null)
+            {
+                effect = spriteRender.Effect;
+                Matrix view = Camera.Current.GetViewMatrix();
+                Matrix projection = Camera.Current.GetProjectionMatrix();
+                Matrix.Multiply(ref view, ref projection, out var result);
+                effect.Parameters["WorldViewProj"]?.SetValue(result);
+                //effect.Parameters["Texture"]?.SetValue(sprite.Texture);
+                effect.Parameters["Time"]?.SetValue((float)gameTime.TotalGameTime.TotalSeconds);
+
+                //textureParam = base.Parameters["Texture"];
+                //diffuseColorParam = base.Parameters["DiffuseColor"];
+                //alphaTestParam = base.Parameters["AlphaTest"];
+
+                //TextureCube textureCube = new TextureCube(graphics, 80, false, SurfaceFormat.Color);
+
+                //textureCube.SetData(CubeMapFace.PositiveX, )
+
+                //Texture2D texture;
+                //texture.SetData()
+            }
+            else
+            {
+                effect = this.effect;
+                this.effect.Alpha = spriteRender.Alpha;
+                this.effect.View = Camera.Current.GetViewMatrix();
+                this.effect.Projection = Camera.Current.GetProjectionMatrix();
+            }
+
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointWrap,
                   DepthStencilState.Default, RasterizerState.CullNone, effect, Camera.Current.TranslationVirtualMatrix);
 
             spriteBatch.Draw(sprite, position, sourceRectangle, spriteRender.Color, angle, 

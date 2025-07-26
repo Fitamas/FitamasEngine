@@ -1,32 +1,41 @@
-﻿using Fitamas.ECS;
-using Fitamas.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Fitamas.Animation;
+using Fitamas.Audio;
 using Fitamas.Container;
-using Fitamas.Animation;
+using Fitamas.DebugTools;
+using Fitamas.ECS;
+using Fitamas.ECS.Transform2D;
+using Fitamas.Graphics;
+using Fitamas.Graphics.Lighting;
+using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.Input;
 using Fitamas.Physics;
 using Fitamas.Scene;
-using Fitamas.UserInterface;
-using Fitamas.Graphics.ViewportAdapters;
-using Fitamas.DebugTools;
-using Fitamas.Audio;
 using Fitamas.Tweening;
-using Fitamas.ECS.Transform2D;
+using Fitamas.UserInterface;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Fitamas.Core
 {
     public class GameEngine : Game
     {
+        public const float FixedTimeStep = 0.02f;
+
         private GameWorld gameWorld;
         private PhysicsWorld physicsWorld;
+
         private LoadContentExecutor loadContentExecutor;
         private FixedUpdateExecutor fixedUpdateExecutor;
         private UpdateExecutor updateExecutor;
         private DrawExecutor drawExecutor;
         private DrawGizmosExecutor drawGizmosExecutor;
+
         private float accamulatorTime;
 
-        public const float FixedTimeStep = 0.02f;
+        private RenderPipeline renderPipeline;
+        private Renderer defaultRenderer;
+        private Renderer lightRenderer;
+        private Renderer guiRenderer;
 
         public GameWorld GameWorld => gameWorld;
         public PhysicsWorld PhysicsWorld => physicsWorld;
@@ -49,6 +58,11 @@ namespace Fitamas.Core
             GraphicsDeviceManager.DeviceCreated += (s, a) =>
             {
                 WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDeviceManager.GraphicsDevice);
+
+                renderPipeline = new RenderPipeline(GraphicsDevice, Window);
+                defaultRenderer = renderPipeline.Create();
+                lightRenderer = renderPipeline.Create();
+                guiRenderer = renderPipeline.Create();
             };
 
             InputManager = new InputManager(this);
@@ -116,8 +130,9 @@ namespace Fitamas.Core
 
                 //Render
                 .AddSystem(new CameraSystem(this))
-                .AddSystem(new SpriteRenderSystem(GraphicsDevice))
-                .AddSystem(new MeshRenderSystem(GraphicsDevice))
+                .AddSystem(new SpriteRenderSystem(GraphicsDevice, defaultRenderer))
+                .AddSystem(new MeshRenderSystem(GraphicsDevice, defaultRenderer))
+                .AddSystem(new LightingRenderSystem(this, lightRenderer))
                 .AddSystem(new GUISystem(this));
         }
 
@@ -157,7 +172,16 @@ namespace Fitamas.Core
                 return;
             }
 
+            //GraphicsDevice.SetRenderTarget(defaultRenderer.Cache.Output);
+            //GraphicsDevice.Clear(Camera.Current.Color);
+            //GraphicsDevice.SetRenderTarget(null);
+
             drawExecutor.Draw(gameTime);
+
+            //GraphicsDevice.Clear(Camera.Current.Color);
+
+
+            //renderPipeline.Render();
 
             Gizmos.Begin();
             drawGizmosExecutor.DrawGizmos();

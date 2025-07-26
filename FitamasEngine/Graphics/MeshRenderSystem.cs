@@ -9,19 +9,20 @@ namespace Fitamas.Graphics
 {
     public class MeshRenderSystem : EntityDrawSystem, IDrawGizmosSystem
     {
-        private GraphicsDevice graphics;
+        private GraphicsDevice graphicsDevice;
         private AlphaTestEffect effect;
+        private Renderer renderer;
 
         private ComponentMapper<Transform> transformMapper;
         private ComponentMapper<MeshRender> renderMapper;
         private ComponentMapper<Mesh> meshMapper;
 
-        public MeshRenderSystem(GraphicsDevice graphicsDevice) : base(Aspect.All(typeof(Transform), typeof(MeshRender), typeof(Mesh)))
+        public MeshRenderSystem(GraphicsDevice graphicsDevice, Renderer renderer) : base(Aspect.All(typeof(Transform), typeof(MeshRender), typeof(Mesh)))
         {
-            graphics = graphicsDevice;
+            this.graphicsDevice = graphicsDevice;
+            this.renderer = renderer;
 
             effect = new AlphaTestEffect(graphicsDevice);
-            //basicEffect.TextureEnabled = true;
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -62,10 +63,10 @@ namespace Fitamas.Graphics
 
             effect.View = Camera.Current.GetViewMatrix();
             effect.Projection = Camera.Current.GetProjectionMatrix();
-            graphics.DepthStencilState = DepthStencilState.Default;
-            graphics.SamplerStates[0] = SamplerState.PointWrap;
-            graphics.RasterizerState = RasterizerState.CullCounterClockwise;
-            graphics.BlendState = BlendState.AlphaBlend;
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
+            graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
+            graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
+            graphicsDevice.BlendState = BlendState.AlphaBlend;
 
             if (render.Matireal != null)
             {
@@ -87,7 +88,7 @@ namespace Fitamas.Graphics
             foreach (EffectPass effectPass in effect.CurrentTechnique.Passes)
             {
                 effectPass.Apply();
-                graphics.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
+                graphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList,
                     vertex, 0, mesh.Vertices.Length, mesh.Ind, 0, mesh.Ind.Length / 3);
             }
         }

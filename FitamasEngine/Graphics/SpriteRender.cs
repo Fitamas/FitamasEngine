@@ -9,6 +9,7 @@ namespace Fitamas.Graphics
 {
     public class SpriteRender : Component
     {
+        public Effect Effect;
         public Sprite Sprite;
         public float Alpha;
         public Color Color;
