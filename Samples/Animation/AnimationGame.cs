@@ -69,7 +69,7 @@ namespace Animation
             });
 
             Entity entity1 = GameWorld.CreateEntity();
-            entity1.Attach(new SpriteRender()
+            entity1.Attach(new SpriteRendererComponent()
             {
                 Sprite = Sprite.Create("TestBox", [new Rectangle(0, 0, 40, 40), new Rectangle(32, 32, 20, 20)]),
             });
@@ -132,7 +132,7 @@ namespace Animation
         public Entity CreatePumpkin()
         {
             Entity entity = GameWorld.CreateEntity();
-            entity.Attach(new SpriteRender()
+            entity.Attach(new SpriteRendererComponent()
             {
                 Sprite = Sprite.Create("Pumpkin"),
             });

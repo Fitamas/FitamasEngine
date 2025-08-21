@@ -15,7 +15,7 @@ namespace Physics.Gameplay
         public static Entity CreatePumpkin(GameWorld world, Vector2 position)
         {
             Entity entity = world.CreateEntity();
-            entity.Attach(new SpriteRender()
+            entity.Attach(new SpriteRendererComponent()
             {
                 Sprite = Sprite.Create("Pumpkin"),
             });
@@ -31,10 +31,32 @@ namespace Physics.Gameplay
             return entity;
         }
 
+        public static Entity CreateLight(GameWorld world, Vector2 position)
+        {
+            Entity entity = world.CreateEntity();
+            entity.Attach(new SpriteRendererComponent()
+            {
+                Sprite = Sprite.Create("Spot1"),
+                Color = Color.Red,
+            });
+            entity.Attach(new Transform()
+            {
+                Position = position,
+                Scale = Vector2.One / 2
+            });
+            entity.Attach(PhysicsCollider.CreateCircle(0.5f));
+            entity.Attach(new PhysicsRigidBody()
+            {
+                MotionType = MotionType.Dynamic,
+            });
+            entity.Attach(new TagsComponent([Tags.Light]));
+            return entity;
+        }
+
         public static void CreateLog(GameWorld world, Vector2 position)
         {
             Entity entity = world.CreateEntity();
-            entity.Attach(new SpriteRender()
+            entity.Attach(new SpriteRendererComponent()
             {
                 Sprite = Sprite.Create("Log"),
             });
@@ -58,13 +80,16 @@ namespace Physics.Gameplay
                     new Vector2(-100, -10),
                     new Vector2(100, -10)
                     ]];
-            entity.Attach(new Mesh()
+            Material material = Material.DefaultOpaqueMaterial.Clone();
+            material.MainTexture = GameEngine.Instance.Content.Load<Texture2D>("Rock");
+
+            entity.Attach(new MeshComponent()
             {
                 Shapes = mesh
             });
-            entity.Attach(new MeshRender()
+            entity.Attach(new MeshRendererComponent()
             {
-                Matireal = new Matireal(GameEngine.Instance.Content.Load<Texture2D>("Rock"))
+                Matireal = material
 
             });
             entity.Attach(new Transform()
@@ -81,7 +106,7 @@ namespace Physics.Gameplay
         public static void CreateTestBox(GameWorld world, Vector2 position)
         {
             Entity entity = world.CreateEntity();
-            entity.Attach(new SpriteRender()
+            entity.Attach(new SpriteRendererComponent()
             {
                 Sprite = Sprite.Create("TestBox"),
             });
@@ -99,7 +124,7 @@ namespace Physics.Gameplay
         public static Entity CreateWheel(GameWorld world, Vector2 position)
         {
             Entity entity = world.CreateEntity();
-            entity.Attach(new SpriteRender()
+            entity.Attach(new SpriteRendererComponent()
             {
                 Sprite = Sprite.Create("Wheel"),
             });

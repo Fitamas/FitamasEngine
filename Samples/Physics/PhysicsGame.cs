@@ -3,7 +3,6 @@ using Fitamas.Audio;
 using Fitamas.Core;
 using Fitamas.ECS;
 using Fitamas.Graphics;
-using Fitamas.Graphics.Lighting;
 using Fitamas.Input;
 using Fitamas.Physics;
 using Fitamas.UserInterface;
@@ -45,13 +44,15 @@ namespace Physics
                 Clip = clip, PlayOnAwake = true, Looping = true, Is3d = true, MaxDistance = 4, 
                 AttenuationModel = AudioAttenuationModel.LinearDistance, AttenuationRolloffFactor = 2,
             });
-            entity.Get<SpriteRender>().Effect = Content.Load<Effect>("File");
+            entity.Get<SpriteRendererComponent>().Material = new Material(Content.Load<Effect>("File"));
 
             EntityHelper.CreateRock(GameWorld, new Vector2(0, -15));
 
             Entity entity1 = GameWorld.CreateEntity();
             entity1.Attach(new Transform() { Position = new Vector2(1, 0)});
             entity1.Attach(new AudioReverbZone() { MaxDistance = 3 });
+
+            EntityHelper.CreateLight(GameWorld, Vector2.Zero);
         }
 
         protected override void LoadContent()

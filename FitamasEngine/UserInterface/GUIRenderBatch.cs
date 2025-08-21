@@ -40,7 +40,7 @@ namespace Fitamas.UserInterface
             }
 
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointWrap,
-                              DepthStencilState.DepthRead, rasterState);
+                              DepthStencilState.None, rasterState);
         }
 
         public void End()

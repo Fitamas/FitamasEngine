@@ -18,15 +18,20 @@ namespace Fitamas.DebugTools
 
         internal static void Begin()
         {
+            Matrix view = Camera.Current.GetViewMatrix();
+            Matrix projection = Camera.Current.GetProjectionMatrix();
+
+            Begin(ref projection, ref view);
+        }
+
+        internal static void Begin(ref Matrix projection, ref Matrix view)
+        {
             if (primitiveBatch == null)
             {
                 primitiveBatch = new PrimitiveBatch(GameEngine.Instance.GraphicsDevice);
                 primitiveDrawing = new PrimitiveDrawing(primitiveBatch);
             }
 
-            Matrix view = Camera.Current.GetViewMatrix();
-            Matrix projection = Camera.Current.GetProjectionMatrix();
-            
             primitiveBatch.Begin(ref projection, ref view);
         }
 
@@ -95,7 +100,7 @@ namespace Fitamas.DebugTools
             primitiveDrawing.DrawPolygon(Vector2.Zero, [start, end], color);
         }
 
-        public static void DrawPolygon(Vector2 position, float rotation, Mesh mesh, Color color)
+        public static void DrawPolygon(Vector2 position, float rotation, MeshComponent mesh, Color color)
         {
             Matrix matrix = Matrix.CreateRotationZ(rotation) * 
                             Matrix.CreateTranslation(position.X, position.Y, 0);

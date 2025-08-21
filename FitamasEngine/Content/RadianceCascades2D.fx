@@ -1,4 +1,28 @@
-﻿#if OPENGL
+﻿/*
+MIT License
+
+Copyright (c) 2024 Youssef Afella
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#if OPENGL
 	#define SV_POSITION POSITION
 	#define VS_SHADERMODEL vs_3_0
 	#define PS_SHADERMODEL ps_3_0
@@ -11,7 +35,6 @@
 
 sampler2D _MainTex;
 
-//sampler2D _CascadeTex;
 sampler2D _ColorTex;
 sampler2D _DistanceTex;
 
@@ -42,16 +65,7 @@ struct VertexShaderOutput
     float2 UV : TEXCOORD0;
     float4 Color : COLOR0;
 };
-
-//v2f vert(appdata v)
-//{
-//    v2f o;
-//    o.vertex = UnityObjectToClipPos(v.vertex);
-//    o.uv = v.uv;
-
-//    return o;
-//}
-            
+     
 float2 CalculateRayRange(uint index, uint count)
 {
                 //A relatively cheap way to calculate ray ranges instead of using pow()
@@ -59,14 +73,10 @@ float2 CalculateRayRange(uint index, uint count)
                 //Dividing by 3       : 0, 1, 5, 21, 85
                 //and the distance between each value is multiplied by 4 each time
 
-    //float maxValue = (1 << (count * 2)) - 1;
-    //float start = (1 << (index * 2)) - 1;
-    //float end = (1 << (index * 2 + 2)) - 1;
-    
     float maxValue = pow(2, (count * 2)) - 1;
     float start = pow(2, (index * 2)) - 1;
     float end = pow(2, (index * 2 + 2)) - 1;
-
+    
     float2 r = float2(start, end) / maxValue;
     return r * _RayRange;
 }
@@ -91,7 +101,9 @@ float4 SampleRadianceSDF(float2 rayOrigin, float2 rayDirection, float2 rayRange)
     float t = rayRange.x;
     float4 hit = float4(0, 0, 0, 1);
 
-    for (int i = 0; i < 32; i++)
+    [unroll]
+    //[loop]
+    for (int i = 0; i < 16; i++) //TODO 32
     {
         float2 currentPosition = rayOrigin + t * rayDirection * _Aspect.yx;
 
@@ -127,13 +139,9 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 CascadePS(VertexShaderOutput input) : COLOR
 {
-    //return float4(_SkyColor, 1);
+    float2 pixelIndex = floor(input.UV.xy * _CascadeResolution);
     
-    //return tex2D(_MainTex, input.UV);
-    
-    float2 pixelIndex = floor(input.UV * _CascadeResolution);
-    
-    uint blockSqrtCount = pow(2, _CascadeLevel);//    1 << _CascadeLevel; //Another way to write pow(2, _CascadeLevel)
+    uint blockSqrtCount = pow(2, _CascadeLevel); //Another way to write 1 << _CascadeLevel
     
     float2 blockDim = _CascadeResolution / blockSqrtCount;
     float2 block2DIndex = floor(pixelIndex / blockDim);
@@ -143,9 +151,10 @@ float4 CascadePS(VertexShaderOutput input) : COLOR
     
     float4 finalResult = 0;
                 
-    float2 rayOrigin = (coordsInBlock + 0.5) * blockSqrtCount;
+    float2 rayOrigin = (coordsInBlock + 4) * blockSqrtCount;
     float2 rayRange = CalculateRayRange(_CascadeLevel, _CascadeCount);
     
+    [unroll]
     for (int i = 0; i < 4; i++)
     {
         float angleStep = TAU / (blockSqrtCount * blockSqrtCount * 4);
@@ -158,17 +167,18 @@ float4 CascadePS(VertexShaderOutput input) : COLOR
                     
         if (radiance.a != 0)
         {
-            //if (_CascadeLevel != _CascadeCount - 1)
             if (_CascadeLevel + 1 != _CascadeCount)
             {
                             //Merging with the Upper Cascade (_MainTex)
-                float2 position = coordsInBlock * 0.5 + 0.25;
+                float2 position = coordsInBlock * 0.5 + 4;
                 float2 positionOffset = float2(fmod(angleIndex, blockSqrtCount * 2), floor(angleIndex / (blockSqrtCount * 2)));
 
-                position = clamp(position, 0.5, blockDim * 0.5 - 0.5);
+                position = clamp(position, 8, blockDim * 0.5 - 8);
+                float2 uv = (position + positionOffset * blockDim * 0.5) / _CascadeResolution;
             
-                float4 rad = tex2D(_MainTex, (position + positionOffset * blockDim * 0.5) / _CascadeResolution);
-                        
+                //float4 rad = tex2Dlod(_MainTex, float4(uv, 0, 0));
+                float4 rad = tex2D(_MainTex, uv);
+
                 radiance.rgb += rad.rgb * radiance.a;
                 radiance.a *= rad.a;
             }
@@ -179,15 +189,9 @@ float4 CascadePS(VertexShaderOutput input) : COLOR
                 radiance.rgb += (sky / angleStep) * 2;
             }
         }
-        
-        //float3 sky = _SkyColor;
-        //radiance.rgb += _SkyColor;
-        //radiance.a = 1;
-                    
+              
         finalResult += radiance * 0.25;
     }
-    
-    //finalResult += float4(0, 0, 1, 1);
 
     return finalResult;
 }
@@ -195,7 +199,9 @@ float4 CascadePS(VertexShaderOutput input) : COLOR
 float4 DistancePS(VertexShaderOutput input) : COLOR
 {
     float2 jf = tex2D(_MainTex, input.UV).rg;
-    float value = distance(input.UV, jf);
+    float2 dir = (jf - input.UV) * _Aspect;
+    float value = length(dir);
+
     return float4(value, 0, 0, 1);
 }
 
@@ -217,9 +223,10 @@ float4 JumpFloodPS(VertexShaderOutput input) : COLOR
         [unroll]
         for (int x = -1; x <= 1; x++)
         {
-            float2 peekUV = input.UV + float2(x, y) * _Aspect.yx * _StepSize;
+            float2 peekUV = input.UV + float2(x, y) * _Aspect.yx * float2(_StepSize, _StepSize);
 
             float2 peek = tex2D(_MainTex, peekUV).xy;
+
             if (all(peek))
             {
                 float2 dir = peek - input.UV;
@@ -263,7 +270,7 @@ technique DistanceDrawing
     }
 };
 
-technique Drawing
+technique CascadesDrawing
 {
 	pass Pass0
 	{

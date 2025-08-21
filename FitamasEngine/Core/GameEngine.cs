@@ -5,7 +5,8 @@ using Fitamas.DebugTools;
 using Fitamas.ECS;
 using Fitamas.ECS.Transform2D;
 using Fitamas.Graphics;
-using Fitamas.Graphics.Lighting;
+using Fitamas.Graphics.PostProcessors;
+using Fitamas.Graphics.RendererFeatures;
 using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.Input;
 using Fitamas.Physics;
@@ -14,6 +15,7 @@ using Fitamas.Tweening;
 using Fitamas.UserInterface;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace Fitamas.Core
 {
@@ -32,11 +34,6 @@ namespace Fitamas.Core
 
         private float accamulatorTime;
 
-        private RenderPipeline renderPipeline;
-        private Renderer defaultRenderer;
-        private Renderer lightRenderer;
-        private Renderer guiRenderer;
-
         public GameWorld GameWorld => gameWorld;
         public PhysicsWorld PhysicsWorld => physicsWorld;
 
@@ -45,6 +42,7 @@ namespace Fitamas.Core
         public InputManager InputManager { get; }
         public AudioManager AudioManager { get; }
         public TweenManager TweenManager { get; }
+        public RenderManager RenderManager { get; private set; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
         public WindowViewportAdapter WindowViewportAdapter { get; private set; }
 
@@ -54,16 +52,15 @@ namespace Fitamas.Core
             Instance = this;
 
             MainContainer = new DIContainer();
-            GraphicsDeviceManager = new GraphicsDeviceManager(this);
-            GraphicsDeviceManager.DeviceCreated += (s, a) =>
-            {
-                WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDeviceManager.GraphicsDevice);
 
-                renderPipeline = new RenderPipeline(GraphicsDevice, Window);
-                defaultRenderer = renderPipeline.Create();
-                lightRenderer = renderPipeline.Create();
-                guiRenderer = renderPipeline.Create();
+            GraphicsDeviceManager = new GraphicsDeviceManager(this)
+            {
+                GraphicsProfile = GraphicsProfile.HiDef,
+                SynchronizeWithVerticalRetrace = false,
             };
+            GraphicsDeviceManager.ApplyChanges();
+
+            WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDeviceManager.GraphicsDevice);
 
             InputManager = new InputManager(this);
             Components.Add(InputManager);
@@ -76,6 +73,10 @@ namespace Fitamas.Core
             TweenManager = new TweenManager(this);
             Components.Add(TweenManager);
             MainContainer.RegisterInstance(TweenManager);
+
+            RenderManager = new RenderManager(this);
+            Components.Add(RenderManager);
+            MainContainer.RegisterInstance(RenderManager);
         }
 
         protected override void Initialize()
@@ -85,11 +86,12 @@ namespace Fitamas.Core
             PlayerPrefs.Load();
 
             IsMouseVisible = true;
+            Window.AllowUserResizing = true;
+
             //TODO
             GraphicsDeviceManager.PreferredBackBufferWidth = 1800;
-            GraphicsDeviceManager.PreferredBackBufferHeight = 1080;
+            GraphicsDeviceManager.PreferredBackBufferHeight = 920;
             GraphicsDeviceManager.ApplyChanges();
-            Window.AllowUserResizing = true;
 
             Debug.Log("Load game content");
 
@@ -98,6 +100,13 @@ namespace Fitamas.Core
             Debug.Log("Initialize systems");
 
             gameWorld = CreateWorldBuilder().Build();
+
+            RenderManager.AddRendererFeature(new LightingRendererFeature(GraphicsDevice));
+            RenderManager.AddRendererFeature(new WorldRendererFeature(GraphicsDevice));
+            RenderManager.AddRendererFeature(new PostRendererFeature(GraphicsDevice, drawExecutor));
+            RenderManager.AddRendererFeature(new GizmosRendererFeature(GraphicsDevice, drawGizmosExecutor));
+
+            RenderManager.AddPostProcessor(new VignettePostProcessor(0));
 
             Debug.Log("Load systems content");
 
@@ -130,16 +139,13 @@ namespace Fitamas.Core
 
                 //Render
                 .AddSystem(new CameraSystem(this))
-                .AddSystem(new SpriteRenderSystem(GraphicsDevice, defaultRenderer))
-                .AddSystem(new MeshRenderSystem(GraphicsDevice, defaultRenderer))
-                .AddSystem(new LightingRenderSystem(this, lightRenderer))
+                .AddSystem(new SpriteDrawSystem(RenderManager))
+                .AddSystem(new MeshDrawSystem(RenderManager))
                 .AddSystem(new GUISystem(this));
         }
 
         protected override void Update(GameTime gameTime)
         {
-            TweenManager.Update(gameTime);
-
             base.Update(gameTime);
 
             accamulatorTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -163,29 +169,8 @@ namespace Fitamas.Core
             base.Draw(gameTime);
 
             Camera.Current = Camera.Main;
-            if (Camera.Current != null)
-            {
-                GraphicsDevice.Clear(Camera.Current.Color);
-            }
-            else
-            {
-                return;
-            }
 
-            //GraphicsDevice.SetRenderTarget(defaultRenderer.Cache.Output);
-            //GraphicsDevice.Clear(Camera.Current.Color);
-            //GraphicsDevice.SetRenderTarget(null);
-
-            drawExecutor.Draw(gameTime);
-
-            //GraphicsDevice.Clear(Camera.Current.Color);
-
-
-            //renderPipeline.Render();
-
-            Gizmos.Begin();
-            drawGizmosExecutor.DrawGizmos();
-            Gizmos.End();
+            RenderManager.Draw(gameTime);
         }
 
         protected override void Dispose(bool disposing)
