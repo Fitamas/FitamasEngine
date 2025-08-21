@@ -15,11 +15,10 @@ using System.Linq;
 
 namespace Fitamas.UserInterface
 {
-    public class GUISystem : ILoadContentSystem, IUpdateSystem, IDrawSystem
+    public class GUISystem : ILoadContentSystem, IUpdateSystem, IDrawSystem, IDrawGizmosSystem
     {
         private GraphicsDevice graphics;
         private GUIRenderBatch render;
-        private GUIDebug debug;
         private GUICanvas canvas;
         private GUIRoot root;
         private List<GUIComponent> onMouse = new List<GUIComponent>();
@@ -34,8 +33,6 @@ namespace Fitamas.UserInterface
 
         public GUISystem(GameEngine game)
         {
-            debug = new GUIDebug(game.GraphicsDevice);
-
             graphics = game.GraphicsDevice;
             render = new GUIRenderBatch(game.GraphicsDevice);
 
@@ -86,10 +83,13 @@ namespace Fitamas.UserInterface
         {
             Rectangle rectangle = new Rectangle(new Point(0, 0), Render.GetViewportSize());
             canvas.Draw(gameTime, new GUIContextRender(rectangle, 1f));
+        }
 
+        public void DrawGizmos()
+        {
             if (GUIDebug.Active)
             {
-                debug.Render(canvas);
+                GUIDebug.Render(canvas);
             }
         }
 

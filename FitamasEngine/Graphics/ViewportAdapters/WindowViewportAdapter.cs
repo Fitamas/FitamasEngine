@@ -33,7 +33,7 @@ namespace Fitamas.Graphics.ViewportAdapters
 {
     public class WindowViewportAdapter : ViewportAdapter
     {
-        protected readonly GameWindow Window;
+        public GameWindow Window { get; }
 
         public WindowViewportAdapter(GameWindow window, GraphicsDevice graphicsDevice)
             : base(graphicsDevice)

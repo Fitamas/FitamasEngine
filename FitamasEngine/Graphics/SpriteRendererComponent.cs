@@ -7,10 +7,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fitamas.Graphics
 {
-    public class SpriteRender : Component
+    public class SpriteRendererComponent : Component
     {
+        public Material Material;
         public Sprite Sprite;
-        public float Alpha;
         public Color Color;
         public Vector2 SpriteOffset;
         public int Layer;
@@ -33,9 +33,8 @@ namespace Fitamas.Graphics
             }
         }
 
-        public SpriteRender()
+        public SpriteRendererComponent()
         {
-            Alpha = 1.0f;
             Color = Color.White;
             RectangleIndex = -1;
         }

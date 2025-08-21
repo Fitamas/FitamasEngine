@@ -5,18 +5,18 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Fitamas.Graphics
 {
-    public class MeshRender : Component
+    public class MeshRendererComponent : Component
     {
         public RectangleF TextureBounds = new RectangleF(Vector2.Zero, Vector2.One);
-        public Matireal Matireal;
+        public Material Matireal;
         public int Layer;
 
-        public MeshRender()
+        public MeshRendererComponent()
         {
 
         }
 
-        public MeshRender(Matireal matireal, RectangleF textureBounds)
+        public MeshRendererComponent(Material matireal, RectangleF textureBounds)
         {
             Matireal = matireal;
             TextureBounds = textureBounds;

@@ -5,7 +5,7 @@ using System;
 
 namespace Fitamas.Math
 {
-    public class Mesh : Component
+    public class MeshComponent : Component
     {
         [SerializeField] private Vector2[][] shapes = new Vector2[0][];
 
@@ -56,12 +56,12 @@ namespace Fitamas.Math
             }
         }
 
-        public Mesh()
+        public MeshComponent()
         {
 
         }
 
-        public Mesh(Vector2[][] shapes)
+        public MeshComponent(Vector2[][] shapes)
         {
             Shapes = shapes;
         }

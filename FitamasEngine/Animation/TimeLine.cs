@@ -89,14 +89,14 @@ namespace Fitamas.Animation
         }
     }
 
-    public class SpriteTimeLine : TimeLine<SpriteRender, int>
+    public class SpriteTimeLine : TimeLine<SpriteRendererComponent, int>
     {
         public SpriteTimeLine(string boneName, KeyFrame<int>[] keys) : base(boneName, keys)
         {
 
         }
 
-        protected override void Step(AnimationInfo info, FrameData<SpriteRender> frameData, KeyFrame<int> currentFrame, KeyFrame<int> nextFrame)
+        protected override void Step(AnimationInfo info, FrameData<SpriteRendererComponent> frameData, KeyFrame<int> currentFrame, KeyFrame<int> nextFrame)
         {
             frameData.Component.RectangleIndex = currentFrame.Value;
         }
