@@ -63,8 +63,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         protected override void OnMouseEntered()
         {
-            Point mousePosition = System.Mouse.Position;
-            Point delta = System.Mouse.Delta;
+            Point mousePosition = Manager.Mouse.Position;
+            Point delta = Manager.Mouse.Delta;
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
                            MouseButton.None, GUINodeEditorEventType.Entered, this);
             NodeEditor.OnNodeInteractMouseEvent.Invoke(args);
@@ -72,8 +72,8 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         protected override void OnMouseExitted()
         {
-            Point mousePosition = System.Mouse.Position;
-            Point delta = System.Mouse.Delta;
+            Point mousePosition = Manager.Mouse.Position;
+            Point delta = Manager.Mouse.Delta;
             GUINodeEditorEventArgs args = new GUINodeEditorEventArgs(mousePosition, delta,
                                       MouseButton.None, GUINodeEditorEventType.Exitted, this);
             NodeEditor.OnNodeInteractMouseEvent.Invoke(args);

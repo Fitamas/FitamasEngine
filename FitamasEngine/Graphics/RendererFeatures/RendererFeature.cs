@@ -30,7 +30,7 @@ namespace Fitamas.Graphics.RendererFeatures
 
         public virtual void OnCameraSetup(ref RenderingData renderingData)
         {
-            Point screen = renderingData.ViewportAdapter.Viewport.Bounds.Size;
+            Point screen = renderingData.Viewport.Size;
 
             RenderTexture = new RenderTarget2D(GraphicsDevice, screen.X, screen.Y);
         }

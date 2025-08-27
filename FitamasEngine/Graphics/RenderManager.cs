@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using R3;
 
 namespace Fitamas.Graphics
 {
@@ -17,7 +18,7 @@ namespace Fitamas.Graphics
     //    All,
     //}
 
-    public class RenderManager : IGameComponent
+    public class RenderManager : IInitializable
     {
         private GameEngine game;
         private List<RendererFeature> rendererFeatures;
@@ -25,11 +26,19 @@ namespace Fitamas.Graphics
         private List<PostProcessor> postProcessors;
         private GraphicsDevice graphicsDevice;
         private SpriteBatch spriteBatch;
+        private RenderTarget2D finalRenderTarget;
+
+        private RenderTarget2D renderTarget1;
+        private RenderTarget2D renderTarget2;
         private Camera camera;
 
         private RenderingData renderingData;
 
+        private bool isInitialized;
+        private RenderContext context;
+
         public Bag<Renderer> Renderers { get; }
+        public IFinalRender FinalRender;
 
         public RenderManager(GameEngine game)
         {
@@ -42,18 +51,19 @@ namespace Fitamas.Graphics
             spriteBatch = new SpriteBatch(graphicsDevice);
             Renderers = new Bag<Renderer>();
 
-            renderingData = new RenderingData();
-            renderingData.PostProcessingEnabled = true;
-
-            game.Window.ClientSizeChanged += (s, a) =>
-            {
-                OnCameraSetup();
-            };
+            //renderingData = new RenderingData();
+            context = new RenderContext(this);
+            //renderingData.PostProcessingEnabled = true;
         }
 
         public void Initialize()
         {
-            OnCameraSetup();
+            if (!isInitialized)
+            {
+                isInitialized = true;
+            }
+            renderingData.ViewportAdapter = game.ViewportAdapterProperty.Value;
+            SetupCamera();
         }
 
         public void AddRendererFeature(RendererFeature rendererFeature)
@@ -68,7 +78,11 @@ namespace Fitamas.Graphics
             }
 
             rendererFeature.Create();
-            rendererFeature.OnCameraSetup(ref renderingData);
+
+            if (isInitialized)
+            {
+                rendererFeature.OnCameraSetup(ref renderingData);
+            }
         }
 
         public void AddPostProcessor(PostProcessor postProcessor)
@@ -76,15 +90,22 @@ namespace Fitamas.Graphics
             postProcessors.Add(postProcessor);
 
             postProcessor.Create();
-            postProcessor.OnCameraSetup(ref renderingData);
+
+            if (isInitialized)
+            {
+                postProcessor.OnCameraSetup(ref renderingData);
+            }
         }
 
-        public void Draw(GameTime gameTime)
+        public void Render(GameTime gameTime)
         {
-            RenderContext context = new RenderContext(this);
+            SetupCameraIfNeed();
+
             context.GameTime = gameTime;
 
-            renderingData.Camera = Camera.Current;
+            renderingData.Source = renderTarget1;
+            renderingData.Destination = renderTarget2;
+            renderingData.Camera = camera;
 
             foreach (RendererFeature renderer in rendererFeatures)
             {
@@ -97,7 +118,7 @@ namespace Fitamas.Graphics
             }
 
             graphicsDevice.SetRenderTarget(renderingData.Source);
-            graphicsDevice.Clear(Camera.Current.Color);
+            graphicsDevice.Clear(camera.Color);
 
             foreach (RendererFeature renderer in rendererFeatures)
             {
@@ -105,24 +126,22 @@ namespace Fitamas.Graphics
                 Effect effect = material.Effect;
 
                 spriteBatch.Begin(SpriteSortMode.Deferred, material.BlendState, material.SamplerState, material.DepthStencilState, RasterizerState.CullNone);
-                spriteBatch.Draw(renderer.RenderTexture, renderingData.Viewport, Color.White);
+                spriteBatch.Draw(renderer.RenderTexture, graphicsDevice.Viewport.Bounds, Color.White);
                 spriteBatch.End();
             }
-
-            RenderTarget2D renderTarget = renderingData.Source;
 
             graphicsDevice.SetRenderTarget(null);
             foreach (PostProcessor postProcessor in postProcessors)
             {
                 postProcessor.Process(context, renderingData);
-                renderTarget = renderingData.Destination;
+                RenderTarget2D renderTarget = renderingData.Destination;
                 renderingData.Destination = renderingData.Source;
                 renderingData.Source = renderTarget;
             }
-            graphicsDevice.SetRenderTarget(null);
 
+            graphicsDevice.SetRenderTarget(renderingData.Destination);
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone);
-            spriteBatch.Draw(renderTarget, renderingData.Viewport, Color.White);
+            spriteBatch.Draw(renderingData.Source, graphicsDevice.Viewport.Bounds, Color.White);
             spriteBatch.End();
 
             foreach (RendererFeature renderer in rendererFeaturesAfterPostProcessors)
@@ -131,9 +150,27 @@ namespace Fitamas.Graphics
                 Effect effect = material.Effect;
 
                 spriteBatch.Begin(SpriteSortMode.Deferred, material.BlendState, material.SamplerState, material.DepthStencilState, RasterizerState.CullNone);
-                spriteBatch.Draw(renderer.RenderTexture, renderingData.Viewport, Color.White);
+                spriteBatch.Draw(renderer.RenderTexture, graphicsDevice.Viewport.Bounds, Color.White);
                 spriteBatch.End();
             }
+
+            if (FinalRender != null)
+            {
+                renderingData.Source = renderingData.Destination;
+                renderingData.Destination = finalRenderTarget;
+                graphicsDevice.SetRenderTarget(null);
+                FinalRender.Draw(context, renderingData);
+            }
+
+            graphicsDevice.SetRenderTarget(null);
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone);
+            spriteBatch.Draw(renderingData.Destination, graphicsDevice.Viewport.Bounds, Color.White);
+            spriteBatch.End();
+        }
+
+        public void Render(Camera camera, RenderTarget2D renderTarget)
+        {
+            //TODO
         }
 
         public void Blit(Texture2D source, RenderTarget2D destination)
@@ -144,10 +181,20 @@ namespace Fitamas.Graphics
         public void Blit(Texture2D source, RenderTarget2D destination, Material material)
         {
             graphicsDevice.SetRenderTarget(destination);
+            DrawTexture(source, material);
+            graphicsDevice.SetRenderTarget(null);
+        }
+
+        public void DrawTexture(Texture2D source)
+        {
+            DrawTexture(source, Material.BlitMaterial);
+        }
+
+        public void DrawTexture(Texture2D source, Material material)
+        {
             spriteBatch.Begin(SpriteSortMode.Deferred, material.BlendState, material.SamplerState, material.DepthStencilState, RasterizerState.CullNone, material.Effect);
             spriteBatch.Draw(source, source.Bounds, Color.White);
             spriteBatch.End();
-            graphicsDevice.SetRenderTarget(null);
         }
 
         public void DrawRenderers(RenderContext context, RenderTarget2D renderTarget, Color color)
@@ -179,13 +226,51 @@ namespace Fitamas.Graphics
             graphicsDevice.SetRenderTarget(null);
         }
 
-        private void OnCameraSetup()
+        private void SetupCameraIfNeed()
         {
-            renderingData.ViewportAdapter = game.WindowViewportAdapter;
-            renderingData.Viewport = game.WindowViewportAdapter.Viewport.Bounds;
+            camera = Camera.Main;
 
-            renderingData.Source = new RenderTarget2D(graphicsDevice, renderingData.Viewport.Width, renderingData.Viewport.Height);
-            renderingData.Destination = new RenderTarget2D(graphicsDevice, renderingData.Viewport.Width, renderingData.Viewport.Height);
+
+            renderingData.Camera = camera; //TODO
+            renderingData.ViewportAdapter = game.ViewportAdapterProperty.Value;
+
+            if (game.ViewportAdapterProperty.Value != renderingData.ViewportAdapter)
+            {
+                renderingData.NeedCameraSetup = true;
+            }
+
+            int wigth = renderingData.ViewportAdapter.ViewportWidth;
+            int height = renderingData.ViewportAdapter.ViewportHeight;
+            Rectangle viewport = new Rectangle(0, 0, wigth, height);
+            if (viewport != renderingData.Viewport)
+            {
+                renderingData.NeedCameraSetup = true;
+            }
+
+            //if (wigth > 0 && height > 0)
+            //{
+
+            //}
+
+            if (renderingData.NeedCameraSetup)
+            {
+                SetupCamera();
+                renderingData.NeedCameraSetup = false;
+            }
+        }
+
+        private void SetupCamera()
+        {
+            Point screen = game.Window.ClientBounds.Size;
+            int wigth = renderingData.ViewportAdapter.ViewportWidth;
+            int height = renderingData.ViewportAdapter.ViewportHeight;
+            if (wigth == 0) wigth = 1;
+            if (height == 0) height = 1;
+            //renderingData.ViewportAdapter = camera.ViewportAdapter;
+            renderingData.Viewport = new Rectangle(0, 0, wigth, height);
+            renderTarget1 = new RenderTarget2D(graphicsDevice, wigth, height);
+            renderTarget2 = new RenderTarget2D(graphicsDevice, wigth, height);
+            finalRenderTarget = new RenderTarget2D(graphicsDevice, screen.X, screen.Y);
 
             foreach (RendererFeature renderer in rendererFeatures)
             {

@@ -1,5 +1,6 @@
 ﻿using Fitamas.Core;
 using Fitamas.Serialization;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -8,11 +9,23 @@ namespace Fitamas.Graphics
 {
     public class Material : MonoContentObject
     {
-        public static Material DefaultMaterial = new Material(new AlphaTestEffect(GameEngine.Instance.GraphicsDevice) { VertexColorEnabled = true });
+        public static Material DefaultMaterial = new Material(new AlphaTestEffect(GameEngine.Instance.GraphicsDevice) 
+        { 
+            VertexColorEnabled = true,
+        });
 
-        public static Material DefaultOpaqueMaterial = new Material(new AlphaTestEffect(GameEngine.Instance.GraphicsDevice)) { BlendState = BlendState.Opaque};
+        public static Material DefaultOpaqueMaterial = new Material(new AlphaTestEffect(GameEngine.Instance.GraphicsDevice)
+        {
+            VertexColorEnabled = true,
+        })
+        {
+            BlendState = BlendState.Opaque
+        };
 
-        public static Material BlitMaterial = new Material(new SpriteEffect(GameEngine.Instance.GraphicsDevice)) { BlendState = BlendState.Opaque };
+        public static Material BlitMaterial = new Material(new SpriteEffect(GameEngine.Instance.GraphicsDevice)) 
+        { 
+            BlendState = BlendState.Opaque 
+        };
 
         [SerializeField] private Effect effect;
 

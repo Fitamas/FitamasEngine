@@ -1,18 +1,19 @@
-﻿using Fitamas.Events;
+﻿using Fitamas.Core;
+using Fitamas.Events;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 
 namespace Fitamas.Tweening
 {
-    public class TweenManager : GameComponent
+    public class TweenManager : Core.IUpdateable
     {
         private List<Tween> activeTweens;
 
         public MonoAction<Tween> OnAddTween;
         public MonoAction<Tween> OnRemoveTween;
 
-        public TweenManager(Game game) : base(game)
+        public TweenManager(Game game)
         {
             activeTweens = new List<Tween>();
         }
@@ -34,7 +35,7 @@ namespace Fitamas.Tweening
             }
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             float elapsedSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
 

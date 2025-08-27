@@ -8,8 +8,7 @@ namespace Fitamas.UserInterface
 {
     public class GUIRenderBatch
     {
-        private GraphicsDevice graphicsDevice;
-        private SpriteEffect effect;
+        private AlphaTestEffect effect;
         private SpriteBatch spriteBatch;
         private RasterizerState rasterState;
         private Rectangle clipRectangle;
@@ -18,9 +17,9 @@ namespace Fitamas.UserInterface
 
         public GUIRenderBatch(GraphicsDevice graphicsDevice)
         {
-            this.graphicsDevice = graphicsDevice;
-            effect = new SpriteEffect(graphicsDevice);
             spriteBatch = new SpriteBatch(graphicsDevice);
+            effect = new AlphaTestEffect(graphicsDevice);
+            effect.VertexColorEnabled = true;
 
             rasterState = new RasterizerState();
             rasterState.MultiSampleAntiAlias = true;
@@ -39,8 +38,14 @@ namespace Fitamas.UserInterface
                 this.clipRectangle = clipRectangle;
             }
 
+            Matrix view = Camera.Current.ViewportScaleMatrix;
+            Matrix projection = Camera.Current.GetProjectionMatrix();
+
+            effect.View = view;
+            effect.Projection = projection;
+
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.NonPremultiplied, SamplerState.PointWrap,
-                              DepthStencilState.None, rasterState);
+                              DepthStencilState.None, rasterState, effect);
         }
 
         public void End()

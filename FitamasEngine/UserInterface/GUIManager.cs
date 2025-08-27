@@ -1,24 +1,18 @@
 ﻿using Fitamas.Core;
-using Fitamas.ECS;
-using Fitamas.Extended.Entities;
-using Fitamas.Graphics;
 using Fitamas.Input;
 using Fitamas.Input.InputListeners;
 using Fitamas.UserInterface.Components;
 using Fitamas.UserInterface.Input;
 using Fitamas.UserInterface.ViewModel;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Fitamas.UserInterface
 {
-    public class GUISystem : ILoadContentSystem, IUpdateSystem, IDrawSystem, IDrawGizmosSystem
+    public class GUIManager : IInitializable, Core.IUpdateable, Core.IDrawable, IDrawableGizmos
     {
-        private GraphicsDevice graphics;
-        private GUIRenderBatch render;
+        private GUIRenderBatch renderBatch;
         private GUICanvas canvas;
         private GUIRoot root;
         private List<GUIComponent> onMouse = new List<GUIComponent>();
@@ -26,22 +20,18 @@ namespace Fitamas.UserInterface
         public GUIMouse Mouse { get; }
         public GUIKeyboard Keyboard { get; }
 
-        public GraphicsDevice GraphicsDevice => graphics;
-        public GUIRenderBatch Render => render;
+        public GUIRenderBatch RenderBatch => renderBatch;
         public GUICanvas Canvas => canvas;
         public GUIRoot Root => root;
 
-        public GUISystem(GameEngine game)
+        public GUIManager(GameEngine game)
         {
-            graphics = game.GraphicsDevice;
-            render = new GUIRenderBatch(game.GraphicsDevice);
+            renderBatch = new GUIRenderBatch(game.GraphicsDevice);
 
             canvas = new GUICanvas();
             root = new GUIRoot();
             root.SetAlignment(GUIAlignment.Stretch);
             canvas.AddChild(root);
-
-            game.MainContainer.RegisterInstance(ApplicationKey.GUISystem, this);
 
             GUIRootBinder rootBinder = new GUIRootBinder(this);
             game.MainContainer.RegisterInstance(ApplicationKey.GUIRootBinder, rootBinder);
@@ -50,25 +40,15 @@ namespace Fitamas.UserInterface
             rootBinder.Bind(rootViewModel);
             game.MainContainer.RegisterInstance(ApplicationKey.GUIRootViewModel, rootViewModel);
 
-            KeyboardListenerSettings settings = new KeyboardListenerSettings();
-            KeyboardListener keyboard = new KeyboardListener(settings);
-            MouseListener mouse = new MouseListener(game.WindowViewportAdapter);
+            InputManager inputManager = game.InputManager;
 
-            InputListenerComponent component = new InputListenerComponent(game, mouse, keyboard);
-            game.Components.Add(component);
-
-            Mouse = new GUIMouse(mouse);
-            Keyboard = new GUIKeyboard(keyboard);
+            Mouse = new GUIMouse(inputManager.Mouse);
+            Keyboard = new GUIKeyboard(inputManager.Keyboard);
         }
-
-        public void Initialize(GameWorld world)
+        
+        public void Initialize()
         {
             canvas.Init(this);
-        }
-
-        public void LoadContent(ContentManager content)
-        {
-
         }
 
         public void Update(GameTime gameTime)
@@ -81,7 +61,7 @@ namespace Fitamas.UserInterface
 
         public void Draw(GameTime gameTime)
         {
-            Rectangle rectangle = new Rectangle(new Point(0, 0), Render.GetViewportSize());
+            Rectangle rectangle = new Rectangle(Point.Zero, RenderBatch.GetViewportSize());
             canvas.Draw(gameTime, new GUIContextRender(rectangle, 1f));
         }
 
@@ -106,11 +86,6 @@ namespace Fitamas.UserInterface
         public GUIComponent GetComponentFromId(string id)
         {
             return canvas.GetComponentFromName(id);
-        }
-
-        public void Dispose()
-        {
-
         }
     }
 }

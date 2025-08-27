@@ -149,7 +149,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsInHierarchy)
             {
-                System.Root.CloseWindow(this);
+                Manager.Root.CloseWindow(this);
                 if (DestroyOnClose)
                 {
                     Destroy();

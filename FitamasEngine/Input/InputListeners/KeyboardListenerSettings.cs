@@ -25,6 +25,8 @@
     SOFTWARE.
 */
 
+using Fitamas.Core;
+
 namespace Fitamas.Input.InputListeners
 {
     public class KeyboardListenerSettings : InputListenerSettings<KeyboardListener>
@@ -40,7 +42,7 @@ namespace Fitamas.Input.InputListeners
         public int InitialDelayMilliseconds { get; set; }
         public int RepeatDelayMilliseconds { get; set; }
 
-        public override KeyboardListener CreateListener()
+        public override KeyboardListener CreateListener(GameEngine game)
         {
             return new KeyboardListener(this);
         }

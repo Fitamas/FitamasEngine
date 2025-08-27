@@ -80,7 +80,7 @@ namespace Physics.Gameplay
                     new Vector2(-100, -10),
                     new Vector2(100, -10)
                     ]];
-            Material material = Material.DefaultOpaqueMaterial.Clone();
+            Material material = Material.DefaultMaterial.Clone();
             material.MainTexture = GameEngine.Instance.Content.Load<Texture2D>("Rock");
 
             entity.Attach(new MeshComponent()

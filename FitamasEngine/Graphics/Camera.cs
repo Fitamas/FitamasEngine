@@ -1,9 +1,10 @@
-﻿using Fitamas.ECS;
-using Fitamas.Math;
+﻿using Fitamas.Core;
+using Fitamas.ECS;
 using Fitamas.Graphics.ViewportAdapters;
+using Fitamas.Math;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
-using Fitamas.Core;
 
 namespace Fitamas.Graphics
 {
@@ -12,13 +13,16 @@ namespace Fitamas.Graphics
         public static Camera Main { get; set; }
         public static Camera Current { get; set; }
 
+        public ViewportAdapter ViewportAdapter { get; set; }
         public Vector2 Position { get; set; }
         public float Rotation { get; set; }
 
         public float Zoom;
         public Color Color;
 
-        public ViewportAdapter ViewportAdapter { get; set; }
+        internal RenderTarget2D RenderTarget1 { get; set; }
+        internal RenderTarget2D RenderTarget2 { get; set; }
+        internal RenderingData RenderingData { get; set; }
 
         public Vector2 Origin
         {

@@ -25,11 +25,13 @@
     SOFTWARE.
 */
 
+using Fitamas.Core;
+
 namespace Fitamas.Input.InputListeners
 {
     public abstract class InputListenerSettings<T>
         where T : InputListener
     {
-        public abstract T CreateListener();
+        public abstract T CreateListener(GameEngine game);
     }
 }

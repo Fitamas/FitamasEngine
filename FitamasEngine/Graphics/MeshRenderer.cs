@@ -40,12 +40,13 @@ namespace Fitamas.Graphics
             graphicsDevice.SamplerStates[0] = material.SamplerState;
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-            VertexPositionTexture[] vertex = new VertexPositionTexture[meshComponent.Vertices.Length];
+            VertexPositionColorTexture[] vertex = new VertexPositionColorTexture[meshComponent.Vertices.Length];
             float layer = (float)meshRendererComponent.Layer / Settings.LayersCount;
 
             for (int i = 0; i < vertex.Length; i++)
             {
                 vertex[i].Position = new Vector3(transform.ToAbsolutePosition(meshComponent.Vertices[i]), layer);
+                vertex[i].Color = Color.White;
                 Vector2 texturePos = meshComponent.Vertices[i];
                 texturePos.X /= meshRendererComponent.TextureBounds.Width;
                 texturePos.Y /= meshRendererComponent.TextureBounds.Height;

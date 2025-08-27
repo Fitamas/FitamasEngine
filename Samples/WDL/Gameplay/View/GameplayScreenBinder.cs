@@ -135,7 +135,7 @@ namespace WDL.Gameplay.View
                     viewModel.Simulation.CurrentValue.CreateComponent(description, ghostPopup.Window.LocalPosition);
                 }
             });
-            System.AddComponent(ghostPopup);
+            Manager.AddComponent(ghostPopup);
 
             GUIWindow window1 = new GUIWindow();
             //window1.LocalSize = new Point(200, 200);

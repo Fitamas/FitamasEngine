@@ -16,7 +16,7 @@ namespace Fitamas.Samples.HelloWorld
 
             GameWorld.CreateMainCamera();
 
-            GUISystem system = MainContainer.Resolve<GUISystem>(ApplicationKey.GUISystem);
+            GUIManager system = MainContainer.Resolve<GUIManager>(ApplicationKey.GUISystem);
 
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
@@ -145,7 +145,7 @@ namespace Fitamas.Samples.HelloWorld
             {
                 if (a.Index == 0)
                 {
-                    CreateWindow().LocalPosition = m.System.Mouse.Position;
+                    CreateWindow().LocalPosition = m.Manager.Mouse.Position;
                 }
                 else if (a.Index == 1)
                 {

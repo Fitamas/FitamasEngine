@@ -25,6 +25,16 @@ namespace Fitamas.Graphics
             renderManager.Blit(source, destination, material);
         }
 
+        public void DrawTexture(Texture2D source)
+        {
+            renderManager.DrawTexture(source);
+        }
+
+        public void DrawTexture(Texture2D source, Material material)
+        {
+            renderManager.DrawTexture(source, material);
+        }
+
         public void DrawRenderers(RenderContext context, RenderTarget2D renderTarget, Color color)
         {
             renderManager.DrawRenderers(context, renderTarget, color);

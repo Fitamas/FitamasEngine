@@ -159,12 +159,12 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
-            System.Root.Popup = this;
-            System.Mouse.MouseCapture = this;
+            Manager.Root.Popup = this;
+            Manager.Mouse.MouseCapture = this;
             Enable = true;
             OnOpen.Invoke(this);
             RaiseEvent(new GUIEventArgs(OnOpenEvent, this));
-            UpdatePosition(System.Mouse.Position);
+            UpdatePosition(Manager.Mouse.Position);
         }
 
         private void ClosePopup()

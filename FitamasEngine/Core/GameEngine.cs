@@ -15,6 +15,7 @@ using Fitamas.Tweening;
 using Fitamas.UserInterface;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using R3;
 using System.Collections.Generic;
 
 namespace Fitamas.Core
@@ -22,6 +23,8 @@ namespace Fitamas.Core
     public class GameEngine : Game
     {
         public const float FixedTimeStep = 0.02f;
+
+        private IEnumerable<IUpdateable> updateables;
 
         private GameWorld gameWorld;
         private PhysicsWorld physicsWorld;
@@ -32,6 +35,7 @@ namespace Fitamas.Core
         private DrawExecutor drawExecutor;
         private DrawGizmosExecutor drawGizmosExecutor;
 
+        private WindowViewportAdapter defaultViewportAdapter;
         private float accamulatorTime;
 
         public GameWorld GameWorld => gameWorld;
@@ -42,9 +46,10 @@ namespace Fitamas.Core
         public InputManager InputManager { get; }
         public AudioManager AudioManager { get; }
         public TweenManager TweenManager { get; }
-        public RenderManager RenderManager { get; private set; }
+        public RenderManager RenderManager { get; }
+        public GUIManager GUIManager { get; }
         public GraphicsDeviceManager GraphicsDeviceManager { get; }
-        public WindowViewportAdapter WindowViewportAdapter { get; private set; }
+        public ReactiveProperty<ViewportAdapter> ViewportAdapterProperty { get; }
 
         public GameEngine()
         {
@@ -60,23 +65,23 @@ namespace Fitamas.Core
             };
             GraphicsDeviceManager.ApplyChanges();
 
-            WindowViewportAdapter = new WindowViewportAdapter(Window, GraphicsDeviceManager.GraphicsDevice);
+            defaultViewportAdapter = new WindowViewportAdapter(Window, GraphicsDevice);
+            ViewportAdapterProperty = new ReactiveProperty<ViewportAdapter>(defaultViewportAdapter);
 
             InputManager = new InputManager(this);
-            Components.Add(InputManager);
-            MainContainer.RegisterInstance(InputManager);
+            MainContainer.RegisterInstance(InputManager, true);
 
             AudioManager = new AudioManager(this);
-            Components.Add(AudioManager);
-            MainContainer.RegisterInstance(AudioManager);
+            MainContainer.RegisterInstance(AudioManager, true);
 
             TweenManager = new TweenManager(this);
-            Components.Add(TweenManager);
-            MainContainer.RegisterInstance(TweenManager);
+            MainContainer.RegisterInstance(TweenManager, true);
 
             RenderManager = new RenderManager(this);
-            Components.Add(RenderManager);
-            MainContainer.RegisterInstance(RenderManager);
+            MainContainer.RegisterInstance(RenderManager, true);
+
+            GUIManager = new GUIManager(this);
+            MainContainer.RegisterInstance(GUIManager, true);
         }
 
         protected override void Initialize()
@@ -97,14 +102,20 @@ namespace Fitamas.Core
 
             base.Initialize();
 
+            foreach (var initializable in MainContainer.ResolveAll<IInitializable>())
+            {
+                initializable.Initialize();
+            }
+            updateables = MainContainer.ResolveAll<IUpdateable>();
+
             Debug.Log("Initialize systems");
 
             gameWorld = CreateWorldBuilder().Build();
 
-            RenderManager.AddRendererFeature(new LightingRendererFeature(GraphicsDevice));
+            //RenderManager.AddRendererFeature(new LightingRendererFeature(GraphicsDevice));
             RenderManager.AddRendererFeature(new WorldRendererFeature(GraphicsDevice));
-            RenderManager.AddRendererFeature(new PostRendererFeature(GraphicsDevice, drawExecutor));
-            RenderManager.AddRendererFeature(new GizmosRendererFeature(GraphicsDevice, drawGizmosExecutor));
+            RenderManager.AddRendererFeature(new PostRendererFeature(this, drawExecutor));
+            RenderManager.AddRendererFeature(new GizmosRendererFeature(this, drawGizmosExecutor));
 
             RenderManager.AddPostProcessor(new VignettePostProcessor(0));
 
@@ -133,15 +144,14 @@ namespace Fitamas.Core
                 //Animation
                 .AddSystem(new AnimationSystem())
                 .AddSystem(new TweenSystem(TweenManager))
-                
+
                 //Audio
                 .AddSystem(new AudioSystem(AudioManager))
 
                 //Render
                 .AddSystem(new CameraSystem(this))
                 .AddSystem(new SpriteDrawSystem(RenderManager))
-                .AddSystem(new MeshDrawSystem(RenderManager))
-                .AddSystem(new GUISystem(this));
+                .AddSystem(new MeshDrawSystem(RenderManager));
         }
 
         protected override void Update(GameTime gameTime)
@@ -161,6 +171,11 @@ namespace Fitamas.Core
                 return;
             }
 
+            foreach (var update in updateables)
+            {
+                update.Update(gameTime);
+            }
+
             updateExecutor.Update(gameTime);
         }
 
@@ -170,7 +185,12 @@ namespace Fitamas.Core
 
             Camera.Current = Camera.Main;
 
-            RenderManager.Draw(gameTime);
+            RenderManager.Render(gameTime);
+        }
+
+        public void SetDefaultViewportAdapter()
+        {
+            ViewportAdapterProperty.Value = defaultViewportAdapter;
         }
 
         protected override void Dispose(bool disposing)

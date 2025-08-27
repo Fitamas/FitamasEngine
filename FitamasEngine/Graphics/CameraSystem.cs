@@ -1,7 +1,10 @@
 ﻿using Fitamas.Core;
 using Fitamas.ECS;
+using Fitamas.Graphics.ViewportAdapters;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using R3;
 
 namespace Fitamas.Graphics
 {
@@ -15,6 +18,13 @@ namespace Fitamas.Graphics
         public CameraSystem(GameEngine game) : base(Aspect.All(typeof(Transform), typeof(Camera)))
         {
             this.game = game;
+            game.ViewportAdapterProperty.Subscribe(value =>
+            {
+                if (Camera.Main != null)
+                {
+                    Camera.Main.ViewportAdapter = value;
+                }
+            });
         }
 
         public override void Initialize(IComponentMapperService mapperService)
@@ -28,7 +38,7 @@ namespace Fitamas.Graphics
         {
             Camera camera = cameraMapper.Get(entityId);
             Camera.Main = camera;
-            camera.ViewportAdapter = game.WindowViewportAdapter;
+            camera.ViewportAdapter = game.ViewportAdapterProperty.Value;
         }
 
         public override void Update(GameTime gameTime)

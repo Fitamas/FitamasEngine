@@ -34,11 +34,6 @@ namespace Fitamas.Graphics.ViewportAdapters
 {
     public class ScalingWindowViewportAdapter : ViewportAdapter
     {
-        public ScalingWindowViewportAdapter(GraphicsDevice graphicsDevice) : base(graphicsDevice)
-        {
-
-        }
-
         public override int VirtualWidth => VirtualSize.X;
         public override int VirtualHeight => VirtualSize.Y;
         public override int ViewportWidth => ViewportSize.X;
@@ -47,6 +42,11 @@ namespace Fitamas.Graphics.ViewportAdapters
         public Point VirtualSize { get; set; }
         public Point ViewportSize { get; set; }
         public Point ScreenPosition { get; set; }
+
+        public ScalingWindowViewportAdapter(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+
+        }
 
         public override Matrix GetScaleMatrix()
         {

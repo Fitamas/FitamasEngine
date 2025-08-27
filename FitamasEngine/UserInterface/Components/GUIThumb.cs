@@ -56,7 +56,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver)
             {
-                System.Mouse.MouseCapture = this;
+                Manager.Mouse.MouseCapture = this;
                 IsDrag = true;
                 StartDragOffset = mouse.Position - Rectangle.Location;
                 GUIDragEventArgs args = new GUIDragEventArgs(DragStartEvent, this)
@@ -86,7 +86,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsDrag)
             {
-                System.Mouse.MouseCapture = null;
+                Manager.Mouse.MouseCapture = null;
                 IsDrag = false;
                 GUIDragEventArgs args = new GUIDragEventArgs(DragEndEvent, this)
                 {

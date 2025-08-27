@@ -5,7 +5,7 @@ using System;
 
 namespace Fitamas.Audio
 {
-    public class AudioManager : GameComponent
+    public class AudioManager : Core.IUpdateable, IDisposable
     {
         internal static readonly SoloudObject NullObject = new SoloudObject() { objhandle = IntPtr.Zero };
 
@@ -13,7 +13,7 @@ namespace Fitamas.Audio
 
         public bool IsDisposed { get; private set; }
 
-        public AudioManager(Game game) : base(game)
+        public AudioManager(GameEngine game)
         {
             Soloud = new Soloud();
             Soloud.init();
@@ -24,7 +24,7 @@ namespace Fitamas.Audio
             Dispose();
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             Soloud.update3dAudio();
         }
@@ -39,10 +39,8 @@ namespace Fitamas.Audio
             Soloud.play3d(clip.Wav, position.X, position.Y, position.Z);
         }
 
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            base.Dispose(disposing);
-
             if (!IsDisposed)
             {
                 IsDisposed = true;

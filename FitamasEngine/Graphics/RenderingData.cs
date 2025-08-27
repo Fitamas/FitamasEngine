@@ -12,7 +12,15 @@ namespace Fitamas.Graphics
         public RenderTarget2D Source;
         public RenderTarget2D Destination;
 
+        public bool NeedCameraSetup;
         public bool PostProcessingEnabled;
         public Rectangle Viewport;
+
+        public RenderingData()
+        {
+            NeedCameraSetup = false;
+            PostProcessingEnabled = true;
+            Viewport = new Rectangle(Point.Zero, new Point(1, 1));
+        }
     }
 }

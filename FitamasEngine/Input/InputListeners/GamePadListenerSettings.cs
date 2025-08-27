@@ -25,6 +25,7 @@
     SOFTWARE.
 */
 
+using Fitamas.Core;
 using Microsoft.Xna.Framework;
 
 namespace Fitamas.Input.InputListeners
@@ -153,7 +154,7 @@ namespace Fitamas.Input.InputListeners
         /// </summary>
         public float ThumbstickDownTreshold { get; private set; }
 
-        public override GamePadListener CreateListener()
+        public override GamePadListener CreateListener(GameEngine game)
         {
             return new GamePadListener(this);
         }

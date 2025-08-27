@@ -169,14 +169,14 @@ namespace Fitamas.UserInterface.Components
         protected override void OnFocus()
         {
             caretEnable = true;
-            System.Keyboard.Focused = this;
+            Manager.Keyboard.Focused = this;
             Unselect();
         }
 
         protected override void OnUnfocus()
         {
             caretEnable = false;
-            System.Keyboard.Focused = null;
+            Manager.Keyboard.Focused = null;
             Unselect();
 
             switch (ContentType)
@@ -316,7 +316,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver && !IsFocused)
             {
-                System.Mouse.MouseCapture = this;
+                Manager.Mouse.MouseCapture = this;
                 Focus();
             }
             else if (!IsMouseOver && IsFocused)

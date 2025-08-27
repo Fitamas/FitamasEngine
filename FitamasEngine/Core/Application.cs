@@ -12,6 +12,8 @@ namespace Fitamas.Core
 
         public static readonly string DataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Fitamas), Name);
 
+        public static readonly float Dpi = 96f; //TODO
+
         static Application()
         {
             Directory.CreateDirectory(DataPath);

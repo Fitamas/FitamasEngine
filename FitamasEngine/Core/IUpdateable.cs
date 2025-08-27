@@ -2,7 +2,7 @@
 
 namespace Fitamas.Core
 {
-    public interface IUpdate
+    public interface IUpdateable
     {
         void Update(GameTime gameTime);
     }

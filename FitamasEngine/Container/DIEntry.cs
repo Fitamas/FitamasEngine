@@ -26,12 +26,17 @@
     SOFTWARE.
 */
 
+using Fitamas.Core;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Fitamas.Container
 {
     public abstract class DIEntry : IDisposable
     {
+        public List<Type> ContractTypes { get; }
+
         protected DIContainer Container { get; }
         protected bool IsSingleton { get; set; }
 
@@ -39,13 +44,16 @@ namespace Fitamas.Container
         
         protected DIEntry(DIContainer container)
         {
+            ContractTypes = new List<Type>();
             Container = container;
         }
 
         public T Resolve<T>()
         {
-            return ((DIEntry<T>)this).Resolve();
+            return (T)ResolvObject();
         }
+
+        public abstract object ResolvObject();
 
         public DIEntry AsSingle()
         {
@@ -62,13 +70,13 @@ namespace Fitamas.Container
         private Func<DIContainer, T> Factory { get; }
         private T _instance;
         private IDisposable _disposableInstance;
-        
+
         public DIEntry(DIContainer container, Func<DIContainer, T> factory) : base(container)
         {
             Factory = factory;
         }
 
-        public DIEntry(T value)
+        public DIEntry(DIContainer container, T value, bool withInterfaces) : base(container)
         {
             _instance = value;
 
@@ -78,16 +86,22 @@ namespace Fitamas.Container
             }
             
             IsSingleton = true;
+
+            ContractTypes.Add(typeof(T));
+            if (withInterfaces)
+            {
+                ContractTypes.AddRange(typeof(T).GetInterfaces());
+            }
         }
 
-        public T Resolve()
+        public override object ResolvObject()
         {
             if (IsSingleton)
             {
                 if (_instance == null)
                 {
                     _instance = Factory(Container);
-                    
+
                     if (_instance is IDisposable disposableInstance)
                     {
                         _disposableInstance = disposableInstance;

@@ -6,9 +6,9 @@ namespace Fitamas.UserInterface.ViewModel
     {
         private Dictionary<GUIWindowViewModel, IGUIWindowBinder> openedWindowBinders;
         private IGUIWindowBinder openedScreenBinder;
-        private GUISystem system;
+        private UserInterface.GUIManager system;
 
-        public GUIWindowsContainer(GUISystem system)
+        public GUIWindowsContainer(UserInterface.GUIManager system)
         {
             openedWindowBinders = new Dictionary<GUIWindowViewModel, IGUIWindowBinder>();
             this.system = system;

@@ -11,7 +11,7 @@ namespace Fitamas.UserInterface.ViewModel
         private GUIWindowsContainer windowsContainer;
         private CompositeDisposable subscriptions;
 
-        public GUIRootBinder(GUISystem system)
+        public GUIRootBinder(UserInterface.GUIManager system)
         {
             windowsContainer = new GUIWindowsContainer(system);
             subscriptions = new CompositeDisposable();

@@ -31,6 +31,8 @@ using Microsoft.Xna.Framework.Input;
 using Fitamas.Graphics.ViewportAdapters;
 using System.Collections.Generic;
 using Fitamas.Input.Actions;
+using Fitamas.Core;
+using R3;
 
 namespace Fitamas.Input.InputListeners
 {
@@ -102,18 +104,18 @@ namespace Fitamas.Input.InputListeners
             }
         }
 
-        public MouseListener() : this(new MouseListenerSettings())
+        public MouseListener(GameEngine game) : this(game, new MouseListenerSettings())
         {
 
         }
 
-        public MouseListener(ViewportAdapter viewportAdapter) : this(new MouseListenerSettings())
+        public MouseListener(GameEngine game, MouseListenerSettings settings)
         {
-            ViewportAdapter = viewportAdapter;
-        }
+            game.ViewportAdapterProperty.Subscribe(value =>
+            {
+                ViewportAdapter = value;
+            });
 
-        public MouseListener(MouseListenerSettings settings)
-        {
             ViewportAdapter = settings.ViewportAdapter;
             DoubleClickMilliseconds = settings.DoubleClickMilliseconds;
             DragThreshold = settings.DragThreshold;

@@ -64,12 +64,12 @@ namespace Fitamas.Container
             return diEntry;
         }
 
-        public void RegisterInstance<T>(T instance)
+        public void RegisterInstance<T>(T instance, bool withInterfaces = false)
         {
-            RegisterInstance(null, instance);
+            RegisterInstance(null, instance, withInterfaces);
         }
 
-        public void RegisterInstance<T>(string tag, T instance)
+        public void RegisterInstance<T>(string tag, T instance, bool withInterfaces = false)
         {
             var key = (tag, typeof(T));
             
@@ -79,7 +79,7 @@ namespace Fitamas.Container
                     $"DI: Instance with tag {key.Item1} and type {key.Item2.FullName} has already registered");
             }
 
-            var diEntry = new DIEntry<T>(instance);
+            var diEntry = new DIEntry<T>(this, instance, withInterfaces);
 
             _entriesMap[key] = diEntry;
         }
@@ -113,6 +113,22 @@ namespace Fitamas.Container
             } 
             
             throw new Exception($"Couldn't find dependency for tag {tag} and type {key.Item2.FullName}");
+        }
+
+        public IEnumerable<T> ResolveAll<T>()
+        {
+            Type type = typeof(T);  
+            List<T> values = new List<T>();
+
+            foreach (var entry in _entriesMap.Values)
+            {
+                if (entry.ContractTypes.Contains(type))
+                {
+                    values.Add(entry.Resolve<T>());
+                }
+            }
+
+            return values;
         }
 
         public void Dispose()

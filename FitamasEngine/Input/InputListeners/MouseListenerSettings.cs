@@ -25,6 +25,7 @@
     SOFTWARE.
 */
 
+using Fitamas.Core;
 using Fitamas.Graphics.ViewportAdapters;
 
 namespace Fitamas.Input.InputListeners
@@ -42,9 +43,9 @@ namespace Fitamas.Input.InputListeners
         public int DoubleClickMilliseconds { get; set; }
         public ViewportAdapter ViewportAdapter { get; set; }
 
-        public override MouseListener CreateListener()
+        public override MouseListener CreateListener(GameEngine game)
         {
-            return new MouseListener(this);
+            return new MouseListener(game, this);
         }
     }
 }

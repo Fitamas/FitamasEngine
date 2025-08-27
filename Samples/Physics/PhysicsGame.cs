@@ -3,10 +3,13 @@ using Fitamas.Audio;
 using Fitamas.Core;
 using Fitamas.ECS;
 using Fitamas.Graphics;
+using Fitamas.ImGuiNet;
+using Fitamas.ImGuiNet.Windows;
 using Fitamas.Input;
 using Fitamas.Physics;
 using Fitamas.UserInterface;
 using Fitamas.UserInterface.ViewModel;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Physics.Gameplay;
@@ -18,6 +21,27 @@ namespace Physics
 {
     public class PhysicsGame : GameEngine
     {
+        public PhysicsGame()
+        {
+            ImGuiManager manager = new ImGuiManager(this);
+            RenderManager.FinalRender = manager;
+
+            manager.OpenWindow(new ConsoleWindow());
+            manager.OpenWindow(new ConsoleWindow());
+            manager.OpenWindow(new HierarchyWindow());
+            manager.OpenWindow(new GameWorldWindow());
+            manager.OpenWindow(new InspectorWindow());
+            manager.OpenWindow(new SceneEditorWindow());
+            manager.OpenWindow(new GUIEditorWindow());
+
+            manager.ShowSeperateGameWindow = true;
+
+            ImGuiIOPtr io = ImGui.GetIO();
+            io.FontGlobalScale = 2f;
+
+            ImGuiThemes.DarkTheme();
+        }
+
         protected override void Initialize()
         {
             base.Initialize();

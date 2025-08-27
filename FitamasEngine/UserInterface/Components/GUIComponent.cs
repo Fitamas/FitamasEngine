@@ -36,7 +36,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<bool> EnableProperty = new DependencyProperty<bool>(EnableChangedCallback, true, false);
 
-        private GUISystem system;
+        private GUIManager manager;
         private GUIComponent parent;
         private List<GUIComponent> childrensComponent;
         private Rectangle absoluteRectangle;
@@ -45,9 +45,9 @@ namespace Fitamas.UserInterface.Components
 
         protected EventHandlersStore eventHandlersStore;
 
-        public GUISystem System => system;
-        public GUIRenderBatch Render => System.Render;
-        public bool IsInHierarchy => system != null;
+        public GUIManager Manager => manager;
+        public GUIRenderBatch Render => Manager.RenderBatch;
+        public bool IsInHierarchy => manager != null;
         public Rectangle VisibleRectangle => visibleRectangle;
         public bool IsVisible => visibleRectangle.Size != Point.Zero;
         public bool IsVisibleAndEnable => IsVisible && Enable;
@@ -422,7 +422,7 @@ namespace Fitamas.UserInterface.Components
 
                 childrensComponent.Add(component);
                                 
-                component.Init(System);
+                component.Init(Manager);
                 component.Parent = this;
                 
                 Style?.ApplySetters(this);
@@ -614,18 +614,18 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public void Init(GUISystem system)
+        public void Init(GUIManager system)
         {
-            if (this.system != system && system != null)
+            if (this.manager != system && system != null)
             {
-                this.system = system;
+                this.manager = system;
                 OnInit();
             }
 
             foreach (var child in childrensComponent)
             {
                 child.parent = this;
-                child.Init(System);
+                child.Init(Manager);
             }
         }
 
@@ -658,7 +658,7 @@ namespace Fitamas.UserInterface.Components
             if (IsInHierarchy)
             {
                 OnDestroy();
-                system = null;
+                manager = null;
             }
 
             foreach (var component in childrensComponent.ToArray())

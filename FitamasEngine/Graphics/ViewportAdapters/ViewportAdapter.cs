@@ -26,6 +26,7 @@
 */
 
 using System;
+using Fitamas.Events;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -33,6 +34,14 @@ namespace Fitamas.Graphics.ViewportAdapters
 {
     public abstract class ViewportAdapter : IDisposable
     {
+        public GraphicsDevice GraphicsDevice { get; }
+        public abstract int VirtualWidth { get; }
+        public abstract int VirtualHeight { get; }
+        public abstract int ViewportWidth { get; }
+        public abstract int ViewportHeight { get; }
+
+        public Viewport Viewport => GraphicsDevice.Viewport;
+
         protected ViewportAdapter(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
@@ -40,18 +49,9 @@ namespace Fitamas.Graphics.ViewportAdapters
 
         public virtual void Dispose()
         {
+
         }
 
-        public GraphicsDevice GraphicsDevice { get; }
-        public Viewport Viewport => GraphicsDevice.Viewport;
-
-        public abstract int VirtualWidth { get; }
-        public abstract int VirtualHeight { get; }
-        public abstract int ViewportWidth { get; }
-        public abstract int ViewportHeight { get; }
-
-        public Rectangle BoundingRectangle => new Rectangle(0, 0, VirtualWidth, VirtualHeight);
-        public Point Center => BoundingRectangle.Center;
         public abstract Matrix GetScaleMatrix();
 
         public Point PointToScreen(Point point)

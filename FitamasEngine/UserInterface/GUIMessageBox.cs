@@ -147,7 +147,7 @@ namespace Fitamas.UserInterface
 
             if (onMousePosition)
             {
-                window.LocalPosition = window.System.Mouse.Position;
+                window.LocalPosition = window.Manager.Mouse.Position;
             }
             else
             {

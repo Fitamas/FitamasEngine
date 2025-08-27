@@ -83,7 +83,7 @@ namespace Animation
                 Name = "BONE2",
             });
 
-            GUISystem system = MainContainer.Resolve<GUISystem>(ApplicationKey.GUISystem);
+            GUIManager system = MainContainer.Resolve<GUIManager>(ApplicationKey.GUISystem);
             GUISlider slider = GUI.CreateSlider(new Point(50, 150), GUISliderDirection.LeftToRight, 200);
             slider.Pivot = new Vector2(0, 0);
             slider.Track.OnValueChanged.AddListener((s, v) =>
