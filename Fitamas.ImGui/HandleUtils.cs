@@ -1,10 +1,11 @@
-﻿using Fitamas.Physics.Characters;
-using Fitamas.DebugTools;
+﻿using Fitamas.DebugTools;
+using Fitamas.Graphics;
 using Fitamas.Math;
+using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System;
 
-namespace Fitamas.Editor
+namespace Fitamas.ImGuiNet
 {
     public enum Handle
     {
@@ -19,25 +20,30 @@ namespace Fitamas.Editor
         private static Vector2 offset = Vector2.Zero;
         private static Handle handle = Handle.none;
 
+        public static Vector2 HandleSize = new Vector2(0.3f, 0.3f);
+
         public static Handle Handle => handle;
 
-        public static Vector2 PositionHandle(Vector2 position, float rotation, Vector2 mousePosition, bool isClicked, bool isDragging)
+        public static Vector2 PositionHandle(Vector2 position, float rotation, Vector2 mousePosition)
         {
-            Handle handle = GetHandle(position, rotation, mousePosition, out Vector2 localMousePosition);
-
-            if (isClicked)
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
-                HandleUtils.handle = handle;
+                handle = GetHandle(position, rotation, mousePosition, out Vector2 localMousePosition);
                 offset = localMousePosition;
             }
-            if (isDragging)
+            else if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
             {
-                Gizmos.DrawAnchor(position, rotation, handle);
+                handle = Handle.none;
+            }
+            else if (ImGui.IsMouseDragging(ImGuiMouseButton.Left))
+            {
+                DrawAnchor(position, rotation, handle);
                 return PlaneHandle(position, rotation, mousePosition, offset, handle);
             }
             else
             {
-                Gizmos.DrawAnchor(position, rotation, handle);
+                handle = GetHandle(position, rotation, mousePosition, out Vector2 localMousePosition);
+                DrawAnchor(position, rotation, handle);
             }
 
             return position;
@@ -57,7 +63,7 @@ namespace Fitamas.Editor
         public static Handle GetHandle(Vector2 localMousePosition)
         {
             Vector2 size = Gizmos.AnchorSize;
-            Vector2 handleSize = Gizmos.HandleSize;
+            Vector2 handleSize = HandleSize;
             RectangleF rectangleXY = new RectangleF(new Vector2(), handleSize);
             RectangleF rectangleX = new RectangleF(new Vector2(0, -size.Y / 2), new Vector2(size.X, size.Y * 2));
             RectangleF rectangleY = new RectangleF(new Vector2(-size.Y / 2, 0), new Vector2(size.Y * 2, size.X));
@@ -93,6 +99,37 @@ namespace Fitamas.Editor
             }
 
             return position;
+        }
+
+        public static void DrawAnchor(Vector2 position, float rotation, Handle handle = Handle.none)
+        {
+            Color x = Color.Green;
+            Color y = Color.Red;
+            Color xy = Color.Blue;
+
+            switch (handle)
+            {
+                case Handle.none:
+                    break;
+                case Handle.XY:
+                    xy = Color.Yellow;
+                    x = Color.Yellow;
+                    y = Color.Yellow;
+                    break;
+                case Handle.X:
+                    x = Color.Yellow;
+                    break;
+                case Handle.Y:
+                    y = Color.Yellow;
+                    break;
+            }
+
+            Gizmos.DrawLine(position + MathV.Rotate(new Vector2(0, HandleSize.Y / 2), rotation), 
+                            position + MathV.Rotate(new Vector2(HandleSize.X, HandleSize.Y / 2), rotation), xy, HandleSize.Y);
+
+            Gizmos.DrawLine(position, position + MathV.Rotate(new Vector2(0, Gizmos.AnchorSize.X), rotation), y, Gizmos.AnchorSize.Y);
+
+            Gizmos.DrawLine(position, position + MathV.Rotate(new Vector2(Gizmos.AnchorSize.X, 0), rotation), x, Gizmos.AnchorSize.Y);
         }
     }
 }

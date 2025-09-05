@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Fitamas.ImGuiNet
 {
-    public class ImGuiManager : IFinalRender
+    public class ImGuiManager : IFinalRender, IInitializable
     {
         private GraphicsDevice graphicsDevice;
         private ImGuiRenderer renderer;
@@ -41,13 +41,29 @@ namespace Fitamas.ImGuiNet
             renderer.RebuildFontAtlas();
 
             ImGuiIOPtr io = ImGui.GetIO();
-            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
+            io.WantCaptureKeyboard = true;
+        }
+
+        public void Initialize()
+        {
+            foreach (var window in editorWindows)
+            {
+                window.OnOpenEditor();
+            }
         }
 
         public void Draw(RenderContext context, RenderingData renderingData)
         {
             renderer.BeginLayout(context.GameTime);
+
+            bool showSeperateGameWindowCache = ShowSeperateGameWindow;
+
+            if (ImGuiUtils.IsKeyPressedWithModifier(ImGuiKey.ModCtrl, ImGuiKey.P))
+            {
+                ShowSeperateGameWindow = !ShowSeperateGameWindow;
+            }
 
             if (ShowSeperateGameWindow)
             {
@@ -62,26 +78,51 @@ namespace Fitamas.ImGuiNet
                     renderTargetId = renderer.BindTexture(renderingData.Source);
                 }
 
+                ImGuiMainMenuBar.MainMenuBar(this);
+
+                ImGuiToolbar.Toolbar();
+
                 ImGuiUtils.DockSpace();
+
+                for (int i = editorWindows.Count - 1; i >= 0; i--)
+                {
+                    if (!editorWindows[i].Enable)
+                    {
+                        EditorWindow window = editorWindows[i];
+                        editorWindows.RemoveAt(i);
+                        window.Close();
+                    }
+                    else
+                    {
+                        editorWindows[i].DrawGUI(context.GameTime);
+                    }
+                }
             }
             else
             {
+                graphicsDevice.SetRenderTarget(renderingData.Destination);
                 context.DrawTexture(renderingData.Source);
             }
 
-            for (int i = editorWindows.Count - 1; i >= 0; i--)
+            if (showSeperateGameWindowCache != ShowSeperateGameWindow)
             {
-                if (!editorWindows[i].Enable)
+                if (ShowSeperateGameWindow)
                 {
-                    EditorWindow window = editorWindows[i];
-                    editorWindows.RemoveAt(i);
-                    window.Close();
+                    foreach (var window in editorWindows)
+                    {
+                        window.OnOpenEditor();
+                    }
                 }
                 else
                 {
-                    editorWindows[i].DrawGUI();
+                    foreach (var window in editorWindows)
+                    {
+                        window.OnCloseEditor();
+                    }
                 }
             }
+
+
             graphicsDevice.SetRenderTarget(renderingData.Destination);
             renderer.EndLayout();
         }

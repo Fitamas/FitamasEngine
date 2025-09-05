@@ -1,6 +1,7 @@
 ﻿using Fitamas.ECS;
 using Fitamas.UserInterface.Components;
 using ImGuiNET;
+using Microsoft.Xna.Framework;
 using System;
 using System.Linq;
 
@@ -13,7 +14,7 @@ namespace Fitamas.ImGuiNet.Windows
             Name = "GUI";
         }
 
-        protected override void OnGUI()
+        protected override void OnGUI(GameTime gameTime)
         {
             DrawItem(manager.Game.GUIManager.Canvas);
         }
@@ -23,7 +24,7 @@ namespace Fitamas.ImGuiNet.Windows
             string uniqueId = component.GetHashCode().ToString();
             string nodeName = $"{component.GetType().Name} ({component.Name})##{uniqueId}";
             bool isLeaf = component.ChildrensComponent.Count() == 0;
-            bool select = (GUIComponent)ImGuiManager.SelectObject == component;
+            bool select = ImGuiManager.SelectObject == component;
             ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags.None;
             if (isLeaf) flag |= ImGuiTreeNodeFlags.Leaf;
             if (select) flag |= ImGuiTreeNodeFlags.Selected;

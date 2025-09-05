@@ -54,7 +54,7 @@ namespace Fitamas.ImGuiNet.Windows
             //}
         }
 
-        protected override void OnGUI()
+        protected override void OnGUI(GameTime gameTime)
         {
             ImGui.Text("Search:");
             ImGui.SameLine();

@@ -20,9 +20,10 @@ namespace Fitamas.Graphics
         public float Zoom;
         public Color Color;
 
-        internal RenderTarget2D RenderTarget1 { get; set; }
-        internal RenderTarget2D RenderTarget2 { get; set; }
-        internal RenderingData RenderingData { get; set; }
+        //TODO
+        //internal RenderTarget2D RenderTarget1 { get; set; }
+        //internal RenderTarget2D RenderTarget2 { get; set; }
+        //internal RenderingData RenderingData { get; set; }
 
         public Vector2 Origin
         {

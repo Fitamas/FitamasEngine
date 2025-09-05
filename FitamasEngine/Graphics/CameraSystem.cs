@@ -5,10 +5,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using R3;
+using Fitamas.DebugTools;
+using Fitamas.Math;
 
 namespace Fitamas.Graphics
 {
-    public class CameraSystem : EntityUpdateSystem
+    public class CameraSystem : EntityUpdateSystem, IDrawGizmosSystem
     {
         private GameEngine game;
 
@@ -38,6 +40,7 @@ namespace Fitamas.Graphics
         {
             Camera camera = cameraMapper.Get(entityId);
             Camera.Main = camera;
+            Camera.Current = Camera.Main;
             camera.ViewportAdapter = game.ViewportAdapterProperty.Value;
         }
 
@@ -50,6 +53,18 @@ namespace Fitamas.Graphics
 
                 camera.Position = transform.Position;
                 camera.Rotation = transform.Rotation;
+            }
+        }
+
+        public void DrawGizmos()
+        {
+            foreach (var entityId in ActiveEntities)
+            {
+                Camera camera = cameraMapper.Get(entityId);
+
+                RectangleF rectangle = camera.WorldBounds();
+
+                Gizmos.DrawRectangle(rectangle.Center, 0, rectangle.Size, Color.White);
             }
         }
     }

@@ -32,7 +32,7 @@ namespace Fitamas.Graphics.RendererFeatures
         {
             Point screen = renderingData.Viewport.Size;
 
-            RenderTexture = new RenderTarget2D(GraphicsDevice, screen.X, screen.Y);
+            RenderTexture = new RenderTarget2D(GraphicsDevice, screen.X, screen.Y, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
         }
 
         public abstract void Draw(RenderContext context, RenderingData renderingData);

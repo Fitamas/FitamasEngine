@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using Microsoft.Xna.Framework;
 using System;
 
 namespace Fitamas.ImGuiNet.Windows
@@ -29,8 +30,13 @@ namespace Fitamas.ImGuiNet.Windows
             OnOpen();
         }
 
-        public void DrawGUI()
+        public void DrawGUI(GameTime gameTime)
         {
+            if (!enable)
+            {
+                return;
+            }
+
             bool flag = enable;
             string windowName = $"{Name}##{id}";
             if (ImGui.Begin(windowName, ref flag))
@@ -55,7 +61,7 @@ namespace Fitamas.ImGuiNet.Windows
 
                 if (flag)
                 {
-                    OnGUI();
+                    OnGUI(gameTime);
                 }
             }
 
@@ -73,9 +79,13 @@ namespace Fitamas.ImGuiNet.Windows
             OnClose();
         }
 
+        public virtual void OnOpenEditor() { }
+
+        public virtual void OnCloseEditor() { }
+
         protected virtual void OnOpen() { }
 
-        protected virtual void OnGUI() { }
+        protected virtual void OnGUI(GameTime gameTime) { }
 
         protected virtual void OnClose() { }
 

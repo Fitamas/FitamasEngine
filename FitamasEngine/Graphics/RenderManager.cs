@@ -27,15 +27,13 @@ namespace Fitamas.Graphics
         private GraphicsDevice graphicsDevice;
         private SpriteBatch spriteBatch;
         private RenderTarget2D finalRenderTarget;
+        private bool isInitialized;
+        private RenderContext context;
 
         private RenderTarget2D renderTarget1;
         private RenderTarget2D renderTarget2;
         private Camera camera;
-
         private RenderingData renderingData;
-
-        private bool isInitialized;
-        private RenderContext context;
 
         public Bag<Renderer> Renderers { get; }
         public IFinalRender FinalRender;
@@ -50,10 +48,7 @@ namespace Fitamas.Graphics
             postProcessors = new List<PostProcessor>();
             spriteBatch = new SpriteBatch(graphicsDevice);
             Renderers = new Bag<Renderer>();
-
-            //renderingData = new RenderingData();
             context = new RenderContext(this);
-            //renderingData.PostProcessingEnabled = true;
         }
 
         public void Initialize()
@@ -62,8 +57,8 @@ namespace Fitamas.Graphics
             {
                 isInitialized = true;
             }
-            renderingData.ViewportAdapter = game.ViewportAdapterProperty.Value;
-            SetupCamera();
+
+            SetupCameraIfNeed();
         }
 
         public void AddRendererFeature(RendererFeature rendererFeature)
@@ -79,7 +74,7 @@ namespace Fitamas.Graphics
 
             rendererFeature.Create();
 
-            if (isInitialized)
+            if (isInitialized && camera != null)
             {
                 rendererFeature.OnCameraSetup(ref renderingData);
             }
@@ -91,7 +86,7 @@ namespace Fitamas.Graphics
 
             postProcessor.Create();
 
-            if (isInitialized)
+            if (isInitialized && camera != null)
             {
                 postProcessor.OnCameraSetup(ref renderingData);
             }
@@ -100,6 +95,11 @@ namespace Fitamas.Graphics
         public void Render(GameTime gameTime)
         {
             SetupCameraIfNeed();
+
+            if (camera == null)
+            {
+                return;
+            }
 
             context.GameTime = gameTime;
 
@@ -158,7 +158,6 @@ namespace Fitamas.Graphics
             {
                 renderingData.Source = renderingData.Destination;
                 renderingData.Destination = finalRenderTarget;
-                graphicsDevice.SetRenderTarget(null);
                 FinalRender.Draw(context, renderingData);
             }
 
@@ -166,11 +165,6 @@ namespace Fitamas.Graphics
             spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointWrap, DepthStencilState.None, RasterizerState.CullNone);
             spriteBatch.Draw(renderingData.Destination, graphicsDevice.Viewport.Bounds, Color.White);
             spriteBatch.End();
-        }
-
-        public void Render(Camera camera, RenderTarget2D renderTarget)
-        {
-            //TODO
         }
 
         public void Blit(Texture2D source, RenderTarget2D destination)
@@ -228,49 +222,52 @@ namespace Fitamas.Graphics
 
         private void SetupCameraIfNeed()
         {
-            camera = Camera.Main;
-
-
-            renderingData.Camera = camera; //TODO
-            renderingData.ViewportAdapter = game.ViewportAdapterProperty.Value;
-
-            if (game.ViewportAdapterProperty.Value != renderingData.ViewportAdapter)
+            if (Camera.Current == null)
             {
+                return;
+            }
+
+            if (camera != Camera.Current)
+            {
+                camera = Camera.Current;
+                renderingData.Camera = camera;
+                renderingData.NeedCameraSetup = true;
+            }
+
+            if (camera.ViewportAdapter != renderingData.ViewportAdapter)
+            {
+                renderingData.ViewportAdapter = camera.ViewportAdapter;
                 renderingData.NeedCameraSetup = true;
             }
 
             int wigth = renderingData.ViewportAdapter.ViewportWidth;
             int height = renderingData.ViewportAdapter.ViewportHeight;
             Rectangle viewport = new Rectangle(0, 0, wigth, height);
+
             if (viewport != renderingData.Viewport)
             {
                 renderingData.NeedCameraSetup = true;
             }
 
-            //if (wigth > 0 && height > 0)
-            //{
-
-            //}
-
             if (renderingData.NeedCameraSetup)
             {
                 SetupCamera();
-                renderingData.NeedCameraSetup = false;
             }
         }
 
         private void SetupCamera()
         {
+            renderingData.NeedCameraSetup = false;
+
             Point screen = game.Window.ClientBounds.Size;
             int wigth = renderingData.ViewportAdapter.ViewportWidth;
             int height = renderingData.ViewportAdapter.ViewportHeight;
             if (wigth == 0) wigth = 1;
             if (height == 0) height = 1;
-            //renderingData.ViewportAdapter = camera.ViewportAdapter;
             renderingData.Viewport = new Rectangle(0, 0, wigth, height);
-            renderTarget1 = new RenderTarget2D(graphicsDevice, wigth, height);
-            renderTarget2 = new RenderTarget2D(graphicsDevice, wigth, height);
-            finalRenderTarget = new RenderTarget2D(graphicsDevice, screen.X, screen.Y);
+            renderTarget1 = new RenderTarget2D(graphicsDevice, wigth, height, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
+            renderTarget2 = new RenderTarget2D(graphicsDevice, wigth, height, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
+            finalRenderTarget = new RenderTarget2D(graphicsDevice, screen.X, screen.Y, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
 
             foreach (RendererFeature renderer in rendererFeatures)
             {

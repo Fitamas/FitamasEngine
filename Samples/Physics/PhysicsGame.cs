@@ -1,6 +1,7 @@
 ﻿using Fitamas;
 using Fitamas.Audio;
 using Fitamas.Core;
+using Fitamas.DebugTools;
 using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.ImGuiNet;
@@ -21,15 +22,17 @@ namespace Physics
 {
     public class PhysicsGame : GameEngine
     {
+        private FramesPerSecondCounter counter;
+
         public PhysicsGame()
         {
             ImGuiManager manager = new ImGuiManager(this);
             RenderManager.FinalRender = manager;
+            MainContainer.RegisterInstance(manager, true);
 
             manager.OpenWindow(new ConsoleWindow());
             manager.OpenWindow(new ConsoleWindow());
             manager.OpenWindow(new HierarchyWindow());
-            manager.OpenWindow(new GameWorldWindow());
             manager.OpenWindow(new InspectorWindow());
             manager.OpenWindow(new SceneEditorWindow());
             manager.OpenWindow(new GUIEditorWindow());
@@ -40,6 +43,10 @@ namespace Physics
             io.FontGlobalScale = 2f;
 
             ImGuiThemes.DarkTheme();
+
+            counter = new FramesPerSecondCounter();
+
+            //TODO resource order with all references
         }
 
         protected override void Initialize()
@@ -88,6 +95,20 @@ namespace Physics
             FontManager.DefaultFont = Content.Load<SpriteFont>("Font\\Pixel_20");
             ResourceDictionary dictionary = ResourceDictionary.DefaultResources;
             dictionary[CommonResourceKeys.DefaultFont] = FontManager.DefaultFont;
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            counter.Update(gameTime);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            base.Draw(gameTime);
+
+            counter.Draw(gameTime);
         }
     }
 }

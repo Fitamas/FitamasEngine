@@ -21,7 +21,7 @@ namespace Fitamas.ImGuiNet.Windows
             messagePool = new List<string>();
         }
 
-        protected override void OnGUI()
+        protected override void OnGUI(GameTime gameTime)
         {
             foreach (var message in messagePool)
             {

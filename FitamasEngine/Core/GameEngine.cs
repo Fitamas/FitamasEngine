@@ -60,8 +60,8 @@ namespace Fitamas.Core
 
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
-                GraphicsProfile = GraphicsProfile.HiDef,
-                SynchronizeWithVerticalRetrace = false,
+                //GraphicsProfile = GraphicsProfile.HiDef,
+                //SynchronizeWithVerticalRetrace = false,
             };
             GraphicsDeviceManager.ApplyChanges();
 
@@ -96,6 +96,8 @@ namespace Fitamas.Core
             //TODO
             GraphicsDeviceManager.PreferredBackBufferWidth = 1800;
             GraphicsDeviceManager.PreferredBackBufferHeight = 920;
+            //IsFixedTimeStep = false;
+            //GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
             GraphicsDeviceManager.ApplyChanges();
 
             Debug.Log("Load game content");
@@ -182,8 +184,6 @@ namespace Fitamas.Core
         protected override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-
-            Camera.Current = Camera.Main;
 
             RenderManager.Render(gameTime);
         }

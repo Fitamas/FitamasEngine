@@ -471,14 +471,11 @@ namespace Fitamas.ImGuiNet
                         color.ToVector4().ToNumerics(), borderColor.ToVector4().ToNumerics());
         }
 
-        public const float toolbarSize = 60;
-        public const float toolbarButtonSize = 35;
-
         public static void DockSpace()
         {
             ImGuiViewportPtr viewport = ImGui.GetMainViewport();
-            ImGui.SetNextWindowPos(viewport.Pos + new System.Numerics.Vector2(0, toolbarSize));
-            ImGui.SetNextWindowSize(viewport.Size - new System.Numerics.Vector2(0, toolbarSize));
+            ImGui.SetNextWindowPos(viewport.Pos + new System.Numerics.Vector2(0, ImGuiToolbar.toolbarSize));
+            ImGui.SetNextWindowSize(viewport.Size - new System.Numerics.Vector2(0, ImGuiToolbar.toolbarSize));
             ImGui.SetNextWindowViewport(viewport.ID);
             ImGuiWindowFlags window_flags = 0
                 | ImGuiWindowFlags.MenuBar | ImGuiWindowFlags.NoDocking
@@ -497,42 +494,6 @@ namespace Fitamas.ImGuiNet
             ImGui.PopStyleVar(3);
         }
 
-        public static void BeginToolbar()
-        {
-            ImGuiViewportPtr viewport = ImGui.GetMainViewport();
-
-            float menuBarHeight = viewport.Size.Y - viewport.WorkSize.Y;
-
-            ImGui.SetNextWindowPos(new System.Numerics.Vector2(viewport.Pos.X, viewport.Pos.Y + menuBarHeight));
-            ImGui.SetNextWindowSize(new System.Numerics.Vector2(viewport.Size.X, toolbarSize));
-            ImGui.SetNextWindowViewport(viewport.ID);
-            ImGuiWindowFlags window_flags = 0
-                | ImGuiWindowFlags.NoDocking
-                | ImGuiWindowFlags.NoTitleBar
-                | ImGuiWindowFlags.NoResize
-                | ImGuiWindowFlags.NoMove
-                | ImGuiWindowFlags.NoScrollbar
-                | ImGuiWindowFlags.NoSavedSettings
-                ;
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
-            ImGui.Begin("TOOLBAR", window_flags);
-            ImGui.PopStyleVar();
-        }
-
-        public static void EndToolbar()
-        {
-            ImGui.End();
-        }
-
-        public static bool ToolbarButton(nint textureId, Vector2? size = default)
-        {
-            ImGui.SameLine();
-            ImGui.PushID("ToolbarButton");
-            System.Numerics.Vector2 imageSize = size.HasValue ? size.Value.ToNumerics()
-                                                              : new System.Numerics.Vector2(toolbarButtonSize);
-            return ImGui.ImageButton("ToolbarButton", textureId, imageSize);
-        }
-
         public static void AlignForWidth(float width, float alignment = 0.5f)
         {
             float windowWidth = ImGui.GetWindowSize().X;
@@ -544,6 +505,11 @@ namespace Fitamas.ImGuiNet
             //float off = (avail - width) * alignment;
             //if (off > 0.0f)
             //    ImGui.SetCursorPosX(ImGui.GetCursorPosX() + off);
+        }
+
+        public static bool IsKeyPressedWithModifier(ImGuiKey modifier, ImGuiKey key)
+        {
+            return ImGui.IsKeyDown(modifier) && ImGui.IsKeyPressed(key, false);
         }
     }
 }

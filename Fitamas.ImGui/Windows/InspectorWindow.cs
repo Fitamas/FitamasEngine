@@ -2,6 +2,7 @@
 using Fitamas.ECS;
 using Fitamas.Serialization;
 using ImGuiNET;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -86,7 +87,7 @@ namespace Fitamas.ImGuiNet.Windows
             return editor;
         }
 
-        protected override void OnGUI()
+        protected override void OnGUI(GameTime gameTime)
         {
             if (ImGuiManager.SelectObject != selectObject)
             {
