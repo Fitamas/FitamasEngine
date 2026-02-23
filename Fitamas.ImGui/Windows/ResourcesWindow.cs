@@ -1,57 +1,65 @@
-﻿using Fitamas.DebugTools;
-using Fitamas.Serialization;
+﻿using Fitamas.Core;
+using Fitamas.DebugTools;
+using Fitamas.ECS;
+using Fitamas.ImGuiNet.Assets;
+using Fitamas.ImGuiNet.TreeView;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fitamas.ImGuiNet.Windows
 {
     public class ResourcesWindow : EditorWindow
     {
-        //private AssetTree assetTree;
-        //private TreeNode<AssetData> root;
-        //private TreeNode<AssetData> selected;
-        //private TreeNode<AssetData> dragAndDrop;
-        //private AssetData toRename;
+        private readonly FileSystemWatcher watcher;
+        private AssetTree assetTree;
+        private bool treeIsDirty;
+        private TreeNode<AssetData> root;
+        private TreeNode<AssetData> selected;
+        private TreeNode<AssetData> dragAndDrop;
+        private AssetData toRename;
 
-        private Type[] createAssetTypes;
-        //private string[] extensions = { ".png" };
+        private static AssetTypeAttribute[] assetTypes = ReflectionUtils.GetTypeAttributes<AssetTypeAttribute>();
 
-        public ResourcesWindow()
+        public ResourcesWindow() : base("Resources")
         {
-            Name = "Resources";
+            watcher = new FileSystemWatcher(GameEngine.Instance.Content.RootDirectory)
+            {
+                IncludeSubdirectories = true,
+                NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite |
+                 NotifyFilters.CreationTime | NotifyFilters.Size,
+                EnableRaisingEvents = true
+            };
+
+            watcher.Created += OnFileChanged;
+            watcher.Changed += OnFileChanged;
+            watcher.Renamed += OnFileChanged;
+            watcher.Deleted += OnFileChanged;
+        }
+
+        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        {
+            DebounceFileOperation();
+        }
+
+        private void DebounceFileOperation()
+        {
+            SetTreeDirty();
         }
 
         protected override void OnOpen()
         {
-            //createAssetTypes = AssemblyUtils.GetTypes<AssetMenuAttribute>();
-            //assetTree = new AssetTree();
-            //root = assetTree.Root;
+            assetTree = new AssetTree();
+            root = assetTree.Root;
 
-            //editor.FileManager.OnChanged += BuildTree;
-
-            //BuildTree();
+            SetTreeDirty();
         }
 
-        private void BuildTree()
+        public void SetTreeDirty()
         {
-            //assetTree.Clear();
-
-            //foreach (string directory in AssetDatabase.GetAllFolderPaths())
-            //{
-            //    assetTree.AddAsset(directory);
-            //}
-
-            //foreach (string file in AssetDatabase.GetAllAssetPaths(ContentExtensionUtils.GetAllExtensions()))
-            //{
-            //    assetTree.AddAsset(file);
-            //}
+            treeIsDirty = true;
         }
 
         protected override void OnGUI(GameTime gameTime)
@@ -64,181 +72,217 @@ namespace Fitamas.ImGuiNet.Windows
                 //TODO search asset in tree
             }
 
-            //DrawNode(root);
+            if (treeIsDirty)
+            {
+                treeIsDirty = false;
+                assetTree.Clear();
 
-            //if (ImGui.IsKeyPressed(ImGuiKey.Delete))
-            //{
-            //    if (selected != null)
-            //    {
-            //        AssetDatabase.DeleteAsset(selected.Data.fullPath);
-            //        selected = null;
-            //        BuildTree();
-            //    }
-            //}
+                foreach (string directory in AssetDatabase.GetAllFolderPaths())
+                {
+                    assetTree.AddAsset(directory);
+                }
+
+                foreach (string file in AssetDatabase.GetAllAssetPaths())
+                {
+                    assetTree.AddAsset(file);
+                }
+            }
+
+            DrawNode(root);
+
+            if (focusedWindow)
+            {
+                if (ImGui.IsKeyPressed(ImGuiKey.Delete))
+                {
+                    if (selected != null)
+                    {
+                        AssetDatabase.DeleteAsset(selected.Data.fullPath);
+                        selected = null;
+                    }
+                }
+            }
+
+            if (mouseOverWindow && !ImGui.IsAnyItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
+            {
+                selected = null;
+                ImGui.OpenPopup("resourceMenu");
+            }
+
+            Popup();
         }
 
-        //private void DrawNode(TreeNode<AssetData> node)
-        //{
-        //    if (node.IsRoot)
-        //    {
-        //        for (int i = 0; i < node.Count; i++)
-        //        {
-        //            DrawNode(node[i]);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        string nodeName = node.Data.ToString();
+        protected override void OnClose()
+        {
+            watcher.Dispose();
+        }
 
-        //        bool isLeaf = node.IsLeaf;
-        //        bool select = selected == node;
-        //        ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags.None;
-        //        if (isLeaf) flag |= ImGuiTreeNodeFlags.Leaf;
-        //        if (select) flag |= ImGuiTreeNodeFlags.Selected;
-        //        bool open = ImGui.TreeNodeEx(nodeName, flag);
+        private void DrawNode(TreeNode<AssetData> node)
+        {
+            if (node.IsRoot)
+            {
+                for (int i = 0; i < node.Count; i++)
+                {
+                    DrawNode(node[i]);
+                }
+            }
+            else
+            {
+                string nodeName = $"{node.Data.path}##{node.Level}";
+                bool isLeaf = node.IsLeaf;
+                bool select = selected == node;
+                ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags.None;
+                if (isLeaf) flag |= ImGuiTreeNodeFlags.Leaf;
+                if (select) flag |= ImGuiTreeNodeFlags.Selected;
+                bool open = ImGui.TreeNodeEx(nodeName, flag);
 
-        //        //Popup
-        //        ImGui.PushID(nodeName);
-        //        if (Popup(node.Data))
-        //        {
-        //            BuildTree();
-        //            return;
-        //        }
-        //        ImGui.PopID();
+                ImGui.PushID(nodeName);
+                Popup(node);
+                ImGui.PopID();
 
-        //        //Rename
-        //        if (toRename == node.Data)
-        //        {
-        //            ImGui.SameLine();
-        //            ImGui.SetKeyboardFocusHere();
-        //            string newName = toRename.ToString();
+                //Rename
+                if (toRename == node.Data)
+                {
+                    ImGui.SameLine();
+                    ImGui.SetKeyboardFocusHere();
+                    string newName = toRename.ToString();
 
-        //            if (ImGui.InputText("###rename", ref newName, 1000,
-        //                ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
-        //            {
-        //                AssetDatabase.RenameAsset(toRename.fullPath, newName);
-        //                toRename = null;
-        //                BuildTree();
-        //                return;
-        //            }
+                    if (ImGui.InputText("###rename", ref newName, 1000,
+                        ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+                    {
+                        AssetDatabase.RenameAsset(toRename.fullPath, newName);
+                        toRename = null;
+                    }
 
-        //            if (ImGui.IsAnyMouseDown())
-        //            {
-        //                toRename = null;
-        //            }
-        //        }
+                    if (ImGui.IsAnyMouseDown() || ImGui.IsKeyReleased(ImGuiKey.Escape))
+                    {
+                        toRename = null;
+                    }
+                }
 
-        //        //DragDrop
-        //        if (ImGui.BeginDragDropSource())
-        //        {
-        //            dragAndDrop = node;
-        //            string file = dragAndDrop.Data.fullPath;
-        //            string path = Path.GetRelativePath(EditorSystem.ObjectManager.RootDirectory, file);
-        //            MonoObject monoObject = AssetDatabase.LoadAsset(path);
+                //DragDrop
+                if (ImGui.BeginDragDropSource())
+                {
+                    dragAndDrop = node;
+                    string file = dragAndDrop.Data.fullPath;
+                    object asset = AssetDatabase.LoadAsset(file);
 
-        //            EditorSystem.DragDropObject = monoObject == null ? file : monoObject;
+                    ImGuiManager.DragDropObject = asset == null ? file : asset;
 
-        //            ImGui.SetDragDropPayload("object", IntPtr.Zero, 0);
-        //            ImGui.Text(nodeName);
-        //            ImGui.EndDragDropSource();
-        //        }
-        //        if (ImGui.BeginDragDropTarget())
-        //        {
-        //            if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
-        //            {
-        //                string oldPath = dragAndDrop.Data.fullPath;
-        //                string newPath = Path.Combine(node.Data.fullPath, dragAndDrop.Data.path);
+                    ImGui.SetDragDropPayload("object", IntPtr.Zero, 0);
+                    ImGui.Text(nodeName);
+                    ImGui.EndDragDropSource();
+                }
+                if (ImGui.BeginDragDropTarget())
+                {
+                    if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                    {
+                        string oldPath = dragAndDrop.Data.fullPath;
+                        string newPath = Path.Combine(node.Data.fullPath, dragAndDrop.Data.path);
 
-        //                AssetDatabase.MoveAsset(oldPath, newPath);
-        //                dragAndDrop = null;
-        //                BuildTree();
-        //                return;
-        //            }
+                        AssetDatabase.MoveAsset(oldPath, newPath);
+                        dragAndDrop = null;
+                    }
 
-        //            ImGui.EndDragDropTarget();
-        //        }
+                    ImGui.EndDragDropTarget();
+                }
 
-        //        //Draw
-        //        if (open)
-        //        {
-        //            if (ImGui.IsItemClicked(ImGuiMouseButton.Left) && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
-        //            {
-        //                selected = node;
-        //                EditorSystem.SelectObject = null;
-        //                string file = node.Data.fullPath;
+                if (ImGui.IsItemHovered())
+                {
+                    if (ImGui.IsMouseReleased(ImGuiMouseButton.Right))
+                    {
+                        selected = node;
+                    }
 
-        //                if (File.Exists(file))
-        //                {
-        //                    string path = Path.GetRelativePath(EditorSystem.ObjectManager.RootDirectory, file);
-        //                    MonoObject monoObject = AssetDatabase.LoadAsset(path);
-        //                    EditorSystem.SelectObject = monoObject;
+                    if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                    {
+                        selected = node;
 
-        //                    if (monoObject is SerializebleScene scene)
-        //                    {
-        //                        EditorSystem.OpenScene = scene;
-        //                    }
-        //                }
-        //            }
+                        ImGuiManager.SelectObject = null;
+                        string file = node.Data.fullPath;
 
-        //            //DrawNode
-        //            if (!isLeaf)
-        //            {
-        //                for (int i = 0; i < node.Count; i++)
-        //                {
-        //                    DrawNode(node[i]);
-        //                }
-        //            }
+                        if (AssetDatabase.Contains(file))
+                        {
+                            ImGuiManager.SelectObject = AssetDatabase.LoadAsset(file);
+                        }
+                    }
 
-        //            ImGui.TreePop();
-        //        }
-        //    }
-        //}
+                    if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Left))
+                    {
+                        //TODO open scene or file
 
-        //private bool Popup(AssetData assetData)
-        //{
-        //    if (ImGui.BeginPopupContextItem("resourceMenu", ImGuiPopupFlags.MouseButtonRight))
-        //    {
-        //        if (ImGui.Selectable("Delete"))
-        //        {
-        //            AssetDatabase.DeleteAsset(assetData.fullPath);
-        //            return true;
-        //        }
-        //        if (ImGui.Selectable("Rename"))
-        //        {
-        //            toRename = assetData;
-        //        }
+                        //if (monoObject is SerializebleScene scene)
+                        //{
+                        //    EditorSystem.OpenScene = scene;
+                        //}
+                    }
+                }
 
-        //        ImGui.Text("Create:");
+                //Draw
+                if (open)
+                {
+                    if (!isLeaf)
+                    {
+                        for (int i = 0; i < node.Count; i++)
+                        {
+                            DrawNode(node[i]);
+                        }
+                    }
 
-        //        if (ImGui.Selectable("Folder"))
-        //        {
-        //            AssetDatabase.CreateFolder(assetData.fullPath, "Folder");
-        //            return true;
-        //        }
+                    ImGui.TreePop();
+                }
+            }
+        }
 
-        //        foreach (var item in createAssetTypes)
-        //        {
-        //            var attribute = item.GetCustomAttribute<AssetMenuAttribute>();
-        //            string title = attribute.Title;
+        private void Popup(TreeNode<AssetData> treeNode = null)
+        {
+            bool flag = treeNode != null ? ImGui.BeginPopupContextItem("resourceMenu") 
+                                         : ImGui.BeginPopup("resourceMenu");
 
-        //            ImGui.PushID(title);
-        //            if (ImGui.Selectable(title))
-        //            {
-        //                string folder = assetData.fullPath;
-        //                if (File.Exists(folder))
-        //                {
-        //                    folder = Path.GetDirectoryName(folder);
-        //                }
-        //                string path = Path.Combine(folder, attribute.FileName);
-        //                AssetDatabase.CreateAsset(item, path);
-        //                return true;
-        //            }
-        //        }
+            ImGuiSelectableFlags flags = ImGuiSelectableFlags.None;
 
-        //        ImGui.EndPopup();
-        //    }
+            if (treeNode == null)
+            {
+                flags |= ImGuiSelectableFlags.Disabled;
+            }
 
-        //    return false;
-        //}
+            if (flag)
+            {
+                if (ImGui.Selectable("Rename", false, flags))
+                {
+                    toRename = treeNode.Data;
+                }
+
+                if (ImGui.Selectable("Delete", false, flags))
+                {
+                    AssetDatabase.DeleteAsset(selected.Data.fullPath);
+                }
+
+                string path = selected != null ? selected.Data.fullPath : "";
+
+                if (ImGui.Selectable("Create folder"))
+                {
+                    AssetDatabase.CreateFolder(path, "NewFolder");
+                }
+
+                foreach (var assetType in assetTypes)
+                {
+                    string title = $"{assetType.Title}##{assetType.TypeId}";
+
+                    if (ImGui.Selectable(title))
+                    {
+                        //string folder = selected.Data.fullPath;
+                        //if (AssetDatabase.Contains(folder))
+                        //{
+                        //    folder = Path.GetDirectoryName(folder);
+                        //}
+
+                        string assetPath = Path.Combine(path, assetType.FileName);
+                        AssetDatabase.CreateAsset(assetPath, assetType.TargetType);
+                    }
+                }
+
+                ImGui.EndPopup();
+            }
+        }
     }
 }

@@ -246,7 +246,7 @@ namespace Fitamas.ImGuiNet
             io.AddMousePosEvent(mouse.X, mouse.Y);
             io.AddMouseButtonEvent(0, mouse.LeftButton == ButtonState.Pressed);
             io.AddMouseButtonEvent(1, mouse.RightButton == ButtonState.Pressed);
-            io.AddMouseButtonEvent(2, mouse.MiddleButton == ButtonState.Pressed);
+            io. AddMouseButtonEvent(2, mouse.MiddleButton == ButtonState.Pressed);
             io.AddMouseButtonEvent(3, mouse.XButton1 == ButtonState.Pressed);
             io.AddMouseButtonEvent(4, mouse.XButton2 == ButtonState.Pressed);
 
@@ -471,5 +471,4 @@ namespace Fitamas.ImGuiNet
 
         #endregion Internals
     }
-
 }

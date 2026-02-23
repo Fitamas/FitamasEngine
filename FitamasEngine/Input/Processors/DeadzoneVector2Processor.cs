@@ -11,8 +11,8 @@ namespace Fitamas.Input.Processors
 
         public override Vector2 Process(Vector2 value)
         {
-            return new Vector2(MathV.ClosestIfBetween(value.X, Min, Max),
-                               MathV.ClosestIfBetween(value.Y, Min, Max));
+            return new Vector2(FMath.ClosestIfBetween(value.X, Min, Max),
+                               FMath.ClosestIfBetween(value.Y, Min, Max));
         }
     }
 }

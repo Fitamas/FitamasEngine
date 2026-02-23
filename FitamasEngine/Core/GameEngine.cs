@@ -10,13 +10,16 @@ using Fitamas.Graphics.RendererFeatures;
 using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.Input;
 using Fitamas.Physics;
-using Fitamas.Scene;
+using Fitamas.Scenes;
+using Fitamas.Serialization;
+using Fitamas.Serialization.Json;
 using Fitamas.Tweening;
 using Fitamas.UserInterface;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using R3;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Fitamas.Core
 {
@@ -100,18 +103,17 @@ namespace Fitamas.Core
             //GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
             GraphicsDeviceManager.ApplyChanges();
 
-            Debug.Log("Load game content");
+            //string path = Path.Combine(Content.RootDirectory, "Assets", "order.resource");
+            //if (File.Exists(path))
+            //{
+            //    ResourceManifest = JsonUtility.Load<ResourceManifest>(path);
+            //}
+            //else
+            //{
+            //    ResourceManifest = new ResourceManifest();
+            //}
 
-            base.Initialize();
-
-            foreach (var initializable in MainContainer.ResolveAll<IInitializable>())
-            {
-                initializable.Initialize();
-            }
-            updateables = MainContainer.ResolveAll<IUpdateable>();
-
-            Debug.Log("Initialize systems");
-
+            Debug.Log("Create game world");
             gameWorld = CreateWorldBuilder().Build();
 
             //RenderManager.AddRendererFeature(new LightingRendererFeature(GraphicsDevice));
@@ -119,10 +121,15 @@ namespace Fitamas.Core
             RenderManager.AddRendererFeature(new PostRendererFeature(this, drawExecutor));
             RenderManager.AddRendererFeature(new GizmosRendererFeature(this, drawGizmosExecutor));
 
-            RenderManager.AddPostProcessor(new VignettePostProcessor(0));
+            Debug.Log("Initialize systems");
+            foreach (var initializable in MainContainer.ResolveAll<IInitializable>())
+            {
+                initializable.Initialize();
+            }
+            updateables = MainContainer.ResolveAll<IUpdateable>();
 
-            Debug.Log("Load systems content");
-
+            Debug.Log("Load game content");
+            base.Initialize();
             loadContentExecutor.LoadContent(Content);
         }
 
@@ -198,7 +205,7 @@ namespace Fitamas.Core
             base.Dispose(disposing);
 
             gameWorld.Dispose();
-            AudioManager.Dispose();
+            MainContainer.Dispose();
         }
     }
 }

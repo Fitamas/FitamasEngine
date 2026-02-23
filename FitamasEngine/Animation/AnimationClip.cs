@@ -11,7 +11,7 @@ namespace Fitamas.Animation
         public float Lenght => time;
         public ITimeLine[] TimeLines => timeLines;
 
-        public AnimationClip(string name, float time, ITimeLine[] timeLines) : base(name)
+        public AnimationClip(string name, float time, ITimeLine[] timeLines)
         {
             this.time = time;
             this.timeLines = timeLines;

@@ -4,8 +4,12 @@ using Fitamas.Serialization;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Reflection.Emit;
+using System.Runtime.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Fitamas.ImGuiNet
 {
@@ -82,6 +86,11 @@ namespace Fitamas.ImGuiNet
             else if (property.IsString)
             {
                 string stringValue = (string)value;
+                if (string.IsNullOrEmpty(stringValue))
+                {
+                    stringValue = "";
+                }
+
                 if (ImGui.InputText(name, ref stringValue, 1000))
                 {
                     property.SetValue(stringValue);
@@ -106,60 +115,18 @@ namespace Fitamas.ImGuiNet
             }
             else if (property.IsMonoObject)
             {
-                MonoObject serializeble = (MonoObject)value;
-                if (PropertyMonoObject(name, property.Type, ref serializeble))
+                if (PropertyReference(name, property.Type, ref value))
                 {
-                    property.SetValue(serializeble);
+                    property.SetValue(value);
                     return true;
                 }
             }
             else if (property.IsTexture2D)
             {
-                Texture2D texture = (Texture2D)value;
-                string path = texture != null && !string.IsNullOrEmpty(texture.Name) ? texture.Name : "";
-
-                if (ImGui.InputText(name, ref path, 1000, ImGuiInputTextFlags.EnterReturnsTrue))
+                if (PropertyReference(name, property.Type, ref value))
                 {
-                    if (string.IsNullOrEmpty(path))
-                    {
-                        property.SetValue(null);
-                        return true;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            texture = GameEngine.Instance.Content.Load<Texture2D>(path);
-                            property.SetValue(texture);
-                            return true;
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.Log(e);
-                        }
-                    }
-                }
-                if (ImGui.BeginDragDropTarget())
-                {
-                    if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
-                    {
-                        if (ImGuiManager.DragDropObject is string result)
-                        {
-                            try
-                            {
-                                path = Path.GetRelativePath(GameEngine.Instance.Content.RootDirectory, result);
-                                texture = GameEngine.Instance.Content.Load<Texture2D>(path);
-                                property.SetValue(texture);
-                                return true;
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.Log(e);
-                            }
-                        }
-                    }
-
-                    ImGui.EndDragDropTarget();
+                    property.SetValue(value);
+                    return true;
                 }
             }
             else
@@ -250,6 +217,11 @@ namespace Fitamas.ImGuiNet
 
         public static bool PropertyArray(SerializedProperty property)
         {
+            if (property.ArrayElementType.IsAbstract)
+            {
+                return false;
+            }
+
             bool isEdit = false;
             if (ImGui.TreeNode(property.Name))
             {
@@ -290,48 +262,33 @@ namespace Fitamas.ImGuiNet
         public static bool PropertyReference<T>(string name, ref T reference) where T : class
         {
             object result = reference;
-            bool isEdit = PropertyReference(name, ref result, typeof(T));
-            if (isEdit)
+            if (PropertyReference(name, typeof(T), ref result))
             {
                 reference = (T)result;
+                return true;
             }
-            return isEdit;
+
+            return false;
         }
 
-        public static bool PropertyReference(string name, ref object reference, Type type)
+        public static bool PropertyReference(string name, Type type, ref object reference)
         {
-            PropertyReference(type.Name, reference == null);
+            Vector2 size = new Vector2(ImGui.CalcItemWidth(), ImGui.GetFrameHeight());
 
-            bool isEdit = false;
-            if (ImGui.BeginDragDropTarget())
+            if (ImGui.BeginChild($"##{name}_container", size.ToNumerics(), ImGuiChildFlags.FrameStyle))
             {
-                if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
+                if (reference != null)
                 {
-                    //if (ImGuiManager.DragDropObject is GameObject prefab)
-                    //{
-                    //    //if (prefab.TryGet(out object result, type))
-                    //    //{
-                    //    //    reference = result;
-                    //    //    isEdit = true;
-                    //    //}
-                    //}
-                }
+                    string text = reference.GetType().Name;
+                    if (reference is GraphicsResource graphicsResource)
+                    {
+                        text += $"({graphicsResource.Name})";
+                    }
+                    if (reference is MonoContentObject contentObject)
+                    {
+                        text += $"({contentObject.Name})";
+                    }
 
-                ImGui.EndDragDropTarget();
-            }
-            ImGui.SameLine();
-            ImGui.Text(name);
-
-            return isEdit;
-        }
-
-        public static void PropertyReference(string text, bool isEmpty = false)
-        {
-            if (ImGui.BeginChild("region" + text, new System.Numerics.Vector2(250, 40),
-                ImGuiChildFlags.Borders, ImGuiWindowFlags.NoScrollbar))
-            {
-                if (!isEmpty)
-                {
                     ImGui.Text(text);
                 }
                 else
@@ -340,31 +297,16 @@ namespace Fitamas.ImGuiNet
                 }
             }
             ImGui.EndChild();
-        }
-
-        public static bool PropertyMonoObject(string name, Type type, ref MonoObject monoObject)
-        {
-            if (monoObject != null)
-            {
-                PropertyReference(monoObject.GetType().Name, false);
-            }
-            else
-            {
-                PropertyReference(" ", true);
-            }
 
             bool isEdit = false;
             if (ImGui.BeginDragDropTarget())
             {
                 if (ImGui.IsMouseReleased(ImGuiMouseButton.Left))
                 {
-                    if (ImGuiManager.DragDropObject is MonoObject obj)
+                    if (ImGuiManager.DragDropObject != null && ImGuiManager.DragDropObject.GetType().IsAssignableFrom(type))
                     {
-                        if (type == obj.GetType())
-                        {
-                            isEdit = true;
-                            monoObject = obj;
-                        }
+                        isEdit = true;
+                        reference = ImGuiManager.DragDropObject;
                     }
                 }
 

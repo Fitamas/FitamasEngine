@@ -18,12 +18,37 @@ namespace Fitamas.Core
             return types;
         }
 
-        public static Type[] GetTypes<T>() where T : Attribute
+        public static Type[] GetTypesWithAttribute<T>() where T : Attribute
         {
             Type[] types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => a.GetTypes().Where(t => t.IsDefined(typeof(T)))).ToArray();
 
             return types;
+        }
+
+        public static T[] GetAttributes<T>() where T : Attribute
+        {
+            T[] attributes = GetTypesWithAttribute<T>().Select(t => t.GetCustomAttribute<T>()).ToArray();
+
+            return attributes;
+        }
+
+        public static T GetTypeAttribute<T>(this Type type) where T : Attribute, ITypeAttribute
+        {
+            T attribute = type.GetCustomAttribute<T>();
+            if (attribute != null)
+            {
+                attribute.TargetType = type;
+            }
+
+            return attribute;
+        }
+
+        public static T[] GetTypeAttributes<T>() where T : Attribute, ITypeAttribute
+        {
+            T[] attributes = GetTypesWithAttribute<T>().Select(t => t.GetTypeAttribute<T>()).ToArray();
+
+            return attributes;
         }
 
         public static FieldInfo[] GetSerializedFields(this Type type) //TODO fix loop

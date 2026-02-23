@@ -133,7 +133,7 @@ namespace Fitamas.Physics
                 for (int i = 0; i < hits.Length; i++)
                 {
                     Vector2 point = hits[i].Point;
-                    Vector2 result = MathV.ProjectOnTo(origin, origin + direction, point);
+                    Vector2 result = FMath.ProjectOnTo(origin, origin + direction, point);
                     float a = Vector2.Distance(point, result);
                     float b = MathF.Sqrt(MathF.Abs(radius * radius - a * a));
                     float currentDistance = Vector2.Distance(origin, result) - b;

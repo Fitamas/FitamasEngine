@@ -176,7 +176,7 @@ namespace Fitamas.UserInterface.Components
         {
             if (IsMouseOver)
             {
-                float direction = MathV.Sign(mouse.ScrollWheelDelta);
+                float direction = FMath.Sign(mouse.ScrollWheelDelta);
                 VerticalSlider.Track.Value += Sensitivity * direction;
             }
         }

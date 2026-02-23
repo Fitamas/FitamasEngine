@@ -43,15 +43,15 @@ namespace Fitamas.DebugTools
             Color x = Color.Green;
             Color y = Color.Red;
 
-            primitiveDrawing.DrawSegment(position, position + MathV.Rotate(new Vector2(0, AnchorSize.X), rotation), y);
+            primitiveDrawing.DrawSegment(position, position + FMath.Rotate(new Vector2(0, AnchorSize.X), rotation), y);
 
-            primitiveDrawing.DrawSegment(position, position + MathV.Rotate(new Vector2(AnchorSize.X, 0), rotation), x);
+            primitiveDrawing.DrawSegment(position, position + FMath.Rotate(new Vector2(AnchorSize.X, 0), rotation), x);
         }
 
         public static void DrawRectangle(Vector2 position, float rotation, Vector2 size, Color color)
         {
-            Vector2 vector1 = MathV.Rotate(new Vector2(size.X / 2, size.Y / 2), rotation);
-            Vector2 vector2 = MathV.Rotate(new Vector2(-size.X / 2, size.Y / 2), rotation);
+            Vector2 vector1 = FMath.Rotate(new Vector2(size.X / 2, size.Y / 2), rotation);
+            Vector2 vector2 = FMath.Rotate(new Vector2(-size.X / 2, size.Y / 2), rotation);
             Vector2[] points = [vector1, vector2, -vector1, -vector2];
 
             primitiveDrawing.DrawPolygon(position, points, color);

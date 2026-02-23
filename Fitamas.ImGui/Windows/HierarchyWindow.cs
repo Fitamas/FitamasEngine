@@ -1,4 +1,5 @@
-﻿using Fitamas.ECS;
+﻿using Fitamas.Core;
+using Fitamas.ECS;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using System;
@@ -8,24 +9,29 @@ namespace Fitamas.ImGuiNet.Windows
     public class HierarchyWindow : EditorWindow
     {
         private Entity selected;
-        private Entity dragDrop;
         private Entity rename;
 
-        public HierarchyWindow()
+        public HierarchyWindow() : base("Entities")
         {
-            Name = "Entities";
+
         }
 
         protected override void OnGUI(GameTime gameTime)
         {
             if (ImGui.CollapsingHeader("Hierarchy"))
             {
-                EntityManager entityManager = manager.Game.GameWorld.EntityManager;
+                EntityManager entityManager = GameEngine.Instance.GameWorld.EntityManager;
 
                 foreach (var id in entityManager.Entities)
                 {
                     Entity entity = entityManager.Get(id);
                     DrawItem(entity);
+                }
+
+                if (mouseOverWindow && !ImGui.IsAnyItemHovered() && ImGui.IsMouseReleased(ImGuiMouseButton.Right))
+                {
+                    selected = null;
+                    ImGui.OpenPopup("selectEntity");
                 }
 
                 Popup();
@@ -35,8 +41,8 @@ namespace Fitamas.ImGuiNet.Windows
         private void DrawItem(Entity entity)
         {
             string nodeName = $"{entity.Name}##{entity.Id}";
-            bool isLeaf = true;// node.IsLeaf;
-            bool select = (Entity)ImGuiManager.SelectObject == entity;
+            bool isLeaf = true;
+            bool select = entity.Equals(ImGuiManager.SelectObject);
             ImGuiTreeNodeFlags flag = ImGuiTreeNodeFlags.None;
             if (isLeaf) flag |= ImGuiTreeNodeFlags.Leaf;
             if (select) flag |= ImGuiTreeNodeFlags.Selected;
@@ -88,55 +94,47 @@ namespace Fitamas.ImGuiNet.Windows
                 ImGui.EndDragDropTarget();
             }
 
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left) | ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            {
+                ImGuiManager.SelectObject = entity;
+            }
+
             //Draw
             if (open)
             {
-                if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-                {
-                    ImGuiManager.SelectObject = entity;
-                }
-
-                if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
-                {
-                    ImGuiManager.SelectObject = entity;
-                }
-
                 ImGui.TreePop();
-
-                //DrawNode
-                //if (!isLeaf)
-                //{
-                //    for (int i = 0; i < node.Count; i++)
-                //    {
-                //        DrawNode(node[i]);
-                //    }
-                //}
             }
 
             ImGui.OpenPopupOnItemClick("selectEntity");
-
         }
 
         private void Popup()
         {
             if (ImGui.BeginPopup("selectEntity"))
             {
-                if (ImGui.Selectable("Rename entity"))
+                ImGuiSelectableFlags flags = ImGuiSelectableFlags.None;
+
+                if (selected == null)
+                {
+                    flags |= ImGuiSelectableFlags.Disabled;
+                }
+
+                if (ImGui.Selectable("Rename entity", false, flags))
                 {
                     rename = selected;
                 }
-                if (ImGui.Selectable("Delete entity"))
+                if (ImGui.Selectable("Delete entity", false, flags))
                 {
-                    EntityManager entityManager = manager.Game.GameWorld.EntityManager;
+                    EntityManager entityManager = GameEngine.Instance.GameWorld.EntityManager;
                     entityManager.InstantDestroy(selected);
                 }
                 if (ImGui.Selectable("New entity"))
                 {
-                    EntityManager entityManager = manager.Game.GameWorld.EntityManager;
+                    EntityManager entityManager = GameEngine.Instance.GameWorld.EntityManager;
                     selected = entityManager.Create();
                     ImGuiManager.SelectObject = selected;
                 }
-                if (ImGui.Selectable("Convert to prefab"))
+                if (ImGui.Selectable("Convert to prefab", false, flags))
                 {
                     //TODO
                     //PrefabUtility.CreatePrefab("GameObject.prefab", selected);

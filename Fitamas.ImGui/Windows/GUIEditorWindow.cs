@@ -1,4 +1,5 @@
-﻿using Fitamas.ECS;
+﻿using Fitamas.Core;
+using Fitamas.ECS;
 using Fitamas.UserInterface.Components;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
@@ -9,14 +10,14 @@ namespace Fitamas.ImGuiNet.Windows
 {
     public class GUIEditorWindow : EditorWindow
     {
-        public GUIEditorWindow()
+        public GUIEditorWindow() : base("GUI editor")
         {
-            Name = "GUI";
+
         }
 
         protected override void OnGUI(GameTime gameTime)
         {
-            DrawItem(manager.Game.GUIManager.Canvas);
+            DrawItem(GameEngine.Instance.GUIManager.Canvas);
         }
 
         private bool DrawItem(GUIComponent component)

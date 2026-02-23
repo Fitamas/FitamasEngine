@@ -10,9 +10,9 @@ namespace Fitamas.ImGuiNet.Windows
     {
         private List<string> messagePool;
 
-        public ConsoleWindow()
+        public ConsoleWindow() : base("Console")
         {
-            Name = "Console";
+
         }
 
         protected override void OnOpen()

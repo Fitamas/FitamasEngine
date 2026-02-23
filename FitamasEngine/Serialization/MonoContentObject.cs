@@ -1,19 +1,27 @@
-﻿using System;
+﻿using Fitamas.Serialization.Json;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace Fitamas.Serialization
 {
     public abstract class MonoContentObject : MonoObject
     {
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public MonoContentObject(string name = "NewObject")
+        public MonoContentObject()
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
 
-            Name = name;
+        }
+
+        public virtual void LoadData(string path)
+        {
+            JsonUtility.LoadToObject(path, this);
+        }
+
+        public virtual void OnPostLoad()
+        {
+
         }
     }
 }

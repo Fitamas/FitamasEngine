@@ -10,6 +10,13 @@ namespace Fitamas.Serialization
 
         public static string RootDirectory => manager.RootDirectory;
 
+        public static IResourceManifest Manifest { get; set; }
+
+        static Resources()
+        {
+            Manifest = new ResourceManifest();
+        }
+
         public static T Load<T>(string name)
         {
             return manager.Load<T>(name);

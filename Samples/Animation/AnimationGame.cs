@@ -71,7 +71,7 @@ namespace Animation
             Entity entity1 = GameWorld.CreateEntity();
             entity1.Attach(new SpriteRendererComponent()
             {
-                Sprite = Sprite.Create("TestBox", [new Rectangle(0, 0, 40, 40), new Rectangle(32, 32, 20, 20)]),
+                Sprite = Sprite.Create("TestBox", [/*new Rectangle(0, 0, 40, 40), new Rectangle(32, 32, 20, 20)*/]),
             });
             entity1.Attach(new Transform()
             {
@@ -83,7 +83,7 @@ namespace Animation
                 Name = "BONE2",
             });
 
-            GUIManager system = MainContainer.Resolve<GUIManager>(ApplicationKey.GUISystem);
+            GUIManager system = MainContainer.Resolve<GUIManager>();
             GUISlider slider = GUI.CreateSlider(new Point(50, 150), GUISliderDirection.LeftToRight, 200);
             slider.Pivot = new Vector2(0, 0);
             slider.Track.OnValueChanged.AddListener((s, v) =>

@@ -124,7 +124,7 @@ namespace Fitamas.Physics
                 Color color = Color.GreenYellow;
                 Body body = rigidBody.Body;
                 float rotation = body.Rotation;
-                Vector2 position = body.Position + MathV.Rotate(collider.Offset, rotation);
+                Vector2 position = body.Position + FMath.Rotate(collider.Offset, rotation);
 
                 switch (collider.ColliderType)
                 {

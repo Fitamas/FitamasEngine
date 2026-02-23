@@ -7,7 +7,7 @@ namespace Fitamas.Input.Processors
     {
         public override float Process(float value)
         {
-            return MathV.Clamp01(value);
+            return FMath.Clamp01(value);
         }
     }
 }

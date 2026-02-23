@@ -10,7 +10,7 @@ namespace Fitamas.Input.Processors
 
         public override float Process(float value)
         {
-            return MathV.ClosestIfBetween(value, Min, Max);
+            return FMath.ClosestIfBetween(value, Min, Max);
         }
     }
 }

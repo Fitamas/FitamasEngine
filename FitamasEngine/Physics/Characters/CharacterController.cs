@@ -162,7 +162,7 @@ namespace Fitamas.Physics.Characters
                 {
                     Vector2 snapToSurface = velocity.NormalizeF() * (hit.Distance - character.skinSize);
                     Vector2 leftTover = velocity - snapToSurface;
-                    float angle = MathV.AngleDegrees(new Vector2(0, 1), hit.Normal);
+                    float angle = FMath.AngleDegrees(new Vector2(0, 1), hit.Normal);
 
                     //Debug.Log(hit.normal);
 
@@ -177,7 +177,7 @@ namespace Fitamas.Physics.Characters
                         //пол
                         if (angle <= character.maxSlopeAngle || !character.isGrounded || character.isSlide) //(!isRoofed)
                         {
-                            leftTover = MathV.Project(leftTover, hit.Normal);
+                            leftTover = FMath.Project(leftTover, hit.Normal);
                         }
                         //ступени и стены
                         else if (character.isGrounded && !character.isSlide && !character.isRoofed)
@@ -201,7 +201,7 @@ namespace Fitamas.Physics.Characters
                             //    leftTover = Project(leftTover, hit.normal);
                             //}
 
-                            leftTover = MathV.Project(leftTover, hit.Normal);
+                            leftTover = FMath.Project(leftTover, hit.Normal);
                         }
                         //потолок и стена
                         else
@@ -222,7 +222,7 @@ namespace Fitamas.Physics.Characters
                         // потолок или стена или земля
                         else
                         {
-                            leftTover = MathV.Project(leftTover, hit.Normal);
+                            leftTover = FMath.Project(leftTover, hit.Normal);
                         }
                     }
 
@@ -256,7 +256,7 @@ namespace Fitamas.Physics.Characters
             {
                 RayCastHit hit = hits[0];
 
-                float angle = MathV.AngleDegrees(new Vector2(0, 1), hit.Normal);
+                float angle = FMath.AngleDegrees(new Vector2(0, 1), hit.Normal);
 
                 if (angle <= 90 && hit.Distance >= character.skinSize)
                 {
@@ -294,7 +294,7 @@ namespace Fitamas.Physics.Characters
 
                 //if (hit.collider != null && !hit.collider.isTrigger && !ignoreColliders.Contains(hit.collider))
                 {
-                    float angle = MathV.AngleDegrees(new Vector2(0, 1), hit.Normal);
+                    float angle = FMath.AngleDegrees(new Vector2(0, 1), hit.Normal);
 
                     if (angle <= 90/* && hit.distance < character.skinSize * 2*/)
                     {
@@ -345,7 +345,7 @@ namespace Fitamas.Physics.Characters
 
                 //if (hit.collider != null && !hit.collider.isTrigger && !ignoreColliders.Contains(hit.collider))
                 {
-                    float angle = MathV.AngleDegrees(new Vector2(0, 1), hit.Normal);
+                    float angle = FMath.AngleDegrees(new Vector2(0, 1), hit.Normal);
 
                     if (angle > 90)
                     {

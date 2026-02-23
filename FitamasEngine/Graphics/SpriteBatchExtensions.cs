@@ -25,6 +25,7 @@
     SOFTWARE.
 */
 
+using Fitamas.Fonts;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -40,12 +41,16 @@ namespace Fitamas.Graphics
         public static void Draw(this SpriteBatch spriteBatch, Sprite sprite, Vector2 position, Color color,
             float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, Rectangle? clippingRectangle = null)
         {
-            spriteBatch.Draw(sprite, position, sprite.Bounds, color, rotation, origin, scale, effects, layerDepth, clippingRectangle);
+            spriteBatch.Draw(sprite, position, sprite.DefaultFrame.Bounds, color, rotation, origin, scale, effects, layerDepth, clippingRectangle);
         }
 
         public static void Draw(this SpriteBatch spriteBatch, Sprite sprite, Vector2 position, Rectangle sourceRectangle, Color color,
             float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, Rectangle? clippingRectangle = null)
         {
+            if (sprite.Texture == null)
+            {
+                return;
+            }
 
             if (clippingRectangle.HasValue)
             {
@@ -55,9 +60,9 @@ namespace Fitamas.Graphics
                 var height = (int)(sprite.Height * scale.Y);
                 var destinationRectangle = new Rectangle(x, y, width, height);
 
-                sourceRectangle = ClipSourceRectangle(sprite.Bounds, destinationRectangle, clippingRectangle.Value);
-                position.X += (sourceRectangle.X - sprite.Bounds.X) * scale.X;
-                position.Y += (sourceRectangle.Y - sprite.Bounds.Y) * scale.Y;
+                sourceRectangle = ClipSourceRectangle(sprite.DefaultFrame.Bounds, destinationRectangle, clippingRectangle.Value);
+                position.X += (sourceRectangle.X - sprite.DefaultFrame.Bounds.X) * scale.X;
+                position.Y += (sourceRectangle.Y - sprite.DefaultFrame.Bounds.Y) * scale.Y;
 
                 if (sourceRectangle.Width <= 0 || sourceRectangle.Height <= 0)
                     return;

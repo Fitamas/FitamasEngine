@@ -16,7 +16,7 @@ namespace Fitamas.Samples.HelloWorld
 
             GameWorld.CreateMainCamera();
 
-            GUIManager system = MainContainer.Resolve<GUIManager>(ApplicationKey.GUISystem);
+            GUIManager system = MainContainer.Resolve<GUIManager>();
 
             GUIButton button = GUI.CreateButton(new Point(0, 100), "Button from C# script");
             button.SetAlignment(GUIAlignment.Center);
@@ -27,7 +27,7 @@ namespace Fitamas.Samples.HelloWorld
             system.AddComponent(button);
 
             GUITextBlock textBlock = GUI.CreateTextBlock(new Point(50, 10), "Hello World!\nHello World!");
-            textBlock.SetValue(GUITextBlock.ScaleProperty, 1.5f)
+            textBlock.SetValue(GUITextBlock.SizeProperty, 1.5f)
                      .SetValue(GUIComponent.PivotProperty, new Vector2(0, 0));
             textBlock.SetValue(GUITextBlock.AutoScaleProperty, false);
             textBlock.LocalSize = new Point(400, 120);

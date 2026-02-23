@@ -1,4 +1,5 @@
 ﻿using Fitamas.DebugTools;
+using System;
 
 namespace Fitamas
 {
@@ -8,32 +9,37 @@ namespace Fitamas
 
         public static void Log(string message)
         {
-            main.LogRaw(MessageType.info, message);
+            main.Log(message);
         }
 
         public static void Log(object value)
         {
-            Log(value?.ToString());
+            main.Log(value);
         }
 
         public static void LogError(string message)
         {
-            main.LogRaw(MessageType.error, message);
+            main.LogError(message);
         }
 
         public static void LogError(object value)
         {
-            LogError(value?.ToString());
+            main.LogError(value);
         }
 
         public static void LogWarning(string message)
         {
-            main.LogRaw(MessageType.warning, message);
+            main.LogWarning(message);
         }
 
         public static void LogWarning(object value)
         {
-            LogWarning(value?.ToString());
+            main.LogWarning(value);
+        }
+
+        public static void LogExeption(Exception exception)
+        {
+            main.LogExeption(exception);
         }
     }
 }

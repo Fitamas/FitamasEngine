@@ -1,4 +1,5 @@
-﻿using Fitamas.Graphics;
+﻿using Fitamas.Fonts;
+using Fitamas.Graphics;
 using Fitamas.Math;
 using Fitamas.UserInterface.Components;
 using Microsoft.Xna.Framework;
@@ -53,11 +54,9 @@ namespace Fitamas.UserInterface
             spriteBatch.End();
         }
 
-        public void FillRectangle(Point position, Point scale, Color color, float alpha)
+        public void FillRectangle(Rectangle rectangle, Color color, float alpha)
         {
-            Rectangle rectangle = new Rectangle(position, scale);
-
-            Draw(Texture2DHelper.DefaultTexture, rectangle, color, alpha);
+            Draw(TextureHelper.DefaultTexture, rectangle, color, alpha);
         }
 
         public void Draw(Texture2D texture, Rectangle rectangle, Color color, float alpha)
@@ -71,11 +70,11 @@ namespace Fitamas.UserInterface
             spriteBatch.Draw(texture, rectangle, null, color, rotation, Vector2.Zero, SpriteEffects.None, 1);
         }
 
-        public void DrawString(SpriteFont font, string text, Point position, Color color, float scale, float alpha)
+        public void Draw(FontAtlas font, string text, float size, Point position, Color color, float alpha)
         {
             color.A = (byte)(alpha * color.A);
             Vector2 origin = font.MeasureString(text);
-            spriteBatch.DrawString(font, text, position.ToVector2(), color, 0, new Vector2(0, 0), scale, SpriteEffects.None, 1);
+            spriteBatch.Draw(font, text, size, position.ToVector2(), color, 0, new Vector2(0, 0), SpriteEffects.None, 1);
         }
 
         public void Draw(Sprite sprite, Color color, Rectangle rectangle, GUIImageEffect effect, float alpha)
@@ -83,7 +82,7 @@ namespace Fitamas.UserInterface
             color.A = (byte)(alpha * color.A);
 
             Vector2 position = rectangle.Location.ToVector2();
-            Vector2 sourceSize = sprite.Bounds.Size.ToVector2();
+            Vector2 sourceSize = sprite.DefaultFrame.Bounds.Size.ToVector2();
             Vector2 scale = rectangle.Size.ToVector2() / sourceSize;
 
             spriteBatch.Draw(sprite, position, color, 0, Vector2.Zero, scale, (SpriteEffects)effect, 1);

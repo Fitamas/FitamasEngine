@@ -1,4 +1,5 @@
-﻿using Fitamas.DebugTools;
+﻿using Fitamas.Core;
+using Fitamas.DebugTools;
 using Fitamas.ECS;
 using Fitamas.Graphics;
 using Fitamas.Graphics.ViewportAdapters;
@@ -12,47 +13,34 @@ namespace Fitamas.ImGuiNet.Windows
 {
     public class SceneEditorWindow : EditorWindow
     {
-        private GraphicsDevice graphicsDevice;
+        //private GraphicsDevice graphicsDevice;
         private ScalingWindowViewportAdapter adapter;
-        private Camera camera;
-        //private RenderTarget2D renderTarget;
-        //private nint idTexture;
 
         private Vector2 contentSize;
-        private Vector2 mouseOnsScreen;
+        private Vector2 mouseOnScreen;
         private Vector2 mousePosition;
 
         public float CameraSpeed = 10;
 
-        public SceneEditorWindow()
+        public SceneEditorWindow() : base("Scene")
         {
-            Name = "Scene";
-        }
-
-        protected override void OnOpen()
-        {
-            graphicsDevice = manager.Game.GraphicsDevice;
-            adapter = new ScalingWindowViewportAdapter(graphicsDevice);
-            camera = new Camera();
-            camera.Color = Color.DimGray;
-            camera.ViewportAdapter = adapter;
+            adapter = new ScalingWindowViewportAdapter(GameEngine.Instance.GraphicsDevice);
         }
 
         protected override void OnFocus()
         {
-            Camera.Current = camera; //TODO fix
+            ImGuiManager.Instance.Camera.ViewportAdapter = adapter;
+            Camera.Current = ImGuiManager.Instance.Camera;
         }
 
         public override void OnOpenEditor()
         {
-            Camera.Current = camera;
-            manager.Game.InputManager.IsActive = false;
+            GameEngine.Instance.InputManager.IsActive = false;
         }
 
         public override void OnCloseEditor()
         {
-            Camera.Current = Camera.Main;
-            manager.Game.InputManager.IsActive = true;
+            GameEngine.Instance.InputManager.IsActive = true;
         }
 
         protected override void OnGUI(GameTime gameTime)
@@ -60,8 +48,8 @@ namespace Fitamas.ImGuiNet.Windows
             ImGui.BeginChild("GameRender");
 
             Vector2 mousePos = ImGui.GetMousePos();
-            mouseOnsScreen = adapter.PointToScreen(mousePos.ToPoint()).ToVector2();
-            mousePosition = camera.ScreenToWorld(mouseOnsScreen);
+            mouseOnScreen = adapter.PointToScreen(mousePos.ToPoint()).ToVector2();
+            mousePosition = ImGuiManager.Instance.Camera.ScreenToWorld(mouseOnScreen);
 
             Vector2 size = ImGui.GetContentRegionAvail();
             Vector2 uv0 = Vector2.Zero;
@@ -83,16 +71,12 @@ namespace Fitamas.ImGuiNet.Windows
             adapter.ViewportSize = size.ToPoint();
             adapter.VirtualSize = contentSize.ToPoint();
 
-            Gizmos.Begin();
-            RenderScene();
-            Gizmos.End();
-
-            ImGuiUtils.Image(manager.RenderTargetId, size, uv0, uv1, Color.White, new Color());
+            ImGuiUtils.Image(ImGuiManager.Instance.RenderTargetId, size, uv0, uv1, Color.White, new Color());
 
             ImGui.EndChild();
         }
 
-        private void RenderScene()
+        protected override void OnScene(GameTime gameTime)
         {
             if (ImGuiManager.SelectObject is Entity entity)
             {
@@ -100,6 +84,11 @@ namespace Fitamas.ImGuiNet.Windows
                 {
                     transform.Position = HandleUtils.PositionHandle(transform.Position, transform.Rotation, mousePosition);
                 }
+            }
+
+            if (!focusedWindow)
+            {
+                return;
             }
 
             if (ImGui.IsMouseClicked(ImGuiMouseButton.Left) && HandleUtils.Handle == Handle.none)
@@ -122,9 +111,9 @@ namespace Fitamas.ImGuiNet.Windows
                 Vector2 dragDelta = ImGui.GetMouseDragDelta(ImGuiMouseButton.Middle);
                 ImGui.ResetMouseDragDelta(ImGuiMouseButton.Middle);
 
-                Vector2 delta = mousePosition - camera.ScreenToWorld(mouseOnsScreen + dragDelta);
+                Vector2 delta = mousePosition - ImGuiManager.Instance.Camera.ScreenToWorld(mouseOnScreen + dragDelta);
 
-                camera.Position += delta;
+                ImGuiManager.Instance.Camera.Position += delta;
             }
             else if (!ImGui.IsKeyDown(ImGuiKey.ModCtrl))
             {
@@ -138,14 +127,14 @@ namespace Fitamas.ImGuiNet.Windows
 
                 Vector2 delta = direction.NormalizeF() * deltaTime * CameraSpeed;
 
-                camera.Position += delta;
+                ImGuiManager.Instance.Camera.Position += delta;
             }
 
             if (mouseOverWindow && ImGui.IsKeyDown(ImGuiKey.MouseWheelY))
             {
                 float mouseDirection = ImGui.GetIO().MouseWheel;
 
-                camera.AdjustZoom(mouseDirection);
+                ImGuiManager.Instance.Camera.AdjustZoom(mouseDirection);
             }
         }
 

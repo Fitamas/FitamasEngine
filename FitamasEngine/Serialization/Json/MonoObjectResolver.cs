@@ -6,11 +6,13 @@ namespace Fitamas.Serialization.Json
 {
     public class MonoObjectResolver : IReferenceResolver
     {
-        private Dictionary<Guid, MonoObject> dictionary = new Dictionary<Guid, MonoObject>();
+        private readonly IDictionary<Guid, object> _referenceObjects;
+        private readonly IDictionary<object, Guid> _objectReferences;
 
         public MonoObjectResolver()
         {
-
+            _referenceObjects = new Dictionary<Guid, object>();
+            _objectReferences = new Dictionary<object, Guid>();
         }
 
         // This method is called during deserialize for $id
@@ -18,10 +20,11 @@ namespace Fitamas.Serialization.Json
         {
             if (!string.IsNullOrEmpty(reference))
             {
+                Guid id = Guid.Parse(reference);
+                _referenceObjects[id] = value;
+                _objectReferences[value] = id;
                 if (value is MonoObject monoObject)
                 {
-                    Guid id = new Guid(reference);
-                    dictionary[id] = monoObject;
                     monoObject.Guid = id;
                 }
             }
@@ -32,9 +35,9 @@ namespace Fitamas.Serialization.Json
         {
             if (!string.IsNullOrEmpty(reference))
             {
-                Guid id = new Guid(reference);
+                Guid id = Guid.Parse(reference);
 
-                dictionary.TryGetValue(id, out MonoObject monoObject);
+                _referenceObjects.TryGetValue(id, out object monoObject);
 
                 return monoObject;
             }
@@ -45,25 +48,30 @@ namespace Fitamas.Serialization.Json
         // Returns false, so that $id is used, not $ref.
         public bool IsReferenced(object context, object value)
         {
-            if (value is MonoObject monoObject)
-            {
-                return dictionary.ContainsKey(monoObject.Guid);
-            }
-
-            return false;
+            return _objectReferences.ContainsKey(value);
         }
 
         // Returns person name as value of $id
         public string GetReference(object context, object value)
         {
-            if (value is MonoObject monoObject)
+            if (_objectReferences.TryGetValue(value, out Guid guid))
             {
-                Guid guid = monoObject.Guid;
-                dictionary[guid] = monoObject;
                 return guid.ToString();
             }
 
-            return null;
+            if (value is MonoObject monoObject)
+            {
+                guid = monoObject.Guid;
+            }
+            else
+            {
+                guid = Guid.NewGuid();
+            }
+
+            _objectReferences[value] = guid;
+            _referenceObjects[guid] = value;
+
+            return guid.ToString();
         }
     }
 }

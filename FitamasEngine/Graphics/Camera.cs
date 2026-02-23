@@ -3,7 +3,6 @@ using Fitamas.ECS;
 using Fitamas.Graphics.ViewportAdapters;
 using Fitamas.Math;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Fitamas.Graphics
@@ -13,7 +12,8 @@ namespace Fitamas.Graphics
         public static Camera Main { get; set; }
         public static Camera Current { get; set; }
 
-        public ViewportAdapter ViewportAdapter { get; set; }
+        private ViewportAdapter viewportAdapter;
+
         public Vector2 Position { get; set; }
         public float Rotation { get; set; }
 
@@ -24,6 +24,28 @@ namespace Fitamas.Graphics
         //internal RenderTarget2D RenderTarget1 { get; set; }
         //internal RenderTarget2D RenderTarget2 { get; set; }
         //internal RenderingData RenderingData { get; set; }
+
+        public ViewportAdapter ViewportAdapter 
+        { 
+            get
+            {
+                if (viewportAdapter == null)
+                {
+                    viewportAdapter = new DefaultViewportAdapter(GameEngine.Instance.GraphicsDevice);
+                }
+
+                return viewportAdapter;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(viewportAdapter));
+                }
+
+                viewportAdapter = value;
+            }
+        }
 
         public Vector2 Origin
         {

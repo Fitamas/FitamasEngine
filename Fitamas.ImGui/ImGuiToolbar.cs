@@ -13,7 +13,7 @@ namespace Fitamas.ImGuiNet
         public const float toolbarSize = 60;
         public const float toolbarButtonSize = 35;
 
-        public static void Toolbar()
+        public static void Draw()
         {
             BeginToolbar();
 

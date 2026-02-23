@@ -106,7 +106,7 @@ namespace Fitamas.UserInterface.Components
             }
             set
             {
-                thumbScale = MathV.Clamp01(value);
+                thumbScale = FMath.Clamp01(value);
                 UpdateThumb();
             }
         }
@@ -184,7 +184,7 @@ namespace Fitamas.UserInterface.Components
             {
                 if (dependencyObject is GUITrack slider)
                 {
-                    newValue = MathV.Clamp(newValue, slider.MinValue, slider.MaxValue);
+                    newValue = FMath.Clamp(newValue, slider.MinValue, slider.MaxValue);
                     dependencyObject.SetValue(property, newValue);
                     slider.OnValueChanged.Invoke(slider, newValue);
                     slider.RaiseEvent(new GUIEventArgs(OnValueChangedEvent, slider));

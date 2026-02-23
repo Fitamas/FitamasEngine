@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using Fitamas.UserInterface.Input;
 using Fitamas.Events;
+using Fitamas.Fonts;
 
 namespace Fitamas.UserInterface.Components
 {
@@ -203,14 +204,14 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
-            SpriteFont font = TextBlock.Font;
+            FontAtlas font = TextBlock.Font;
             if (font == null)
             {
                 return;
             }
 
             string text = Text;
-            int lineHeight = FontManager.GetHeight(font);
+            int lineHeight = (int)TextBlock.Size;
 
             if (isSelect && !string.IsNullOrEmpty(text))
             {
@@ -268,7 +269,7 @@ namespace Fitamas.UserInterface.Components
                             Point linePosition = TextBlock.TextPostion + new Point(indent, lineCount * lineHeight);
 
                             Render.Begin(context.Mask);
-                            Render.FillRectangle(linePosition, lineSize, SelectColor, context.Alpha);
+                            Render.FillRectangle(new Rectangle(linePosition, lineSize), SelectColor, context.Alpha);
                             Render.End();
                         }
 
@@ -302,7 +303,7 @@ namespace Fitamas.UserInterface.Components
                 Point caretPosition = TextBlock.TextPostion + new Point(stringX + (int)font.Spacing / 2 - caretSize.X / 2, stringY);
 
                 Render.Begin(context.Mask);
-                Render.FillRectangle(caretPosition, caretSize, CaretColor, context.Alpha);
+                Render.FillRectangle(new Rectangle(caretPosition, caretSize), CaretColor, context.Alpha);
                 Render.End();
             }
         }

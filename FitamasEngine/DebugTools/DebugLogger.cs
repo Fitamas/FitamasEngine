@@ -24,6 +24,42 @@ namespace Fitamas.DebugTools
             memoryStream = new StreamWriter(filePath);
         }
 
+        public void Log(object value)
+        {
+            Log(value?.ToString());
+        }
+
+        public void Log(string message)
+        {
+            LogRaw(MessageType.info, message);
+        }
+
+        public void LogError(object value)
+        {
+            LogError(value?.ToString());
+        }
+
+        public void LogError(string message)
+        {
+            LogRaw(MessageType.error, message);
+        }
+
+        public void LogWarning(object value)
+        {
+            LogWarning(value?.ToString());
+        }
+
+        public void LogWarning(string message)
+        {
+            LogRaw(MessageType.warning, message);
+        }
+
+        public void LogExeption(Exception exception)
+        {
+            string message = $"{exception.Message}\n{exception.StackTrace}";
+            LogError(message);
+        }
+
         public void LogRaw(MessageType type, DateTime time, string message)
         {
             LogRaw($"[{type}] [{time.ToLongTimeString()}] {message}");

@@ -5,7 +5,7 @@ namespace Fitamas.DebugTools
 {
     public class FramesPerSecondCounter
     {
-        public static FramesPerSecondCounter Instance { get; private set; }
+        public static FramesPerSecondCounter Instance { get; } = new FramesPerSecondCounter();
 
         private static readonly TimeSpan _oneSecondTimeSpan = new TimeSpan(0, 0, 1);
         private int _framesCounter;
@@ -13,7 +13,7 @@ namespace Fitamas.DebugTools
 
         public FramesPerSecondCounter()
         {
-            Instance = this;
+
         }
 
         public int FramesPerSecond { get; private set; }

@@ -44,7 +44,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
         public static GUINode CreateNode(GUIStyle style, Point position, string name)
         {
             Point padding = style.Resources.FramePadding;
-            int height = FontManager.GetHeight() + padding.Y * 2;
+            int height = FontManager.Size + padding.Y * 2;
 
             GUINode node = new GUINode();
             node.LocalPosition = position;
@@ -147,7 +147,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
 
         public static GUIPin CreatePin(GUIStyle style, GUIPinType type)
         {
-            Point size = new Point(FontManager.GetHeight());
+            Point size = new Point(FontManager.Size);
 
             GUIPin pin = new GUIPin();
             pin.LocalSize = size;

@@ -5,6 +5,21 @@ namespace Fitamas.Math
 {
     public static class Vector2Extension
     {
+        public static Vector2 FromNumerics(this System.Numerics.Vector2 v2)
+        {
+            return new Vector2(v2.X, v2.Y);
+        }
+
+        public static Vector3 FromNumerics(this System.Numerics.Vector3 v3)
+        {
+            return new Vector3(v3.X, v3.Y, v3.Z);
+        }
+
+        public static Vector4 FromNumerics(this System.Numerics.Vector4 v4)
+        {
+            return new Vector4(v4.X, v4.Y, v4.Z, v4.W);
+        }
+
         public static Vector2 ToXY(this Vector3 v3)
         {
             return new Vector2(v3.X, v3.Y);
@@ -27,17 +42,17 @@ namespace Fitamas.Math
 
         public static float Angle(this Vector2 value)
         {
-            return MathV.Angle(value);
+            return FMath.Angle(value);
         }
 
         public static float Angle(this Vector2 from, Vector2 to)
         {
-            return MathV.Angle(from, to);
+            return FMath.Angle(from, to);
         }
 
         public static float AngleDegrees(this Vector2 from, Vector2 to)
         {
-            return MathV.AngleDegrees(from, to);
+            return FMath.AngleDegrees(from, to);
         }
 
         public static Vector2 NormalizeF(this Vector2 value)

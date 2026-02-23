@@ -41,7 +41,7 @@ namespace Fitamas.UserInterface.Components.NodeEditor
             {
                 Point a = FromLocal(Anchors[i - 1]);
                 Point b = FromLocal(Anchors[i]);
-                float distance = MathV.DistancePointToSegment(a.ToVector2(), b.ToVector2(), point.ToVector2());
+                float distance = FMath.DistancePointToSegment(a.ToVector2(), b.ToVector2(), point.ToVector2());
 
                 if (distance <= (Thickness + ShadowSize) / 2f)
                 {

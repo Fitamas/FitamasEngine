@@ -32,8 +32,8 @@ namespace Fitamas.Graphics
             Vector2 scale = transform.Scale / spriteRendererComponent.Sprite.PixelInUnit;
             float layer = (float)spriteRendererComponent.Layer / Settings.LayersCount;
             Rectangle sourceRectangle = spriteRendererComponent.RectangleIndex >= 0 &&
-                                           spriteRendererComponent.RectangleIndex < sprite.Rectangles.Length ?
-                                           sprite.Rectangles[spriteRendererComponent.RectangleIndex] : sprite.Bounds;
+                                           spriteRendererComponent.RectangleIndex < sprite.FramesCount ?
+                                           sprite.Frames[spriteRendererComponent.RectangleIndex].Bounds : sprite.DefaultFrame.Bounds;
 
 
             Matrix view = Camera.Current.GetViewMatrix();

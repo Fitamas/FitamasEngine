@@ -7,20 +7,20 @@ namespace Fitamas.Audio
 {
     public class AudioClip : MonoContentObject
     {
-        internal Wav Wav { get; }
+        private Wav wav;
 
-        private AudioClip(Wav wav)
+        internal Wav Wav => wav;
+        public double Lenght => wav.getLength();
+
+        private AudioClip()
         {
-            Wav = wav;
+            wav = new Wav();
         }
 
-        public static AudioClip LoadWav(string path)
+        public override void LoadData(string path)
         {
-            path = Path.Combine(Resources.RootDirectory, path);
-            Wav wav = new Wav();
+            wav = new Wav();;
             wav.load(path);
-
-            return new AudioClip(wav);
         }
     }
 }

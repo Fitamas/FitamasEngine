@@ -1,4 +1,5 @@
-﻿using Fitamas.Math;
+﻿using Fitamas.Graphics;
+using Fitamas.Math;
 using Fitamas.Serialization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -86,7 +87,7 @@ namespace Fitamas.UserInterface.Components
 
         public GUILineRenderer()
         {
-            texture = Texture2DHelper.DefaultTexture;
+            texture = TextureHelper.DefaultTexture;
             Anchors = new List<Point>();
         }
 
@@ -125,7 +126,7 @@ namespace Fitamas.UserInterface.Components
             Vector2 v1 = lastAnchor.ToVector2();
             Vector2 v2 = currentAnchor.ToVector2();
             Vector2 direction = v2 - v1;
-            float angle = MathV.Angle(direction) - MathF.PI / 2;
+            float angle = FMath.Angle(direction) - MathF.PI / 2;
             float distance = Vector2.Distance(v1, v2);
             float halfThickness = thickness / 2;
             Point offset = (direction.PerpendicularCounterClockwise().NormalizeF() * halfThickness).ToPoint();

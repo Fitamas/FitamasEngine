@@ -89,13 +89,13 @@ namespace Fitamas.ImGuiNet
             switch (handle)
             {
                 case Handle.XY:
-                    return mousePosition - MathV.Rotate(offset, rotation);
+                    return mousePosition - FMath.Rotate(offset, rotation);
                 case Handle.X:
-                    Vector2 direction = MathV.Rotate(new Vector2(1, 0), rotation);
-                    return MathV.ProjectOnTo(position, position + direction, mousePosition - MathV.Rotate(offset, rotation));
+                    Vector2 direction = FMath.Rotate(new Vector2(1, 0), rotation);
+                    return FMath.ProjectOnTo(position, position + direction, mousePosition - FMath.Rotate(offset, rotation));
                 case Handle.Y:
-                    direction = MathV.Rotate(new Vector2(0, 1), rotation);
-                    return MathV.ProjectOnTo(position, position + direction, mousePosition - MathV.Rotate(offset, rotation));
+                    direction = FMath.Rotate(new Vector2(0, 1), rotation);
+                    return FMath.ProjectOnTo(position, position + direction, mousePosition - FMath.Rotate(offset, rotation));
             }
 
             return position;
@@ -124,12 +124,12 @@ namespace Fitamas.ImGuiNet
                     break;
             }
 
-            Gizmos.DrawLine(position + MathV.Rotate(new Vector2(0, HandleSize.Y / 2), rotation), 
-                            position + MathV.Rotate(new Vector2(HandleSize.X, HandleSize.Y / 2), rotation), xy, HandleSize.Y);
+            Gizmos.DrawLine(position + FMath.Rotate(new Vector2(0, HandleSize.Y / 2), rotation), 
+                            position + FMath.Rotate(new Vector2(HandleSize.X, HandleSize.Y / 2), rotation), xy, HandleSize.Y);
 
-            Gizmos.DrawLine(position, position + MathV.Rotate(new Vector2(0, Gizmos.AnchorSize.X), rotation), y, Gizmos.AnchorSize.Y);
+            Gizmos.DrawLine(position, position + FMath.Rotate(new Vector2(0, Gizmos.AnchorSize.X), rotation), y, Gizmos.AnchorSize.Y);
 
-            Gizmos.DrawLine(position, position + MathV.Rotate(new Vector2(Gizmos.AnchorSize.X, 0), rotation), x, Gizmos.AnchorSize.Y);
+            Gizmos.DrawLine(position, position + FMath.Rotate(new Vector2(Gizmos.AnchorSize.X, 0), rotation), x, Gizmos.AnchorSize.Y);
         }
     }
 }

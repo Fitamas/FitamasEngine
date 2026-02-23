@@ -5,72 +5,80 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Fitamas.Graphics
 {
-    public enum SpriteMode
+    public struct SpriteFrame
     {
-        Default,
-        Multiple
+        public Rectangle Bounds;
+        public Rectangle Border;
     }
 
-    [AssetMenu(fileName: "NewSprite.sprite", title: "Sprite")]
+    [AssetType(fileName: "NewSprite", title: "Sprite")]
     public class Sprite : MonoContentObject
     {
         [SerializeField] private Texture2D texture;
+        [SerializeField] private List<SpriteFrame> frames;
 
         public int PixelInUnit = 32;
-        public Rectangle Bounds;
-        public Rectangle Border;
-        public Rectangle[] Rectangles;
+
+        public SpriteFrame DefaultFrame
+        {
+            get
+            {
+                Init();
+                return frames[0];
+            }
+        }
 
         public Texture2D Texture => texture;
-        public int X => Bounds.X;
-        public int Y => Bounds.Y;
-        public int Width => Bounds.Width;
-        public int Height => Bounds.Height;
-        public Point Size => Bounds.Size;
+        public int X => DefaultFrame.Bounds.X;
+        public int Y => DefaultFrame.Bounds.Y;
+        public int Width => DefaultFrame.Bounds.Width;
+        public int Height => DefaultFrame.Bounds.Height;
+        public Point Size => DefaultFrame.Bounds.Size;
         public int TextureWidth => texture.Width;
         public int TextureHeight => texture.Height;
+        public int FramesCount => frames.Count;
+        public IReadOnlyList<SpriteFrame> Frames => frames;
 
         private Sprite()
         {
+            frames = new List<SpriteFrame>();
 
+            Init();
         }
 
-        public Sprite(string name, Texture2D texture, Rectangle bounds, Rectangle[] rectangles) : base(name)
+        public Sprite(Texture2D texture, IEnumerable<SpriteFrame> frames = null)
         {
             this.texture = texture;
-            Bounds = bounds;
-            Rectangles = rectangles;
+            this.frames = new List<SpriteFrame>();
+
+            if (frames != null)
+            {
+                this.frames.AddRange(frames);
+            }
+
+            Init();
         }
 
-        public Sprite(Texture2D texture, Rectangle bounds) : this(texture.Name, texture, bounds, [])
+        private void Init()
         {
-            this.texture = texture;
-            Bounds = bounds;
+            if (frames.Count == 0)
+            {
+                //TODO FIX
+
+                //frames.Add(new SpriteFrame()
+                //{
+                //    Bounds = texture != null? texture.Bounds : new Rectangle(),
+                //});
+            }
         }
 
-        public Sprite(Texture2D texture, Rectangle[] rectangles) : this(texture)
-        {
-            this.texture = texture;
-            Rectangles = rectangles;
-        }
-
-        public Sprite(Texture2D texture) : this(texture.Name, texture, texture.Bounds, [])
-        {
-            this.texture = texture;
-        }
-
-        public static Sprite Create(string path)
-        {
-            Texture2D texture = GameEngine.Instance.Content.Load<Texture2D>(path);
-            return new Sprite(texture);
-        }
-
-        public static Sprite Create(string path, IEnumerable<Rectangle> rectangles)
+        public static Sprite Create(string path, IEnumerable<SpriteFrame> rectangles = null)
         {
             Texture2D texture = GameEngine.Instance.Content.Load<Texture2D>(path);
             return new Sprite(texture, rectangles.ToArray());
@@ -80,7 +88,7 @@ namespace Fitamas.Graphics
                 int maxRegionCount = int.MaxValue, int margin = 0, int spacing = 0)
         {
             Texture2D texture = GameEngine.Instance.Content.Load<Texture2D>(path);
-            List<Rectangle> rectangles = new List<Rectangle>();
+            List<SpriteFrame> frames = new List<SpriteFrame>();
             var count = 0;
             var width = texture.Width - margin;
             var height = texture.Height - margin;
@@ -91,17 +99,21 @@ namespace Fitamas.Graphics
             {
                 for (var x = margin; x < width; x += xIncrement)
                 {
-                    rectangles.Add(new Rectangle(x, y, regionHeight, regionWidth));
+                    frames.Add(new SpriteFrame()
+                    {
+                        Bounds = new Rectangle(x, y, regionHeight, regionWidth)
+                    });
+
                     count++;
 
                     if (count >= maxRegionCount)
                     {
-                        return new Sprite(texture, rectangles.ToArray());
+                        return new Sprite(texture, frames.ToArray());
                     }
                 }
             }
 
-            return new Sprite(texture, rectangles.ToArray());
+            return new Sprite(texture, frames.ToArray());
         }
     }
 }

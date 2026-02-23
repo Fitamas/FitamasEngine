@@ -183,7 +183,7 @@ namespace Fitamas.UserInterface.Components
 
             if (Sprite != null)
             {
-                Rectangle rectangle = GetImageRactengle(Sprite.Bounds, Rectangle);
+                Rectangle rectangle = GetImageRactengle(Sprite.DefaultFrame.Bounds, Rectangle);
 
                 switch (ImageType)
                 {
@@ -202,7 +202,7 @@ namespace Fitamas.UserInterface.Components
             }
             else
             {
-                Render.Draw(Texture2DHelper.DefaultTexture, Rectangle, Color, context.Alpha);
+                Render.Draw(TextureHelper.DefaultTexture, Rectangle, Color, context.Alpha);
             }
 
             Render.End();
@@ -274,7 +274,7 @@ namespace Fitamas.UserInterface.Components
 
         public void SetNativeSize()
         {
-            LocalSize = Sprite.Bounds.Size;
+            LocalSize = Sprite.DefaultFrame.Bounds.Size;
         }
     }
 }

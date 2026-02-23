@@ -1,41 +1,46 @@
-﻿using Fitamas.Core;
+﻿using Fitamas.Collections;
+using Fitamas.Core;
+using Fitamas.ECS;
 using Fitamas.Graphics;
+using Fitamas.Graphics.ViewportAdapters;
+using Fitamas.ImGuiNet.Assets;
 using Fitamas.ImGuiNet.Windows;
+using Fitamas.Scenes;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
-using System.Collections.Generic;
 
 namespace Fitamas.ImGuiNet
 {
-    public class ImGuiManager : IFinalRender, IInitializable
+    public class ImGuiManager : IFinalRender, IInitializable, Core.IUpdateable, IDisposable
     {
         private GraphicsDevice graphicsDevice;
         private ImGuiRenderer renderer;
-        private List<EditorWindow> editorWindows;
-        private int windowCount;
 
+        private Camera camera;
         private RenderTarget2D lastRenderTarget;
         private IntPtr renderTargetId = IntPtr.Zero;
 
         public bool ShowSeperateGameWindow;
 
+        public static ImGuiManager Instance { get; private set; }
         public static object SelectObject { get; set; }
         public static object DragDropObject { get; set; }
 
-        public GameEngine Game { get; }
-
+        public Camera Camera => camera;
         public RenderTarget2D LastRenderTarget => lastRenderTarget;
         public IntPtr RenderTargetId => renderTargetId;
 
         public ImGuiManager(GameEngine game)
         {
-            Game = game;
+            Instance = this;
+
             graphicsDevice = game.GraphicsDevice;
 
-            editorWindows = new List<EditorWindow>();
-            windowCount = 0;
+            camera = new Camera();
+            camera.Color = Color.DimGray;
+            Camera.Current = camera;
 
             renderer = new ImGuiRenderer(game);
             renderer.RebuildFontAtlas();
@@ -44,11 +49,15 @@ namespace Fitamas.ImGuiNet
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable | ImGuiConfigFlags.NavEnableKeyboard;
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             io.WantCaptureKeyboard = true;
+
+            EditorWindow.LoadData();
         }
 
         public void Initialize()
         {
-            foreach (var window in editorWindows)
+            SceneEditor.Initialize();
+
+            foreach (var window in EditorWindow.Windows)
             {
                 window.OnOpenEditor();
             }
@@ -78,25 +87,15 @@ namespace Fitamas.ImGuiNet
                     renderTargetId = renderer.BindTexture(renderingData.Source);
                 }
 
-                ImGuiMainMenuBar.MainMenuBar(this);
+                EditorWindow.DrawScene(context.GameTime);
 
-                ImGuiToolbar.Toolbar();
+                ImGuiMainMenuBar.Draw();
+
+                ImGuiToolbar.Draw();
 
                 ImGuiUtils.DockSpace();
 
-                for (int i = editorWindows.Count - 1; i >= 0; i--)
-                {
-                    if (!editorWindows[i].Enable)
-                    {
-                        EditorWindow window = editorWindows[i];
-                        editorWindows.RemoveAt(i);
-                        window.Close();
-                    }
-                    else
-                    {
-                        editorWindows[i].DrawGUI(context.GameTime);
-                    }
-                }
+                EditorWindow.Draw(context.GameTime);
             }
             else
             {
@@ -108,36 +107,24 @@ namespace Fitamas.ImGuiNet
             {
                 if (ShowSeperateGameWindow)
                 {
-                    foreach (var window in editorWindows)
+                    foreach (var window in EditorWindow.Windows)
                     {
                         window.OnOpenEditor();
                     }
                 }
                 else
                 {
-                    foreach (var window in editorWindows)
+                    foreach (var window in EditorWindow.Windows)
                     {
                         window.OnCloseEditor();
                     }
                 }
             }
 
+            graphicsDevice.SamplerStates[0] = SamplerState.PointWrap;
 
             graphicsDevice.SetRenderTarget(renderingData.Destination);
             renderer.EndLayout();
-        }
-
-        public void OpenWindow(EditorWindow window)
-        {
-            editorWindows.Add(window);
-            window.Initialize(this, windowCount);
-            windowCount++;
-        }
-
-        public void CloseWindow(EditorWindow window)
-        {
-            editorWindows.Remove(window);
-            window.Close();
         }
 
         public void UnbindTexture(IntPtr textureId)
@@ -148,6 +135,16 @@ namespace Fitamas.ImGuiNet
         public IntPtr BindTexture(Texture2D texture)
         {
             return renderer.BindTexture(texture);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            AssetSystem.Update();
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 }

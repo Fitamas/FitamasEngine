@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework.Content;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Fitamas.Serialization.Json
 {
@@ -13,24 +16,32 @@ namespace Fitamas.Serialization.Json
             return (T)Load(path, typeof(T));
         }
 
-        public static object Load(string path, Type type)
+        public static object Load(string path, Type type = null)
         {
-            ContentManager manager = GameEngine.Instance.Content;
             using (var reader = new StreamReader(path))
             using (var jsonReader = new JsonTextReader(reader))
             {
-                var serializer = new MonoJsonSerializer(manager);
+                var serializer = new MonoJsonSerializer(GameEngine.Instance);
                 return serializer.Deserialize(jsonReader, type);
+            }
+        }
+
+        public static void LoadToObject(string path, object target)
+        {
+            using (var reader = new StreamReader(path))
+            using (var jsonReader = new JsonTextReader(reader))
+            {
+                var serializer = new MonoJsonSerializer(GameEngine.Instance);
+                serializer.Populate(jsonReader, target);
             }
         }
 
         public static void Save(string path, object data)
         {
-            ContentManager manager = GameEngine.Instance.Content;
             using (var writer = new StreamWriter(path))
             using (JsonWriter jsonWriter = new JsonTextWriter(writer))
             {
-                var serializer = new MonoJsonSerializer(manager);
+                var serializer = new MonoJsonSerializer(GameEngine.Instance);
                 serializer.Serialize(jsonWriter, data);
             }
         }

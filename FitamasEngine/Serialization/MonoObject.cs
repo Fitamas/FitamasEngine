@@ -6,7 +6,7 @@ namespace Fitamas.Serialization
 {
     public abstract class MonoObject
     {
-        internal Guid Guid { get; set; }
+        public Guid Guid { get; set; }
 
         public MonoObject()
         {

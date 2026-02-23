@@ -142,7 +142,7 @@ namespace Fitamas.Graphics
             Vector2 delta = end - start;
 
             float distance = Vector2.Distance(start, end);
-            float angle = MathV.SignedAngle(new Vector2(1, 0), delta);
+            float angle = FMath.SignedAngle(new Vector2(1, 0), delta);
 
             float hight = thickness / 2;
 

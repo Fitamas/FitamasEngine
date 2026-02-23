@@ -20,7 +20,7 @@ namespace Fitamas.Tweening
         public float Duration { get; }
 
         public float TimeRemaining => Duration - ElapsedDuration;
-        public float Completion => MathV.Clamp01(completion);
+        public float Completion => FMath.Clamp01(completion);
 
         public Tweener(Func<T, T, float, T> interpolateFunction, Getter<T> getValueFunction, Setter<T> setVelueFunction, T endValue, float duration)
         {

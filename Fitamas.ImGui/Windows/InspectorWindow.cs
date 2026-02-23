@@ -1,8 +1,10 @@
 ﻿using Fitamas.Core;
 using Fitamas.ECS;
+using Fitamas.ImGuiNet.Editors;
 using Fitamas.Serialization;
 using ImGuiNET;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -11,77 +13,71 @@ namespace Fitamas.ImGuiNet.Windows
 {
     public class InspectorWindow : EditorWindow
     {
-        private Type[] componentTypes;
-        private Type[] editorType;
+        private static readonly Type[] componentTypes = ReflectionUtils.GetTypesAssignableFrom<Component>();
+        private static readonly Type[] editorType = ReflectionUtils.GetTypesWithAttribute<CustomEditorAttribute>();
 
         private object selectObject;
-        private List<EditorComponent> components;
+        private List<Editor> editors;
 
-        public InspectorWindow()
+        public InspectorWindow() : base("Inspector")
         {
-            Name = "Inspector";
-        }
 
-        protected override void OnOpen()
-        {
-            componentTypes = ReflectionUtils.GetTypesAssignableFrom<Component>();
-            editorType = ReflectionUtils.GetTypes<CustomEditorAttribute>();
         }
 
         private void UpdateComponents()
         {
-            components = new List<EditorComponent>();
+            editors = new List<Editor>();
 
-            if (selectObject is MonoObject serializeble)
+            if (selectObject is MonoObject || selectObject is GraphicsResource)
             {
-                EditorComponent res = CreateEditorComponent(selectObject);
-                res.Name = serializeble.GetType().Name;
-                res.Properties = SerializedProperty.GetChildProperty(serializeble);
-                res.target = serializeble;
+                Editor res = CreateEditorComponent(selectObject);
+                res.Name = $"{selectObject.GetType().Name}(TODO asset naame)";
+                res.Properties = SerializedProperty.GetChildProperty(selectObject);
+                res.target = selectObject;
 
                 res.OnEnable();
-                components.Add(res);
+                editors.Add(res);
             }
             else if (selectObject is Entity entity)
             {
-                if (manager.Game.GameWorld != null)
+                if (GameEngine.Instance.GameWorld != null)
                 {
-                    ComponentManager prefabManager = manager.Game.GameWorld.ComponentManager;
+                    ComponentManager prefabManager = GameEngine.Instance.GameWorld.ComponentManager;
 
                     foreach (var mapper in prefabManager.ComponentMappers)
                     {
                         if (mapper != null && mapper.Has(entity.Id))
                         {
                             object component = mapper.GetObject(entity.Id);
-                            EditorComponent res = CreateEditorComponent(component);
-                            res.Mapper = mapper;
+                            Editor res = CreateEditorComponent(component);
+                            //res.Mapper = mapper;
                             res.Name = mapper.ComponentType.Name;
                             res.Properties = SerializedProperty.GetChildProperty(component);
                             res.target = component;
 
                             res.OnEnable();
-                            components.Add(res);
+                            editors.Add(res);
                         }
                     }
                 }
             }
         }
 
-        private EditorComponent CreateEditorComponent(object component)
+        private Editor CreateEditorComponent(object component)
         {
-            EditorComponent editor = null;
+            Editor editor = null;
 
             foreach (var type in editorType)
             {
                 if (type.GetCustomAttribute<CustomEditorAttribute>().EditorType == component.GetType())
                 {
-                    editor = (EditorComponent)Activator.CreateInstance(type);
+                    editor = (Editor)Activator.CreateInstance(type);
                 }
             }
 
             if (editor == null)
             {
-                editor = new EditorComponent();
+                editor = new Editor();
             }
 
             return editor;
@@ -94,7 +90,7 @@ namespace Fitamas.ImGuiNet.Windows
                 selectObject = ImGuiManager.SelectObject;
                 UpdateComponents();
             }
-            
+        
             if (ImGuiManager.SelectObject is Entity entity)
             {
                 string name = "Entity name: " + entity.Name;
@@ -103,11 +99,11 @@ namespace Fitamas.ImGuiNet.Windows
                 ImGui.Text(name);
                 ImGui.Text(id);
 
-                foreach (var component in components)
+                foreach (var component in editors)
                 {
                     bool visible = true;
 
-                    if (ImGui.CollapsingHeader(component.Name, ref visible))
+                    if (ImGui.CollapsingHeader(component.Name, ref visible, ImGuiTreeNodeFlags.DefaultOpen))
                     {
                         ImGui.Indent();
 
@@ -118,8 +114,9 @@ namespace Fitamas.ImGuiNet.Windows
 
                     if (!visible)
                     {
-                        component.Mapper.Delete(entity.Id);
-                        components.Remove(component);
+                        //component.Mapper.Delete(entity.Id);
+                        Debug.LogError("TODO DELECTE COMPONENT FROM ENTITY");
+                        editors.Remove(component);
                         break;
                     }
                 }
@@ -163,11 +160,11 @@ namespace Fitamas.ImGuiNet.Windows
                     ImGui.EndPopup();
                 }
             }
-            else if (components != null)
+            else if (editors != null)
             {
-                foreach (var component in components)
+                foreach (var component in editors)
                 {
-                    if (ImGui.CollapsingHeader(component.Name))
+                    if (ImGui.CollapsingHeader(component.Name, ImGuiTreeNodeFlags.DefaultOpen))
                     {
                         ImGui.Indent();
 

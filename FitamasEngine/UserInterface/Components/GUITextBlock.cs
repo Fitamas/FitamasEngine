@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Fitamas.Fonts;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<bool> AutoScaleProperty = new DependencyProperty<bool>(AutoScaleChangedCallback, true, false);
 
-        public static readonly DependencyProperty<float> ScaleProperty = new DependencyProperty<float>(ScaleChangedCallback, 1, false);
+        public static readonly DependencyProperty<float> SizeProperty = new DependencyProperty<float>(ScaleChangedCallback, 10, false);
 
         public static readonly DependencyProperty<Color> ColorProperty = new DependencyProperty<Color>(Color.Black);
 
@@ -33,7 +34,7 @@ namespace Fitamas.UserInterface.Components
 
         public static readonly DependencyProperty<GUITextVerticalAlignment> TextVerticalAlignmentProperty = new DependencyProperty<GUITextVerticalAlignment>(GUITextVerticalAlignment.Top);
 
-        public static readonly DependencyProperty<SpriteFont> FontProperty = new DependencyProperty<SpriteFont>(FontChangedCallback, FontManager.DefaultFont, false);
+        public static readonly DependencyProperty<FontAtlas> FontProperty = new DependencyProperty<FontAtlas>(FontChangedCallback, FontManager.DefaultFont, false);
 
         public static readonly DependencyProperty<Thickness> PaddingProperty = new DependencyProperty<Thickness>(PaddingChangedCallback, Thickness.Zero, false);
 
@@ -63,15 +64,15 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public float Scale
+        public float Size
         {
             get
             {
-                return GetValue(ScaleProperty);
+                return GetValue(SizeProperty);
             }
             set
             {
-                SetValue(ScaleProperty, value);
+                SetValue(SizeProperty, value);
             }
         }
 
@@ -111,7 +112,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        public SpriteFont Font
+        public FontAtlas Font
         {
             get
             {
@@ -139,7 +140,7 @@ namespace Fitamas.UserInterface.Components
         {
             get
             {
-                SpriteFont font = Font;
+                FontAtlas font = Font;
                 if (font == null)
                 {
                     return Point.Zero;
@@ -148,7 +149,7 @@ namespace Fitamas.UserInterface.Components
                 string text = Text;
                 if (string.IsNullOrEmpty(text))
                 {
-                    return FontManager.GetDefaultCharacterSize(font);
+                    return new Point(0, font.Size);
                 }
 
                 return font.MeasureString(text).ToPoint();
@@ -160,8 +161,7 @@ namespace Fitamas.UserInterface.Components
             get
             {
                 Thickness padding = Padding;
-                Vector2 textSize = TextSize.ToVector2();
-                return (textSize * Scale).ToPoint() + new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
+                return TextSize + new Point(padding.Left + padding.Right, padding.Top + padding.Bottom);
             }
         }
 
@@ -214,7 +214,7 @@ namespace Fitamas.UserInterface.Components
                 return;
             }
 
-            SpriteFont font = Font;
+            FontAtlas font = Font;
             if (font == null)
             {
                 return;
@@ -227,7 +227,7 @@ namespace Fitamas.UserInterface.Components
             }
 
             Render.Begin(context.Mask);
-            Render.DrawString(font, text, TextPostion, Color, Scale, context.Alpha);
+            Render.Draw(font, text, Size, TextPostion, Color, context.Alpha);
             Render.End();
 
             base.OnDraw(gameTime, context);
@@ -263,7 +263,7 @@ namespace Fitamas.UserInterface.Components
         {
             position -= Offset;
 
-            SpriteFont font = Font;
+            FontAtlas font = Font;
             if (font == null)
             {
                 return 0;
@@ -275,12 +275,11 @@ namespace Fitamas.UserInterface.Components
                 return 0;
             }
 
-            int height = FontManager.GetHeight(font) + (int)font.Spacing;
+            int height = font.Size + (int)font.Spacing;
             //int lineIndex = position.Y / height;                      //TODO OPTIMIZATION
             //int startIndex = text.FirstIndexOfLine(lineIndex);
             //string line = text.SubstringLine(startIndex);
 
-            Dictionary<char, SpriteFont.Glyph> glyphs = font.GetGlyphs();
             float xPos = 0;
             float yPos = height / 2;
             float closestXDist = float.PositiveInfinity;
@@ -314,7 +313,7 @@ namespace Fitamas.UserInterface.Components
                     yPos += height;
                     xPos = 0;
                 }
-                else if (glyphs.TryGetValue(text[i], out SpriteFont.Glyph glyph))
+                else if (font.TryGetGlyph(text[i], out var glyph))
                 {
                     xPos += glyph.WidthIncludingBearings + font.Spacing;
                 }
@@ -360,7 +359,7 @@ namespace Fitamas.UserInterface.Components
             }
         }
 
-        private static void FontChangedCallback(DependencyObject dependencyObject, DependencyProperty<SpriteFont> property, SpriteFont oldValue, SpriteFont newValue)
+        private static void FontChangedCallback(DependencyObject dependencyObject, DependencyProperty<FontAtlas> property, FontAtlas oldValue, FontAtlas newValue)
         {
             if (dependencyObject is GUITextBlock textBlock)
             {

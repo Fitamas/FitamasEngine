@@ -96,7 +96,7 @@ namespace Fitamas.UserInterface
         public static GUICheckBox CreateCheckBox(GUIStyle style, Point position = new Point())
         {
             Point padding = style.Resources.FramePadding;
-            Point size = new Point(FontManager.GetHeight()) + padding + padding;
+            Point size = new Point(FontManager.Size) + padding + padding;
 
             GUICheckBox checkBox = new GUICheckBox();
             checkBox.LocalPosition = position;
@@ -129,12 +129,11 @@ namespace Fitamas.UserInterface
 
         public static GUIComboBox CreateComboBox(GUIStyle style, Point position)
         {
-            Point localSize = FontManager.GetDefaultCharacterSize();
             Point padding = style.Resources.FramePadding;
 
             GUIComboBox comboBox = new GUIComboBox();
             comboBox.LocalPosition = position;
-            comboBox.LocalSize = padding + padding + localSize;
+            comboBox.LocalSize = padding + padding + new Point(FontManager.Size);
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -257,7 +256,7 @@ namespace Fitamas.UserInterface
 
             GUITextInput input = new GUITextInput();
             input.LocalPosition = position;
-            input.LocalSize = new Point(lenght, FontManager.GetHeight()) + padding + padding;
+            input.LocalSize = new Point(lenght, FontManager.Size) + padding + padding;
 
             GUIImage image = new GUIImage();
             image.SetAlignment(GUIAlignment.Stretch);
@@ -293,7 +292,7 @@ namespace Fitamas.UserInterface
         {
             Point padding = sliderStyle.Resources.FramePadding;
             Point size;
-            int size1 = FontManager.GetDefaultCharacterSize().Y + padding.Y * 2;
+            int size1 = FontManager.Size + padding.Y * 2;
 
             if (direction == GUISliderDirection.LeftToRight || direction == GUISliderDirection.RightToLeft)
             {
@@ -350,7 +349,7 @@ namespace Fitamas.UserInterface
         public static GUIScrollRect CreateScrollRect(GUIStyle sliderStyle, GUIStyle thumbStyle, Point position, Point size)
         {
             Point padding = sliderStyle.Resources.FramePadding;
-            int size1 = FontManager.GetDefaultCharacterSize().Y + padding.Y * 2;
+            int size1 = FontManager.Size + padding.Y * 2;
 
             GUIScrollRect scrollRect = new GUIScrollRect();
             scrollRect.LocalPosition = position;
@@ -427,12 +426,12 @@ namespace Fitamas.UserInterface
         public static GUITreeNode CreateTreeNode(GUIStyle style, string text)
         {
             Point padding = style.Resources.FramePadding;
-            int height = FontManager.GetHeight() + padding.Y * 2;
+            int height = FontManager.Size + padding.Y * 2;
 
             GUITreeNode node = new GUITreeNode();
             //node.HorizontalAlignment = GUIHorizontalAlignment.Stretch;
             node.Pivot = new Vector2(0, 0);
-            node.ContainerPadding = new Thickness(padding.X + FontManager.GetHeight(), 0, 0, 0);
+            node.ContainerPadding = new Thickness(padding.X + FontManager.Size, 0, 0, 0);
             node.ControlTemplate = new GUIControlTemplate();
 
             GUIStack stack = new GUIStack();
@@ -464,7 +463,7 @@ namespace Fitamas.UserInterface
             image.SetAlignment(GUIAlignment.Stretch);
             button.AddChild(image);
 
-            Point size = new Point(FontManager.GetHeight());
+            Point size = new Point(FontManager.Size);
             Point position = padding;
 
             GUIImage image0 = new GUIImage();
@@ -510,7 +509,7 @@ namespace Fitamas.UserInterface
         public static TWindow CreateWindow<TWindow>(GUIStyle style) where TWindow : GUIWindow, new()
         {
             Point padding = style.Resources.WindowPadding;
-            int height = FontManager.GetHeight() + padding.Y * 2;
+            int height = FontManager.Size + padding.Y * 2;
 
             TWindow window = new TWindow();
             window.ControlTemplate = new GUIControlTemplate();

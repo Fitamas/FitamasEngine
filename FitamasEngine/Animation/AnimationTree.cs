@@ -10,7 +10,7 @@ namespace Fitamas.Animation
     {
         public List<AnimationLayerInfo> Layers;
 
-        public AnimationTree(string name) : base(name)
+        public AnimationTree(string name)
         {
             Layers = new List<AnimationLayerInfo>();
         }

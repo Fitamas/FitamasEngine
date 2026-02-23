@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Animation", "Samples
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fitamas.ImGuiNet", "Fitamas.ImGui\Fitamas.ImGuiNet.csproj", "{2465D933-2B7C-4BB6-9639-060B3271ADC5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpFont.NetStandard", "Libraries\SharpFont\Source\SharpFont\SharpFont.NetStandard.csproj", "{48722377-A177-0243-2326-3D36A652414B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2465D933-2B7C-4BB6-9639-060B3271ADC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2465D933-2B7C-4BB6-9639-060B3271ADC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2465D933-2B7C-4BB6-9639-060B3271ADC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48722377-A177-0243-2326-3D36A652414B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48722377-A177-0243-2326-3D36A652414B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48722377-A177-0243-2326-3D36A652414B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48722377-A177-0243-2326-3D36A652414B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
